@@ -27,6 +27,7 @@ dependencies {
     compile 'org.ow2.asm:asm-tree:7.1'
     compile 'org.ow2.asm:asm-commons:7.1'
     compile 'org.ow2.asm:asm-util:7.1'
+    implementation files("build/libs/cache/patched_1.12.2.jar")
     compile files("C:\\Program Files\\Java\\jdk1.8.0_241\\lib\\sa-jdi.jar", "C:\\Program Files\\Java\\jdk1.8.0_241\\lib\\tools.jar")
 }
 

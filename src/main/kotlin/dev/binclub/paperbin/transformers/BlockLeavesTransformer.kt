@@ -1,6 +1,7 @@
 package dev.binclub.paperbin.transformers
 
 import dev.binclub.paperbin.internalName
+import org.bukkit.Bukkit
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
 
@@ -32,6 +33,6 @@ object BlockLeavesTransformer: PaperFeatureTransformer {
 	
 	@JvmStatic
 	fun shouldDecayLeaf(): Boolean {
-		return false
+		return Bukkit.getTPS()[0] > 18 // only decay leaves when the tps is high
 	}
 }

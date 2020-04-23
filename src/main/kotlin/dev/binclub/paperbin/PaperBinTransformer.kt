@@ -2,6 +2,7 @@ package dev.binclub.paperbin
 
 import dev.binclub.paperbin.transformers.BlockLeavesTransformer
 import dev.binclub.paperbin.transformers.EntityInsentientTransformer
+import dev.binclub.paperbin.transformers.MinecraftServerTransformer
 import dev.binclub.paperbin.transformers.PaperFeatureTransformer
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassWriter
@@ -18,6 +19,7 @@ object PaperBinTransformer: ClassFileTransformer {
 	init {
 		transformers["net.minecraft.server.v1_12_R1.EntityInsentient"] = EntityInsentientTransformer
 		transformers["net.minecraft.server.v1_12_R1.BlockLeaves"] = BlockLeavesTransformer
+		transformers["net.minecraft.server.v1_12_R1.MinecraftServer"] = MinecraftServerTransformer
 	}
 	
 	override fun transform(
