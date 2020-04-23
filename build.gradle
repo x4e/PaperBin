@@ -23,6 +23,10 @@ jar {
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    compile 'org.ow2.asm:asm:7.1'
+    compile 'org.ow2.asm:asm-tree:7.1'
+    compile 'org.ow2.asm:asm-commons:7.1'
+    compile 'org.ow2.asm:asm-util:7.1'
     compile files("C:\\Program Files\\Java\\jdk1.8.0_241\\lib\\sa-jdi.jar", "C:\\Program Files\\Java\\jdk1.8.0_241\\lib\\tools.jar")
 }
 
