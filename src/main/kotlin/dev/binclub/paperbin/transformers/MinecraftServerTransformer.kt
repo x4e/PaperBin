@@ -16,10 +16,13 @@ object MinecraftServerTransformer: PaperFeatureTransformer {
 				val list = InsnList().apply {
 					add(VarInsnNode(ALOAD, 0))
 					add(FieldInsnNode(GETFIELD, "net/minecraft/server/v1_12_R1/MinecraftServer", "ticks", "I"))
-					add(MethodInsnNode(INVOKESTATIC, this::class.internalName, "onServerTick", "(I)V"))
+					add(MethodInsnNode(INVOKESTATIC, MinecraftServerTransformer::class.internalName, "onServerTick", "(I)V", false))
 				}
+				method.instructions.insert(list)
+				return
 			}
 		}
+		error("Couldnt find target")
 	}
 	
 	@JvmStatic
