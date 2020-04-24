@@ -60,6 +60,6 @@ object EntityInsentientTransformer: PaperFeatureTransformer {
 			is EntityVillager -> PaperBinInfo.ticks % 15 == 0
 			is EntityMonster -> PaperBinInfo.ticks % 15 == 0
 			else -> PaperBinInfo.ticks % 5 == 0
-		} && entity.world.findNearbyPlayer(entity, 40.0) != null // If there are no players within a 40 block radius then dont calculate AI
+		} && entity.world.findNearbyPlayer(entity, 40.0) != null // Only calculate if there are nearby players
 	}
 }

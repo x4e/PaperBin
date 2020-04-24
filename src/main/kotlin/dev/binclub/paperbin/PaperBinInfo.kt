@@ -18,6 +18,7 @@ object PaperBinInfo {
 		transformers["net.minecraft.server.v1_12_R1.BlockLeaves"] = BlockLeavesTransformer
 		transformers["net.minecraft.server.v1_12_R1.MinecraftServer"] = MinecraftServerTransformer
 		transformers["net.minecraft.server.v1_12_R1.PlayerConnection"] = PlayerConnectionTransformer
+		transformers["net.minecraft.server.v1_12_R1.PersistentVillage"] = PersistentVillageTransformer
 	}
 	
 	var ticks: Int = 0
