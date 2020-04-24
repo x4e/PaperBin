@@ -46,22 +46,20 @@ object EntityInsentientTransformer: PaperFeatureTransformer {
 	
 	@JvmStatic
 	fun shouldDoAi(entity: Any): Boolean {
-		return when (entity as EntityInsentient) {
+		entity as EntityInsentient
+		
+		return when (entity) {
 			is EntityBat -> false
 			is EntitySnowman -> false
 			is EntityRabbit -> false
 			is EntityPolarBear -> false
 			is EntityEndermite -> false
 			is EntityArmorStand -> false
-			is EntityMonster ->  {
-				if (Bukkit.getTPS()[0] > 15) {
-					PaperBinInfo.ticks % 20 == 0 // only every 20 ticks
-				} else {
-					// Or if the tps is lower than 15
-					PaperBinInfo.ticks % 40 == 0 // only every 40 ticks
-				}
-			}
-			else -> PaperBinInfo.ticks % 10 == 0 // Only every 10 ticks
-		}
+			is EntityParrot -> false
+			is EntityPigZombie -> PaperBinInfo.ticks % 25 == 0 // every 60 ticks
+			is EntityVillager -> PaperBinInfo.ticks % 15 == 0 // every 40 ticks
+			is EntityMonster -> PaperBinInfo.ticks % 15 == 0 // every 40 ticks
+			else -> PaperBinInfo.ticks % 5 == 0 // Only every 10 ticks
+		} && entity.world.findNearbyPlayer(entity, 40.0) == null // If there are no players within a 40 block radius then dont calculate AI
 	}
 }
