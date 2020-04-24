@@ -29,6 +29,8 @@ object PersistentVillageTransformer: PaperFeatureTransformer {
 							add(InsnNode(RETURN))
 							add(jumpOver)
 						}
+						method.instructions.insert(insn, list)
+						return
 					}
 				}
 			}
