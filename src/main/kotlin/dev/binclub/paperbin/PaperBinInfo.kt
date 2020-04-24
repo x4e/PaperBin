@@ -1,9 +1,6 @@
 package dev.binclub.paperbin
 
 import dev.binclub.paperbin.transformers.*
-import org.bukkit.Bukkit
-import org.bukkit.command.Command
-import org.bukkit.command.CommandSender
 
 /**
  * @author cookiedragon234 23/Apr/2020
@@ -20,6 +17,7 @@ object PaperBinInfo {
 		transformers["net.minecraft.server.v1_12_R1.PlayerConnection"] = PlayerConnectionTransformer
 		transformers["net.minecraft.server.v1_12_R1.PersistentVillage"] = PersistentVillageTransformer
 		transformers["net.minecraft.server.v1_12_R1.GameRules"] = GameRulesTransformer
+		transformers["net.minecraft.server.v1_12_R1.BlockFire"] = BlockFireTransformer
 	}
 	
 	var ticks: Int = 0
