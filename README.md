@@ -10,4 +10,6 @@ Usage:
 java [any jvm arguments] -jar PaperBin.jar ActualPaper.jar [any paper arguments]
 ```
 
+Commands `/binstop` and `/binstart` are recognised
+
 PaperBin is 100% compatible with any forks of paper, so you dont have to use vanilla paper.
