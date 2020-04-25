@@ -26,7 +26,11 @@ object PaperBinTransformer: ClassFileTransformer {
 			val classNode = ClassNode()
 			ClassReader(classfileBuffer).accept(classNode, 0)
 			
-			it.transformClass(classNode)
+			try {
+				it.transformClass(classNode)
+			} catch (t: Throwable) {
+				t.printStackTrace()
+			}
 			
 			val writer = ClassWriter(ClassWriter.COMPUTE_FRAMES)
 			classNode.accept(writer)

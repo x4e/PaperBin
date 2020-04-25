@@ -30,8 +30,5 @@ object PlayerConnectionTransformer: PaperFeatureTransformer {
 	
 	@JvmStatic
 	fun onCommand(command: String) {
-		if (command == "/binticks") {
-			Bukkit.broadcastMessage("Ticks: ${PaperBinInfo.ticks}")
-		}
 	}
 }

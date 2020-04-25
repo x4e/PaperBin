@@ -42,6 +42,8 @@ object PersistentVillageTransformer: PaperFeatureTransformer {
 	fun shouldTickVillage(village: Any): Boolean {
 		village as PersistentVillage
 		
+		if (PaperBinInfo.isTpsHigh() || !PaperBinInfo.enabled) return true
+		
 		return PaperBinInfo.ticks % 10 == 0 // run every 10 ticks
 	}
 }

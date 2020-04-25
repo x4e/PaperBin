@@ -48,6 +48,8 @@ object EntityInsentientTransformer: PaperFeatureTransformer {
 	fun shouldDoAi(entity: Any): Boolean {
 		entity as EntityInsentient
 		
+		if (PaperBinInfo.isTpsHigh() || !PaperBinInfo.enabled) return true
+		
 		return when (entity) {
 			is EntityBat -> false
 			is EntitySnowman -> false
@@ -55,7 +57,7 @@ object EntityInsentientTransformer: PaperFeatureTransformer {
 			is EntityPolarBear -> false
 			is EntityEndermite -> false
 			is EntityArmorStand -> false
-			is EntityParrot -> false
+			is EntityParrot -> PaperBinInfo.ticks % 25 == 0
 			is EntityPigZombie -> PaperBinInfo.ticks % 25 == 0
 			is EntityVillager -> PaperBinInfo.ticks % 15 == 0
 			is EntityMonster -> PaperBinInfo.ticks % 15 == 0

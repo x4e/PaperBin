@@ -28,5 +28,9 @@ object MinecraftServerTransformer: PaperFeatureTransformer {
 	@JvmStatic
 	fun onServerTick(ticks: Int) {
 		PaperBinInfo.ticks = ticks
+		
+		if (!PaperBinInfo.started) {
+			PaperBinInfo.onStartup()
+		}
 	}
 }
