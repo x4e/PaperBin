@@ -44,6 +44,6 @@ object PersistentVillageTransformer: PaperFeatureTransformer {
 		
 		if (PaperBinInfo.isTpsHigh() || !PaperBinInfo.enabled) return true
 		
-		return PaperBinInfo.ticks % 10 == 0 // run every 10 ticks
+		return PaperBinInfo.ticks % 40 == 0 // run every 10 ticks
 	}
 }

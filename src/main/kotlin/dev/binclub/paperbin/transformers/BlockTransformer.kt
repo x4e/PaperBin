@@ -48,6 +48,8 @@ object BlockTransformer: PaperFeatureTransformer {
 				return PaperBinInfo.ticks % 30 == 0
 			}
 			block is BlockFlowing -> {
+				println("Block flowing")
+				return false
 				return PaperBinInfo.ticks % 30 == 0
 			}
 			block is BlockMagma -> {

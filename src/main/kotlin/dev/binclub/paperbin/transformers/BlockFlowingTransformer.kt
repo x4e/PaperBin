@@ -15,7 +15,7 @@ object BlockFlowingTransformer: PaperFeatureTransformer {
 				val list = InsnList().apply {
 					add(VarInsnNode(ALOAD, 0))
 					add(MethodInsnNode(
-						Opcodes.INVOKESTATIC,
+						INVOKESTATIC,
 						BlockTransformer::class.internalName,
 						"shouldTickBlock",
 						"(Ljava/lang/Object;)Z",

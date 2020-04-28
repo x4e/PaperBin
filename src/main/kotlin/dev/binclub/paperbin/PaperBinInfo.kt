@@ -46,6 +46,7 @@ object PaperBinInfo {
 		transformers["net.minecraft.server.v1_12_R1.BlockFlowing"] = BlockFlowingTransformer
 		transformers["net.minecraft.server.v1_12_R1.BlockMagma"] = BlockMagmaTransformer
 		transformers["net.minecraft.server.v1_12_R1.BlockLeaves"] = BlockLeavesTransformer
+		transformers["net.minecraft.server.v1_12_R1.EntityVillager"] = EntityVillagerTransformer
 	}
 	
 	fun onStartup() {

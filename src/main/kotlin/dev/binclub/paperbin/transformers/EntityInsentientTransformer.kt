@@ -52,14 +52,16 @@ object EntityInsentientTransformer: PaperFeatureTransformer {
 		
 		return when (entity) {
 			is EntityBat -> false
-			is EntitySnowman -> false
 			is EntityRabbit -> false
 			is EntityPolarBear -> false
-			is EntityEndermite -> false
 			is EntityArmorStand -> false
+			is EntitySnowman -> PaperBinInfo.ticks % 25 == 0
+			is EntityEndermite -> PaperBinInfo.ticks % 25 == 0
 			is EntityParrot -> PaperBinInfo.ticks % 25 == 0
 			is EntityPigZombie -> PaperBinInfo.ticks % 25 == 0
-			is EntityVillager -> PaperBinInfo.ticks % 15 == 0
+			is EntityVillager -> (PaperBinInfo.ticks % 15 == 0).also {
+				EntityVillagerTransformer.handleInsentientVillagerUpdate(it, entity)
+			}
 			is EntityMonster -> PaperBinInfo.ticks % 15 == 0
 			else -> PaperBinInfo.ticks % 5 == 0
 		} && entity.world.findNearbyPlayer(entity, 40.0) != null // Only calculate if there are nearby players
