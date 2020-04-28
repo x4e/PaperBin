@@ -4,6 +4,7 @@ import dev.binclub.paperbin.transformers.*
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
+import org.bukkit.command.ConsoleCommandSender
 import org.bukkit.event.Event
 import org.bukkit.event.EventPriority
 import org.bukkit.event.HandlerList
@@ -51,7 +52,9 @@ object PaperBinInfo {
 				if (sender?.isOp == true) {
 					enabled = false
 					sender.sendMessage("Stopped paperbin")
-					println("Stopped paperbin")
+					if (sender !is ConsoleCommandSender) {
+						println("Stopped paperbin")
+					}
 				}
 				return true
 			}
@@ -60,9 +63,12 @@ object PaperBinInfo {
 		Bukkit.getCommandMap().register("binstart", object: Command("binstart") {
 			override fun execute(sender: CommandSender?, commandLabel: String, args: Array<String?>?): Boolean {
 				if (sender?.isOp == true) {
+					sender.spigot()
 					enabled = true
 					sender.sendMessage("Started paperbin")
-					println("Started paperbin")
+					if (sender !is ConsoleCommandSender) {
+						println("Started paperbin")
+					}
 				}
 				return true
 			}
