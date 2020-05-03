@@ -1,9 +1,9 @@
 package dev.binclub.paperbin.transformers
 
 import dev.binclub.paperbin.PaperBinInfo
-import dev.binclub.paperbin.internalName
+import dev.binclub.paperbin.PaperFeatureTransformer
+import dev.binclub.paperbin.utils.internalName
 import net.minecraft.server.v1_12_R1.*
-import org.bukkit.Bukkit
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
 import java.lang.IllegalStateException
@@ -11,7 +11,7 @@ import java.lang.IllegalStateException
 /**
  * @author cookiedragon234 23/Apr/2020
  */
-object EntityInsentientTransformer: PaperFeatureTransformer {
+object EntityInsentientTransformer: PaperFeatureTransformer("net.minecraft.server.v1_12_R1.EntityInsentient") {
 	override fun transformClass(classNode: ClassNode) {
 		for (method in classNode.methods) {
 			if (method.name == "doTick" && method.desc == "()V") {

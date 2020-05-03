@@ -1,10 +1,9 @@
-package dev.binclub.paperbin
+package dev.binclub.paperbin.utils
 
 import com.sun.tools.attach.VirtualMachine
 import java.io.*
 import java.lang.instrument.Instrumentation
 import java.lang.management.ManagementFactory
-import java.net.URLClassLoader
 import java.util.jar.JarFile
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
@@ -56,7 +55,10 @@ object InstrumentationFactory {
 			||
 			agentJarFile.isDirectory
 			||
-			!checkValidManifest(agentJarFile, InstrumentationFactory::class.java.name)
+			!checkValidManifest(
+				agentJarFile,
+				InstrumentationFactory::class.java.name
+			)
 		) {
 			createAgentJar()
 		} else {

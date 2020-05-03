@@ -1,8 +1,7 @@
 package dev.binclub.paperbin.transformers
 
-import dev.binclub.paperbin.PaperBinInfo
-import dev.binclub.paperbin.internalName
-import org.bukkit.Bukkit
+import dev.binclub.paperbin.PaperFeatureTransformer
+import dev.binclub.paperbin.utils.internalName
 import org.objectweb.asm.Opcodes.ALOAD
 import org.objectweb.asm.Opcodes.INVOKESTATIC
 import org.objectweb.asm.tree.ClassNode
@@ -13,7 +12,7 @@ import org.objectweb.asm.tree.VarInsnNode
 /**
  * @author cookiedragon234 24/Apr/2020
  */
-object PlayerConnectionTransformer: PaperFeatureTransformer {
+object PlayerConnectionTransformer: PaperFeatureTransformer("net.minecraft.server.v1_12_R1.PlayerConnection") {
 	override fun transformClass(classNode: ClassNode) {
 		for (method in classNode.methods) {
 			if (method.name == "handleCommand" && method.desc == "(Ljava/lang/String;)V") {

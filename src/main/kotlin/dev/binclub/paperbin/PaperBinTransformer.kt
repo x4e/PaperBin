@@ -40,3 +40,7 @@ object PaperBinTransformer: ClassFileTransformer {
 		return classfileBuffer
 	}
 }
+
+abstract class PaperFeatureTransformer(val target: String) {
+	abstract fun transformClass(classNode: ClassNode)
+}

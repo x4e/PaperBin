@@ -31,17 +31,23 @@ object PaperBinInfo {
 	init {
 		println("Registering transformers...")
 		
-		transformers["net.minecraft.server.v1_12_R1.MinecraftServer"] = MinecraftServerTransformer
-		transformers["net.minecraft.server.v1_12_R1.PlayerConnection"] = PlayerConnectionTransformer
-		transformers["net.minecraft.server.v1_12_R1.EntityInsentient"] = EntityInsentientTransformer
-		transformers["net.minecraft.server.v1_12_R1.PersistentVillage"] = PersistentVillageTransformer
-		transformers["net.minecraft.server.v1_12_R1.GameRules"] = GameRulesTransformer
-		transformers["net.minecraft.server.v1_12_R1.Block"] = BlockTransformer
-		transformers["net.minecraft.server.v1_12_R1.BlockStationary"] = BlockStationaryTransformer
-		transformers["net.minecraft.server.v1_12_R1.BlockFlowing"] = BlockFlowingTransformer
-		transformers["net.minecraft.server.v1_12_R1.BlockMagma"] = BlockMagmaTransformer
-		transformers["net.minecraft.server.v1_12_R1.BlockLeaves"] = BlockLeavesTransformer
-		transformers["net.minecraft.server.v1_12_R1.EntityVillager"] = EntityVillagerTransformer
+		for (transformer in arrayOf(
+			BlockFlowingTransformer,
+			BlockLeavesTransformer,
+			BlockMagmaTransformer,
+			BlockStationaryTransformer,
+			BlockTransformer,
+			CraftEventFactoryTransformer,
+			EntityInsentientTransformer,
+			EntityTransformer,
+			EntityVillagerTransformer,
+			GameRulesTransformer,
+			MinecraftServerTransformer,
+			PersistentVillageTransformer,
+			PlayerConnectionTransformer
+		)) {
+			transformers[transformer.target] = transformer
+		}
 	}
 	
 	fun onStartup() {

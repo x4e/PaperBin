@@ -1,5 +1,6 @@
 package dev.binclub.paperbin
 
+import dev.binclub.paperbin.utils.InstrumentationFactory
 import java.io.File
 import java.net.URL
 import java.net.URLClassLoader

@@ -1,6 +1,7 @@
 package dev.binclub.paperbin.transformers
 
 import dev.binclub.paperbin.PaperBinInfo
+import dev.binclub.paperbin.PaperFeatureTransformer
 import net.minecraft.server.v1_12_R1.EntityVillager
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
@@ -8,7 +9,7 @@ import org.objectweb.asm.tree.*
 /**
  * @author cookiedragon234 28/Apr/2020
  */
-object EntityVillagerTransformer: PaperFeatureTransformer {
+object EntityVillagerTransformer: PaperFeatureTransformer("net.minecraft.server.v1_12_R1.EntityVillager") {
 	override fun transformClass(classNode: ClassNode) {
 		for (method in classNode.methods) {
 			if (method.name == "M" && method.desc == "()V") {

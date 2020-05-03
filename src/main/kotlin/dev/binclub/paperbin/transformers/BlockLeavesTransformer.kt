@@ -1,14 +1,14 @@
 package dev.binclub.paperbin.transformers
 
-import dev.binclub.paperbin.internalName
-import net.minecraft.server.v1_12_R1.BlockLeaves
+import dev.binclub.paperbin.PaperFeatureTransformer
+import dev.binclub.paperbin.utils.internalName
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.tree.*
 
 /**
  * @author cookiedragon234 25/Apr/2020
  */
-object BlockLeavesTransformer: PaperFeatureTransformer {
+object BlockLeavesTransformer: PaperFeatureTransformer("net.minecraft.server.v1_12_R1.BlockLeaves") {
 	override fun transformClass(classNode: ClassNode) {
 		for (method in classNode.methods) {
 			if (method.name == "b" && method.desc == "(Lnet/minecraft/server/v1_12_R1/World;Lnet/minecraft/server/v1_12_R1/BlockPosition;Lnet/minecraft/server/v1_12_R1/IBlockData;Ljava/util/Random;)V") {

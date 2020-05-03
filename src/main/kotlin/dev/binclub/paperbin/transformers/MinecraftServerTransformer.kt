@@ -1,15 +1,15 @@
 package dev.binclub.paperbin.transformers
 
 import dev.binclub.paperbin.PaperBinInfo
-import dev.binclub.paperbin.internalName
-import org.bukkit.Bukkit
+import dev.binclub.paperbin.PaperFeatureTransformer
+import dev.binclub.paperbin.utils.internalName
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
 
 /**
  * @author cookiedragon234 23/Apr/2020
  */
-object MinecraftServerTransformer: PaperFeatureTransformer {
+object MinecraftServerTransformer: PaperFeatureTransformer("net.minecraft.server.v1_12_R1.MinecraftServer") {
 	override fun transformClass(classNode: ClassNode) {
 		for (method in classNode.methods) {
 			if (method.name == "D" && method.desc == "()V") {

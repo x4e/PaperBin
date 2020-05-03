@@ -1,5 +1,6 @@
 package dev.binclub.paperbin.transformers
 
+import dev.binclub.paperbin.PaperFeatureTransformer
 import org.objectweb.asm.tree.ClassNode
 import org.objectweb.asm.tree.FieldInsnNode
 import org.objectweb.asm.tree.MethodInsnNode
@@ -8,7 +9,7 @@ import org.objectweb.asm.tree.TypeInsnNode
 /**
  * @author cookiedragon234 24/Apr/2020
  */
-object GameRulesTransformer: PaperFeatureTransformer {
+object GameRulesTransformer: PaperFeatureTransformer("net.minecraft.server.v1_12_R1.GameRules") {
 	override fun transformClass(classNode: ClassNode) {
 		for (field in classNode.fields) {
 			if (field.name == "a") {

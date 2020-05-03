@@ -1,4 +1,4 @@
-package dev.binclub.paperbin
+package dev.binclub.paperbin.utils
 
 import org.objectweb.asm.Type
 import kotlin.reflect.KClass
