@@ -80,6 +80,7 @@ object PaperBinInfo {
 }
 
 interface PaperFeature {
+	@Throws(IllegalStateException::class)
 	fun registerTransformers()
 	fun register(className: String, transformer: (ClassNode) -> Unit) = PaperBinInfo.registerTransformer(className, transformer)
 }

@@ -1,6 +1,10 @@
 package dev.binclub.paperbin.transformers
 
 import dev.binclub.paperbin.PaperFeature
+import dev.binclub.paperbin.utils.add
+import org.bukkit.craftbukkit.v1_12_R1.CraftWorld
+import org.bukkit.craftbukkit.v1_12_R1.event.CraftEventFactory
+import org.bukkit.craftbukkit.v1_12_R1.inventory.CraftItemStack
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.InsnList
@@ -22,7 +26,7 @@ object AntiDupe: PaperFeature {
 					if (
 						insn is MethodInsnNode
 						&&
-						insn.owner == "org/bukkit/craftbukkit/v1_12_R1/CraftWorld"
+						(insn.owner == "org/bukkit/craftbukkit/v1_12_R1/CraftWorld" || insn.owner == "org/bukkit/World")
 						&&
 						insn.name == "dropItemNaturally"
 						&&
@@ -30,7 +34,8 @@ object AntiDupe: PaperFeature {
 					) {
 						val before = InsnNode(DUP_X2)
 						val after = InsnList().apply {
-							add(InsnNode(ICONST_0))
+							add(SWAP)
+							add(ICONST_0)
 							add(MethodInsnNode(
 								INVOKEVIRTUAL,
 								"org/bukkit/inventory/ItemStack",
@@ -41,13 +46,12 @@ object AntiDupe: PaperFeature {
 						}
 						method.instructions.insertBefore(insn, before)
 						method.instructions.insert(insn, after)
-						
 						i += 1
 					}
 				}
 			}
 			
-			if (i < 2) error("Couldnt find target")
+			if (i < 2) error("Couldnt find target $i")
 		}
 		register("net.minecraft.server.v1_12_R1.Entity") { classNode ->
 			for (method in classNode.methods) {
@@ -55,6 +59,7 @@ object AntiDupe: PaperFeature {
 					for (insn in method.instructions) {
 						if (insn is MethodInsnNode && insn.name == "asBukkitCopy") {
 							insn.name = "asCraftMirror"
+							insn.desc = "(Lnet/minecraft/server/v1_12_R1/ItemStack;)Lorg/bukkit/craftbukkit/v1_12_R1/inventory/CraftItemStack;"
 						} else if (insn is MethodInsnNode && insn.owner == "net/minecraft/server/v1_12_R1/EntityItem" && insn.name == "<init>") {
 							val prev = insn.previous
 							if (prev is VarInsnNode) {

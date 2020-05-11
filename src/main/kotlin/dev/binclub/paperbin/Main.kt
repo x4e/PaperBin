@@ -2,6 +2,7 @@ package dev.binclub.paperbin
 
 import dev.binclub.paperbin.utils.InstrumentationFactory
 import java.io.File
+import java.lang.management.ManagementFactory
 import java.net.URL
 import java.net.URLClassLoader
 
@@ -10,14 +11,19 @@ import java.net.URLClassLoader
  */
 fun main(args: Array<String>) {
 	if (args.isEmpty()) {
-		throw IllegalArgumentException("Usage java -jar paperbin.jar paperclip.jar")
+		error("Usage java -jar paperbin.jar paperclip.jar")
+	}
+	
+	if (!ManagementFactory.getRuntimeMXBean().inputArguments.any {
+			it.contains("noverify", true) || it.contains("Xverify", true)
+		}) {
+		error("Disable the verifier")
 	}
 	
 	val file = File(args[0])
 	val newArgs = args.drop(1).toTypedArray()
 	
 	InstrumentationFactory.instrumentation.addTransformer(PaperBinTransformer)
-	
 	println("Added transformer")
 	
 	val sysCl = ClassLoader.getSystemClassLoader() as URLClassLoader

@@ -3,8 +3,10 @@ package dev.binclub.paperbin
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassWriter
 import org.objectweb.asm.tree.ClassNode
+import java.io.File
 import java.lang.instrument.ClassFileTransformer
 import java.security.ProtectionDomain
+import kotlin.system.exitProcess
 
 /**
  * @author cookiedragon234 12/Apr/2020
@@ -17,24 +19,37 @@ object PaperBinTransformer: ClassFileTransformer {
 		protectionDomain: ProtectionDomain?,
 		classfileBuffer: ByteArray
 	): ByteArray? {
-		if (className == null) {
-			return classfileBuffer
-		}
-		
-		PaperBinInfo.transformers[className.replace('/', '.')]?.let { transformers ->
-			println("Transforming [$className]...")
-			val classNode = ClassNode()
-			ClassReader(classfileBuffer).accept(classNode, 0)
-			
-			transformers.forEach {
-				it.invoke(classNode)
+		try {
+			if (className == null) {
+				return classfileBuffer
 			}
 			
-			val writer = ClassWriter(ClassWriter.COMPUTE_FRAMES)
-			classNode.accept(writer)
-			return writer.toByteArray()
+			PaperBinInfo.transformers[className.replace('/', '.')]?.let { transformers ->
+				println("Transforming [$className]...")
+				val classNode = ClassNode()
+				ClassReader(classfileBuffer).accept(classNode, 0)
+				
+				transformers.forEach {
+					it.invoke(classNode)
+				}
+				
+				val writer = ClassWriter(ClassWriter.COMPUTE_MAXS)//ClassWriter(ClassWriter.COMPUTE_FRAMES)
+				classNode.accept(writer)
+				
+				return writer.toByteArray().also {
+					if (true) {
+						val f = File("$className.class")
+						if (!f.exists()) {
+							f.parentFile.mkdirs()
+						}
+						f.writeBytes(it)
+					}
+				}
+			}
+		} catch (t: Throwable) {
+			t.printStackTrace()
+			exitProcess(-1)
 		}
-			
 		return classfileBuffer
 	}
 }
