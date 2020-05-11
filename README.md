@@ -7,7 +7,7 @@ Dont take this too seriously. I basically look at a profile and rate limit the f
 
 Usage:
 ```
-java [any jvm arguments] -jar PaperBin.jar ActualPaper.jar [any paper arguments]
+java [any jvm arguments] -noverify -jar PaperBin.jar ActualPaper.jar [any paper arguments]
 ```
 
 Commands `/binstop` and `/binstart` are recognised
