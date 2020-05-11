@@ -21,15 +21,13 @@ object PaperBinTransformer: ClassFileTransformer {
 			return classfileBuffer
 		}
 		
-		PaperBinInfo.transformers[className.replace('/', '.')]?.let {
+		PaperBinInfo.transformers[className.replace('/', '.')]?.let { transformers ->
 			println("Transforming [$className]...")
 			val classNode = ClassNode()
 			ClassReader(classfileBuffer).accept(classNode, 0)
 			
-			try {
-				it.transformClass(classNode)
-			} catch (t: Throwable) {
-				t.printStackTrace()
+			transformers.forEach {
+				it.invoke(classNode)
 			}
 			
 			val writer = ClassWriter(ClassWriter.COMPUTE_FRAMES)
@@ -39,8 +37,4 @@ object PaperBinTransformer: ClassFileTransformer {
 			
 		return classfileBuffer
 	}
-}
-
-abstract class PaperFeatureTransformer(val target: String) {
-	abstract fun transformClass(classNode: ClassNode)
 }

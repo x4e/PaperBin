@@ -5,26 +5,15 @@ import org.bukkit.Bukkit
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.command.ConsoleCommandSender
-import org.bukkit.event.Event
-import org.bukkit.event.EventPriority
-import org.bukkit.event.HandlerList
-import org.bukkit.event.Listener
-import org.bukkit.event.player.PlayerCommandPreprocessEvent
-import org.bukkit.plugin.EventExecutor
-import org.bukkit.plugin.Plugin
-import org.bukkit.plugin.RegisteredListener
-import org.bukkit.plugin.SimplePluginManager
-import java.lang.Compiler.command
-import java.lang.reflect.InvocationHandler
-import java.lang.reflect.Method
-import java.lang.reflect.Proxy
+import org.objectweb.asm.Opcodes
+import org.objectweb.asm.tree.ClassNode
 
 
 /**
  * @author cookiedragon234 23/Apr/2020
  */
 object PaperBinInfo {
-	val transformers: MutableMap<String, PaperFeatureTransformer> = hashMapOf()
+	val transformers: MutableMap<String, MutableList<(ClassNode) -> Unit>> = hashMapOf()
 	var enabled = true
 	var started = false
 	
@@ -32,22 +21,20 @@ object PaperBinInfo {
 		println("Registering transformers...")
 		
 		for (transformer in arrayOf(
-			BlockFlowingTransformer,
-			BlockLeavesTransformer,
-			BlockMagmaTransformer,
-			BlockStationaryTransformer,
-			BlockTransformer,
-			CraftEventFactoryTransformer,
-			EntityInsentientTransformer,
-			EntityTransformer,
-			EntityVillagerTransformer,
-			GameRulesTransformer,
-			MinecraftServerTransformer,
-			PersistentVillageTransformer,
-			PlayerConnectionTransformer
+			AntiDupe,
+			BlockTickRateLimiter,
+			FasterGameRuleLookup,
+			FoodTpsCompensator,
+			MobAiRateLimiter,
+			TickCounter,
+			VillageRateLimiter
 		)) {
-			transformers[transformer.target] = transformer
+			transformer.registerTransformers()
 		}
+	}
+	
+	fun registerTransformer(className: String, transformer: (ClassNode) -> Unit) {
+		transformers.getOrPut(className, { ArrayList(1) }).add(transformer)
 	}
 	
 	fun onStartup() {
@@ -90,4 +77,9 @@ object PaperBinInfo {
 	}
 	
 	var ticks: Int = 0
+}
+
+interface PaperFeature {
+	fun registerTransformers()
+	fun register(className: String, transformer: (ClassNode) -> Unit) = PaperBinInfo.registerTransformer(className, transformer)
 }
