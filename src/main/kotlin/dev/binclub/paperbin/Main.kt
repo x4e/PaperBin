@@ -27,5 +27,7 @@ fun main(args: Array<String>) {
 		it.invoke(sysCl, file.toURI().toURL())
 	}
 	
-	Class.forName("com.destroystokyo.paperclip.Main").getDeclaredMethod("main", Array<String>::class.java).invoke(null, newArgs)
+	Class.forName("com.destroystokyo.paperclip.Main")?.getDeclaredMethod("main", Array<String>::class.java)?.also {
+		it.invoke(null, newArgs)
+	} ?: error("Please provide a valid paperclip jar")
 }
