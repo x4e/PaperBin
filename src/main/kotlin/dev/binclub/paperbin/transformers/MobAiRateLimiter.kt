@@ -1,5 +1,6 @@
 package dev.binclub.paperbin.transformers
 
+import dev.binclub.paperbin.PaperBinConfig
 import dev.binclub.paperbin.PaperBinInfo
 import dev.binclub.paperbin.PaperFeature
 import dev.binclub.paperbin.utils.internalName
@@ -49,6 +50,8 @@ object MobAiRateLimiter: PaperFeature {
 	}
 	
 	override fun registerTransformers() {
+		if (!PaperBinConfig.mobAiRateLimit) return
+		
 		register("net.minecraft.server.v1_12_R1.EntityInsentient") { classNode ->
 			for (method in classNode.methods) {
 				if (method.name == "doTick" && method.desc == "()V") {

@@ -1,5 +1,6 @@
 package dev.binclub.paperbin.transformers
 
+import dev.binclub.paperbin.PaperBinConfig
 import dev.binclub.paperbin.PaperBinInfo
 import dev.binclub.paperbin.PaperFeature
 import dev.binclub.paperbin.utils.internalName
@@ -21,6 +22,8 @@ object VillageRateLimiter: PaperFeature {
 	}
 	
 	override fun registerTransformers() {
+		if (!PaperBinConfig.villageRateLimit) return
+		
 		register("net.minecraft.server.v1_12_R1.PersistentVillage") { classNode ->
 			for (method in classNode.methods) {
 				if (method.name == "tick" && method.desc == "()V") {

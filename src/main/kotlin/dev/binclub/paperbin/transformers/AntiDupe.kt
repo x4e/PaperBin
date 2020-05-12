@@ -1,5 +1,6 @@
 package dev.binclub.paperbin.transformers
 
+import dev.binclub.paperbin.PaperBinConfig
 import dev.binclub.paperbin.PaperFeature
 import dev.binclub.paperbin.utils.add
 import dev.binclub.paperbin.utils.printlnAsm
@@ -17,6 +18,8 @@ import org.objectweb.asm.tree.*
  */
 object AntiDupe: PaperFeature {
 	override fun registerTransformers() {
+		if (!PaperBinConfig.antiDupe) return
+		
 		// If an item is dropped then we duplicate it and empty the original stack
 		// This should prevent some duplication glitches, e.g. 11/11
 		register("org.bukkit.craftbukkit.v1_12_R1.event.CraftEventFactory") { classNode ->

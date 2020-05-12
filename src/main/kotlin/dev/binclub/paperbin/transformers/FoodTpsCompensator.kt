@@ -1,5 +1,6 @@
 package dev.binclub.paperbin.transformers
 
+import dev.binclub.paperbin.PaperBinConfig
 import dev.binclub.paperbin.PaperFeature
 import dev.binclub.paperbin.utils.add
 import dev.binclub.paperbin.utils.ldcInt
@@ -14,6 +15,8 @@ import org.objectweb.asm.tree.*
  */
 object FoodTpsCompensator: PaperFeature {
 	override fun registerTransformers() {
+		if (!PaperBinConfig.foodTpsCompensate) return
+		
 		register("net.minecraft.server.v1_12_R1.EntityLiving") { classNode ->
 			classNode.fields.add(FieldNode(
 				ACC_PROTECTED,

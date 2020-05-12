@@ -1,5 +1,6 @@
 package dev.binclub.paperbin.transformers
 
+import dev.binclub.paperbin.PaperBinConfig
 import dev.binclub.paperbin.PaperFeature
 import org.objectweb.asm.tree.FieldInsnNode
 import org.objectweb.asm.tree.MethodInsnNode
@@ -10,6 +11,8 @@ import org.objectweb.asm.tree.TypeInsnNode
  */
 object FasterGameRuleLookup: PaperFeature {
 	override fun registerTransformers() {
+		if (!PaperBinConfig.fastGameRule) return
+		
 		register("net.minecraft.server.v1_12_R1.GameRules") { classNode ->
 			for (field in classNode.fields) {
 				if (field.name == "a") {

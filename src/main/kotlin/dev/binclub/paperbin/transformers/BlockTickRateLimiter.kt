@@ -1,5 +1,6 @@
 package dev.binclub.paperbin.transformers
 
+import dev.binclub.paperbin.PaperBinConfig
 import dev.binclub.paperbin.PaperBinInfo
 import dev.binclub.paperbin.PaperFeature
 import dev.binclub.paperbin.utils.internalName
@@ -57,6 +58,8 @@ object BlockTickRateLimiter: PaperFeature {
 	}
 	
 	override fun registerTransformers() {
+		if (!PaperBinConfig.blockRateLimit) return
+		
 		register("net.minecraft.server.v1_12_R1.BlockFlowing") { classNode ->
 			for (method in classNode.methods) {
 				if (method.name == "b" && method.desc == "(Lnet/minecraft/server/v1_12_R1/World;Lnet/minecraft/server/v1_12_R1/BlockPosition;Lnet/minecraft/server/v1_12_R1/IBlockData;Ljava/util/Random;)V") {
