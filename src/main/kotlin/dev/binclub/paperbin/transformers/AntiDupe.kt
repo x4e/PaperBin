@@ -2,15 +2,15 @@ package dev.binclub.paperbin.transformers
 
 import dev.binclub.paperbin.PaperFeature
 import dev.binclub.paperbin.utils.add
+import dev.binclub.paperbin.utils.printlnAsm
+import net.minecraft.server.v1_12_R1.BlockShulkerBox
+import net.minecraft.server.v1_12_R1.Entity
 import org.bukkit.craftbukkit.v1_12_R1.CraftWorld
 import org.bukkit.craftbukkit.v1_12_R1.event.CraftEventFactory
 import org.bukkit.craftbukkit.v1_12_R1.inventory.CraftItemStack
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Opcodes.*
-import org.objectweb.asm.tree.InsnList
-import org.objectweb.asm.tree.InsnNode
-import org.objectweb.asm.tree.MethodInsnNode
-import org.objectweb.asm.tree.VarInsnNode
+import org.objectweb.asm.tree.*
 
 /**
  * @author cookiedragon234 11/May/2020
@@ -34,7 +34,12 @@ object AntiDupe: PaperFeature {
 					) {
 						val before = InsnNode(DUP_X2)
 						val after = InsnList().apply {
+							val jmpEnd = LabelNode()
+							val end = LabelNode()
 							add(SWAP)
+							add(DUP)
+							add(TypeInsnNode(INSTANCEOF, "org/bukkit/craftbukkit/v1_12_R1/inventory/CraftItemStack"))
+							add(JumpInsnNode(IFEQ, jmpEnd))
 							add(ICONST_0)
 							add(MethodInsnNode(
 								INVOKEVIRTUAL,
@@ -43,6 +48,10 @@ object AntiDupe: PaperFeature {
 								"(I)V",
 								false
 							))
+							add(JumpInsnNode(GOTO, end))
+							add(jmpEnd)
+							add(POP)
+							add(end)
 						}
 						method.instructions.insertBefore(insn, before)
 						method.instructions.insert(insn, after)
@@ -55,6 +64,15 @@ object AntiDupe: PaperFeature {
 		}
 		register("net.minecraft.server.v1_12_R1.Entity") { classNode ->
 			for (method in classNode.methods) {
+				if (method.name == "bf" && method.desc == "()Z") {
+					val list = InsnList().apply {
+						add(VarInsnNode(ALOAD, 0))
+						add(MethodInsnNode(INVOKEVIRTUAL, "net/minecraft/server/v1_12_R1/Entity", "isAlive", "()Z", false))
+						add(IRETURN) // Only allow alive entities to teleport
+					}
+					method.instructions.insert(list)
+				}
+				
 				if (method.name == "a" && method.desc == "(Lnet/minecraft/server/v1_12_R1/ItemStack;F)Lnet/minecraft/server/v1_12_R1/EntityItem;") {
 					for (insn in method.instructions) {
 						if (insn is MethodInsnNode && insn.name == "asBukkitCopy") {

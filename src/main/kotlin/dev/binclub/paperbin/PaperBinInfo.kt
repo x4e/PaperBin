@@ -21,6 +21,7 @@ object PaperBinInfo {
 		println("Registering transformers...")
 		
 		for (transformer in arrayOf(
+			AntiCrasher,
 			AntiDupe,
 			BlockTickRateLimiter,
 			FasterGameRuleLookup,
