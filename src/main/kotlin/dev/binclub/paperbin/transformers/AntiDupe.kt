@@ -73,6 +73,33 @@ object AntiDupe: PaperFeature {
 					method.instructions.insert(list)
 				}
 				
+				if (
+					(method.name == "Y" && method.desc == "()V")
+					||
+					(method.name == "aE" && method.desc == "()V")
+					||
+					(method.name == "b" && method.desc == "(I)Lnet/minecraft/server/v1_12_R1/Entity;")
+					||
+					(method.name == "teleportTo" && method.desc == "(Lorg/bukkit/Location;Z)Lnet/minecraft/server/v1_12_R1/Entity;")
+				) {
+					for (insn in method.instructions) {
+						if (insn is FieldInsnNode && insn.opcode == GETFIELD && insn.name == "dead" && insn.desc == "Z") {
+							val before = InsnList().apply {
+								add(DUP)
+							}
+							val after = InsnList().apply {
+								add(SWAP)
+								add(FieldInsnNode(GETFIELD, "net/minecraft/server/v1_12_R1/Entity", "valid", "Z"))
+								add(ICONST_1)
+								add(IXOR)
+								add(IOR) // They are only not dead if they are also valid
+							}
+							method.instructions.insertBefore(insn, before)
+							method.instructions.insert(insn, after)
+						}
+					}
+				}
+				
 				if (method.name == "a" && method.desc == "(Lnet/minecraft/server/v1_12_R1/ItemStack;F)Lnet/minecraft/server/v1_12_R1/EntityItem;") {
 					for (insn in method.instructions) {
 						if (insn is MethodInsnNode && insn.name == "asBukkitCopy") {
