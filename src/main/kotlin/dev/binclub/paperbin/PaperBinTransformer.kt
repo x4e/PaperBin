@@ -37,7 +37,7 @@ object PaperBinTransformer: ClassFileTransformer {
 				classNode.accept(writer)
 				
 				return writer.toByteArray().also {
-					if (true) {
+					if (PaperBinConfig.debug) {
 						val f = File("$className.class")
 						if (!f.exists()) {
 							f.parentFile.mkdirs()

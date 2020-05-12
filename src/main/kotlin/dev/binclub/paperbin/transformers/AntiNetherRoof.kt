@@ -3,13 +3,12 @@ package dev.binclub.paperbin.transformers
 import dev.binclub.paperbin.PaperBinConfig
 import dev.binclub.paperbin.PaperBinInfo
 import dev.binclub.paperbin.PaperFeature
-import net.minecraft.server.v1_12_R1.Blocks
-import net.minecraft.server.v1_12_R1.MinecraftServer
-import net.minecraft.server.v1_12_R1.PlayerConnection
+import net.minecraft.server.v1_12_R1.*
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.craftbukkit.v1_12_R1.CraftServer
+import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer
 import org.bukkit.event.Event
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
@@ -38,7 +37,6 @@ object AntiNetherRoof: PaperFeature {
 	
 	private fun moveListener(listener: Listener, event: Event) {
 		if (!PaperBinConfig.antiNetherRoof) return
-		
 		event as PlayerMoveEvent
 		
 		val player = event.player

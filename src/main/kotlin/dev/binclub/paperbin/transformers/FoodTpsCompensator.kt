@@ -1,10 +1,14 @@
 package dev.binclub.paperbin.transformers
 
 import dev.binclub.paperbin.PaperBinConfig
+import dev.binclub.paperbin.PaperBinInfo
 import dev.binclub.paperbin.PaperFeature
 import dev.binclub.paperbin.utils.add
+import dev.binclub.paperbin.utils.internalName
 import dev.binclub.paperbin.utils.ldcInt
 import dev.binclub.paperbin.utils.printlnAsm
+import net.minecraft.server.v1_12_R1.EntityLiving
+import org.bukkit.block.Furnace
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
 
@@ -14,9 +18,29 @@ import org.objectweb.asm.tree.*
  * @author cookiedragon234 11/May/2020
  */
 object FoodTpsCompensator: PaperFeature {
+	@JvmStatic
+	fun getPerfectCurrentTick(): Int {
+		// MinecraftServer.currentTick is affected by TPS (obviously)
+		// This function returns what the current tick would be if the server was running at a constant 20tps
+		return ((System.nanoTime() - PaperBinInfo.serverStartTime) / 50000000).toInt()
+	}
+	
 	override fun registerTransformers() {
 		if (!PaperBinConfig.foodTpsCompensate) return
 		
+		register("net.minecraft.server.v1_12_R1.TileEntityFurnace") { classNode ->
+			for (method in classNode.methods) {
+				for (insn in method.instructions) {
+					if (insn is FieldInsnNode && insn.owner == "net/minecraft/server/v1_12_R1/MinecraftServer" && insn.name == "currentTick" && insn.desc == "I") {
+						val new = MethodInsnNode(INVOKESTATIC, FoodTpsCompensator::class.internalName, "getPerfectCurrentTick", "()I", false)
+						
+						method.instructions.insert(insn, new)
+						method.instructions.remove(insn)
+						println("furnace")
+					}
+				}
+			}
+		}
 		register("net.minecraft.server.v1_12_R1.EntityLiving") { classNode ->
 			classNode.fields.add(FieldNode(
 				ACC_PROTECTED,

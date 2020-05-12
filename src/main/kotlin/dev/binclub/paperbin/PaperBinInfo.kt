@@ -29,6 +29,7 @@ object PaperBinInfo {
 	)
 	var enabled = true
 	var started = false
+	var serverStartTime: Long = 0
 	val paperPlugin: Plugin by lazy {
 		Proxy.newProxyInstance(this::class.java.classLoader, arrayOf(Plugin::class.java)) { instance, method, args ->
 			when (method.name) {
@@ -53,6 +54,7 @@ object PaperBinInfo {
 	
 	fun onStartup() {
 		started = true
+		serverStartTime = System.nanoTime()
 		
 		Bukkit.getCommandMap().register("binstop", object: Command("binstop") {
 			override fun execute(sender: CommandSender?, commandLabel: String, args: Array<String?>?): Boolean {

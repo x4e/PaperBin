@@ -31,6 +31,7 @@ object PaperBinConfig {
 	var foodTpsCompensate: Boolean by BooleanProperty(properties, "foodTpsCompensate")
 	var mobAiRateLimit: Boolean by BooleanProperty(properties, "mobAiRateLimit")
 	var villageRateLimit: Boolean by BooleanProperty(properties, "villageRateLimit")
+	var debug: Boolean by BooleanProperty(properties, "debug", false)
 }
 
 class BooleanProperty(val properties: Properties, val key: String, default: Boolean = true) {
