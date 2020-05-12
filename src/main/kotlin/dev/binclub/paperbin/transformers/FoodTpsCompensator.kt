@@ -8,9 +8,11 @@ import dev.binclub.paperbin.utils.internalName
 import dev.binclub.paperbin.utils.ldcInt
 import dev.binclub.paperbin.utils.printlnAsm
 import net.minecraft.server.v1_12_R1.EntityLiving
+import org.bukkit.Bukkit
 import org.bukkit.block.Furnace
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
+import java.util.logging.Level
 
 /**
  * Compensates food eating time based on TPS
@@ -36,7 +38,6 @@ object FoodTpsCompensator: PaperFeature {
 						
 						method.instructions.insert(insn, new)
 						method.instructions.remove(insn)
-						println("furnace")
 					}
 				}
 			}

@@ -9,6 +9,7 @@ import org.bukkit.plugin.Plugin
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.tree.ClassNode
 import java.lang.reflect.Proxy
+import java.util.logging.Level
 
 
 /**
@@ -21,6 +22,7 @@ object PaperBinInfo {
 		AntiDupe,
 		AntiNetherRoof,
 		BlockTickRateLimiter,
+		ChunkLoadingOptimisations,
 		FasterGameRuleLookup,
 		FoodTpsCompensator,
 		MobAiRateLimiter,
@@ -62,7 +64,7 @@ object PaperBinInfo {
 					enabled = false
 					sender.sendMessage("Stopped paperbin")
 					if (sender !is ConsoleCommandSender) {
-						println("Stopped paperbin")
+						Bukkit.getLogger().log(Level.INFO, "Stopped paperbin")
 					}
 				}
 				return true
@@ -76,7 +78,7 @@ object PaperBinInfo {
 					enabled = true
 					sender.sendMessage("Started paperbin")
 					if (sender !is ConsoleCommandSender) {
-						println("Started paperbin")
+						Bukkit.getLogger().log(Level.INFO, "Started paperbin")
 					}
 				}
 				return true

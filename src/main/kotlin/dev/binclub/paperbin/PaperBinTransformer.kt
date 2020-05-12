@@ -1,11 +1,13 @@
 package dev.binclub.paperbin
 
+import org.bukkit.Bukkit
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassWriter
 import org.objectweb.asm.tree.ClassNode
 import java.io.File
 import java.lang.instrument.ClassFileTransformer
 import java.security.ProtectionDomain
+import java.util.logging.Level
 import kotlin.system.exitProcess
 
 /**
@@ -25,7 +27,11 @@ object PaperBinTransformer: ClassFileTransformer {
 			}
 			
 			PaperBinInfo.transformers[className.replace('/', '.')]?.let { transformers ->
-				println("Transforming [$className]...")
+				try {
+					Bukkit.getLogger().log(Level.INFO, "Transforming [$className]...")
+				} catch (t: Throwable) {
+					println("Transforming [$className]...")
+				}
 				val classNode = ClassNode()
 				ClassReader(classfileBuffer).accept(classNode, 0)
 				

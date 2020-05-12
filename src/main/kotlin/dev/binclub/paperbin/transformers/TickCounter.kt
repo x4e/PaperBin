@@ -4,10 +4,18 @@ import dev.binclub.paperbin.PaperBinConfig
 import dev.binclub.paperbin.PaperBinInfo
 import dev.binclub.paperbin.PaperFeature
 import dev.binclub.paperbin.utils.internalName
+import net.minecraft.server.v1_12_R1.EntityHuman
+import net.minecraft.server.v1_12_R1.EntityPlayer
+import net.minecraft.server.v1_12_R1.MinecraftServer
+import net.minecraft.server.v1_12_R1.PortalTravelAgent
+import org.bukkit.PortalType
+import org.bukkit.craftbukkit.v1_12_R1.CraftServer
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
 
 /**
+ * @see net.minecraft.server.v1_12_R1.MinecraftServer
+ *
  * @author cookiedragon234 11/May/2020
  */
 object TickCounter: PaperFeature {
@@ -24,10 +32,10 @@ object TickCounter: PaperFeature {
 					method.instructions.insert(list)
 					count += 1
 				}
-				if (method.name == "run" && method.desc == "()V") {
+				if (method.name == "getServerModName" && method.desc == "()Ljava/lang/String;") {
 					for (insn in method.instructions) {
-						if (insn is LdcInsnNode && insn.cst == "1.12.2") {
-							insn.cst = "Paper Bin 1.12.2"
+						if (insn is LdcInsnNode) {
+							insn.cst = "PaperBin"
 							count += 1
 							break
 						}
@@ -37,6 +45,19 @@ object TickCounter: PaperFeature {
 			if (count != 2) {
 				error("Couldnt find target")
 			}
+		}
+		register("org.bukkit.craftbukkit.v1_12_R1.CraftServer") { classNode ->
+			for (method in classNode.methods) {
+				if (method.name == "getName" && method.desc == "()Ljava/lang/String;") {
+					for (insn in method.instructions) {
+						if (insn is LdcInsnNode) {
+							insn.cst = "PaperBin"
+							return@register
+						}
+					}
+				}
+			}
+			error("Couldnt find target")
 		}
 	}
 	

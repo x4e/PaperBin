@@ -1,6 +1,7 @@
 package dev.binclub.paperbin
 
 import dev.binclub.paperbin.utils.InstrumentationFactory
+import org.bukkit.Bukkit
 import java.io.File
 import java.lang.management.ManagementFactory
 import java.net.URL
