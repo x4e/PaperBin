@@ -36,7 +36,7 @@ object AntiNetherRoof: PaperFeature {
 	private const val worldBorder = 29999984
 	private const val negWorldBorder = -29999984
 	
-	fun moveListener(listener: Listener, event: Event) {
+	private fun moveListener(listener: Listener, event: Event) {
 		if (!PaperBinConfig.antiNetherRoof) return
 		
 		event as PlayerMoveEvent
@@ -79,7 +79,7 @@ object AntiNetherRoof: PaperFeature {
 				// If they are teleporting from another invalid location this likely means they are stuck
 				// Rather than just cancelling the teleport and preventing them from moving the most
 				// humane thing to do is just to kill them :/
-				player.damage(Double.MAX_VALUE)
+				player.damage(20000.0)
 			}
 		}
 	}
