@@ -5,8 +5,10 @@ import org.bukkit.Bukkit
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.command.ConsoleCommandSender
+import org.bukkit.plugin.Plugin
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.tree.ClassNode
+import java.lang.reflect.Proxy
 
 
 /**
@@ -14,23 +16,34 @@ import org.objectweb.asm.tree.ClassNode
  */
 object PaperBinInfo {
 	val transformers: MutableMap<String, MutableList<(ClassNode) -> Unit>> = hashMapOf()
+	val features = arrayOf(
+		AntiCrasher,
+		AntiDupe,
+		AntiNetherRoof,
+		BlockTickRateLimiter,
+		FasterGameRuleLookup,
+		FoodTpsCompensator,
+		MobAiRateLimiter,
+		TickCounter,
+		VillageRateLimiter
+	)
 	var enabled = true
 	var started = false
+	val paperPlugin: Plugin by lazy {
+		Proxy.newProxyInstance(this::class.java.classLoader, arrayOf(Plugin::class.java)) { instance, method, args ->
+			when (method.name) {
+				"isEnabled" -> true
+				"getName" -> "PaperBin"
+				else -> throw UnsupportedOperationException(method.name)
+			}
+		} as Plugin
+	}
 	
 	init {
 		println("Registering transformers...")
 		
-		for (transformer in arrayOf(
-			AntiCrasher,
-			AntiDupe,
-			BlockTickRateLimiter,
-			FasterGameRuleLookup,
-			FoodTpsCompensator,
-			MobAiRateLimiter,
-			TickCounter,
-			VillageRateLimiter
-		)) {
-			transformer.registerTransformers()
+		for (feature in features) {
+			feature.registerTransformers()
 		}
 	}
 	
@@ -68,7 +81,9 @@ object PaperBinInfo {
 			}
 		})
 		
-		println("Registered event")
+		for (feature in features) {
+			feature.postStartup()
+		}
 	}
 	
 	// Disable some of the optimisations if the TPS is doing fine
@@ -84,4 +99,5 @@ interface PaperFeature {
 	@Throws(IllegalStateException::class)
 	fun registerTransformers()
 	fun register(className: String, transformer: (ClassNode) -> Unit) = PaperBinInfo.registerTransformer(className, transformer)
+	fun postStartup() {}
 }
