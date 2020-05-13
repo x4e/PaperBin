@@ -8,6 +8,7 @@ import dev.binclub.paperbin.utils.internalName
 import dev.binclub.paperbin.utils.ldcInt
 import dev.binclub.paperbin.utils.printlnAsm
 import net.minecraft.server.v1_12_R1.EntityLiving
+import net.minecraft.server.v1_12_R1.PlayerInteractManager
 import org.bukkit.Bukkit
 import org.bukkit.block.Furnace
 import org.objectweb.asm.Opcodes.*
@@ -29,8 +30,9 @@ object FoodTpsCompensator: PaperFeature {
 	
 	override fun registerTransformers() {
 		if (!PaperBinConfig.foodTpsCompensate) return
-		
-		register("net.minecraft.server.v1_12_R1.TileEntityFurnace") { classNode ->
+		register("net.minecraft.server.v1_12_R1.PlayerInteractManager") { classNode ->
+			var count = 0
+			
 			for (method in classNode.methods) {
 				for (insn in method.instructions) {
 					if (insn is FieldInsnNode && insn.owner == "net/minecraft/server/v1_12_R1/MinecraftServer" && insn.name == "currentTick" && insn.desc == "I") {
@@ -38,8 +40,32 @@ object FoodTpsCompensator: PaperFeature {
 						
 						method.instructions.insert(insn, new)
 						method.instructions.remove(insn)
+						
+						count += 1
 					}
 				}
+			}
+			
+			if (count < 2) {
+				error("Couldnt find target $count")
+			}
+		}
+		register("net.minecraft.server.v1_12_R1.TileEntityFurnace") { classNode ->
+			var count = 0
+			for (method in classNode.methods) {
+				for (insn in method.instructions) {
+					if (insn is FieldInsnNode && insn.owner == "net/minecraft/server/v1_12_R1/MinecraftServer" && insn.name == "currentTick" && insn.desc == "I") {
+						val new = MethodInsnNode(INVOKESTATIC, FoodTpsCompensator::class.internalName, "getPerfectCurrentTick", "()I", false)
+						
+						method.instructions.insert(insn, new)
+						method.instructions.remove(insn)
+						
+						count += 1
+					}
+				}
+			}
+			if (count < 1) {
+				error("Couldnt find target $count")
 			}
 		}
 		register("net.minecraft.server.v1_12_R1.EntityLiving") { classNode ->
