@@ -16,7 +16,7 @@ import java.util.logging.Level
  * @author cookiedragon234 23/Apr/2020
  */
 object PaperBinInfo {
-	val version = 5.2f
+	val version = 5.3f
 	
 	var enabled = true
 	var started = false
