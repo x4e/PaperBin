@@ -6,14 +6,9 @@ import dev.binclub.paperbin.PaperFeature
 import dev.binclub.paperbin.utils.add
 import dev.binclub.paperbin.utils.internalName
 import dev.binclub.paperbin.utils.ldcInt
-import dev.binclub.paperbin.utils.printlnAsm
 import net.minecraft.server.v1_12_R1.*
-import org.bukkit.Bukkit
-import org.bukkit.CropState
-import org.bukkit.block.Furnace
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
-import java.util.logging.Level
 
 /**
  * Compensates food eating time based on TPS
@@ -31,6 +26,26 @@ object FoodTpsCompensator: PaperFeature {
 	override fun registerTransformers() {
 		if (!PaperBinConfig.foodTpsCompensate) return
 		
+		register("net.minecraft.server.v1_12_R1.PlayerConnection") { classNode ->
+			var count = 0
+			
+			for (method in classNode.methods) {
+				for (insn in method.instructions) {
+					if (insn is FieldInsnNode && insn.owner == "net/minecraft/server/v1_12_R1/MinecraftServer" && insn.name == "currentTick" && insn.desc == "I") {
+						val new = MethodInsnNode(INVOKESTATIC, FoodTpsCompensator::class.internalName, "getPerfectCurrentTick", "()I", false)
+						
+						method.instructions.insert(insn, new)
+						method.instructions.remove(insn)
+						
+						count += 1
+					}
+				}
+			}
+			
+			if (count < 9) {
+				error("Couldnt find target $count")
+			}
+		}
 		register("net.minecraft.server.v1_12_R1.EntityItem") { classNode ->
 			var count = 0
 			

@@ -4,6 +4,8 @@ import dev.binclub.paperbin.PaperBinConfig
 import dev.binclub.paperbin.PaperFeature
 import dev.binclub.paperbin.utils.add
 import dev.binclub.paperbin.utils.printlnAsm
+import net.minecraft.server.v1_12_R1.ChunkRegionLoader
+import net.minecraft.server.v1_12_R1.PlayerChunk
 import net.minecraft.server.v1_12_R1.StructureGenerator
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
@@ -15,6 +17,39 @@ import java.util.concurrent.Semaphore
 object ChunkLoadingOptimisations: PaperFeature {
 	override fun registerTransformers() {
 		if (!PaperBinConfig.chunkLoadOptimisations) return
+		
+		register("net.minecraft.server.v1_12_R1.PlayerChunk") { classNode ->
+			for (method in classNode.methods) {
+				if (method.name == "b" && method.desc == "()Z") {
+					for (insn in method.instructions) {
+						if (insn is MethodInsnNode && insn.owner == "net/minecraft/server/v1_12_R1/PacketPlayOutMapChunk" && insn.name == "<init>") {
+							val list = InsnList().apply {
+								val out = LabelNode()
+								add(VarInsnNode(ALOAD, 0))
+								add(FieldInsnNode(GETFIELD, "net/minecraft/server/v1_12_R1/PlayerChunk", "c", "Ljava/util/List;"))
+								add(MethodInsnNode(INVOKEINTERFACE, "java/util/List", "isEmpty", "()Z", true))
+								add(JumpInsnNode(IFNE, out))
+								add(ICONST_1)
+								add(IRETURN)
+							}
+							method.instructions.insertBefore(insn, list)
+							return@register
+						}
+					}
+				}
+			}
+			error("Couldnt find target")
+		}
+		
+		register("net.minecraft.server.v1_12_R1.ChunkRegionLoader") { classNode ->
+			for (method in classNode.methods) {
+				if (method.name == "processSaveQueueEntry" && method.desc == "(Z)Z") {
+					method.access = ACC_PRIVATE // remove synchronized
+					return@register
+				}
+			}
+			error("Couldnt find target")
+		}
 		
 		register("net.minecraft.server.v1_12_R1.StructureGenerator") { classNode ->
 			val semaphore = FieldNode(
