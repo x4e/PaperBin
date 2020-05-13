@@ -14,7 +14,7 @@ object PaperBinConfig {
 	
 	init {
 		load()
-		Runtime.getRuntime().addShutdownHook(thread (start = false, isDaemon = false, block = this::save))
+		Runtime.getRuntime().addShutdownHook(thread (start = false, isDaemon = false) { this.save() })
 	}
 	
 	fun save(): Boolean {
