@@ -35,7 +35,7 @@ object PacketOptimisations: PaperFeature {
 	
 	override fun registerTransformers() {
 		
-		register("net.minecraft.server.v1_12_R1.NetworkManager") { classNode ->
+		/*register("net.minecraft.server.v1_12_R1.NetworkManager") { classNode ->
 			for (method in classNode.methods) {
 				if (method.name == "a" && method.desc == "()V") {
 					for (insn in method.instructions) {
@@ -53,6 +53,6 @@ object PacketOptimisations: PaperFeature {
 				}
 			}
 			error("Couldnt find target")
-		}
+		}*/
 	}
 }
