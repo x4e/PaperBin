@@ -22,6 +22,7 @@ object PaperBinInfo {
 	var started = false
 	val transformers: MutableMap<String, MutableList<(ClassNode) -> Unit>> = hashMapOf()
 	val features = arrayOf(
+		AntiChunkBan,
 		AntiCrasher,
 		AntiDupe,
 		AntiNetherRoof,
@@ -39,6 +40,7 @@ object PaperBinInfo {
 			when (method.name) {
 				"isEnabled" -> true
 				"getName" -> "PaperBin"
+				"equals" -> args[0] == instance
 				else -> throw UnsupportedOperationException(method.name)
 			}
 		} as Plugin
