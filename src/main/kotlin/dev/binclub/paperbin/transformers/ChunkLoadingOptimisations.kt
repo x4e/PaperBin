@@ -31,6 +31,7 @@ object ChunkLoadingOptimisations: PaperFeature {
 								add(JumpInsnNode(IFNE, out))
 								add(ICONST_1)
 								add(IRETURN)
+								add(out)
 							}
 							method.instructions.insertBefore(insn, list)
 							return@register
