@@ -16,6 +16,10 @@ import java.util.logging.Level
  * @author cookiedragon234 23/Apr/2020
  */
 object PaperBinInfo {
+	val version = 5.2f
+	
+	var enabled = true
+	var started = false
 	val transformers: MutableMap<String, MutableList<(ClassNode) -> Unit>> = hashMapOf()
 	val features = arrayOf(
 		AntiCrasher,
@@ -29,8 +33,6 @@ object PaperBinInfo {
 		TickCounter,
 		VillageRateLimiter
 	)
-	var enabled = true
-	var started = false
 	var serverStartTime: Long = 0
 	val paperPlugin: Plugin by lazy {
 		Proxy.newProxyInstance(this::class.java.classLoader, arrayOf(Plugin::class.java)) { instance, method, args ->
@@ -74,13 +76,19 @@ object PaperBinInfo {
 		Bukkit.getCommandMap().register("binstart", object: Command("binstart") {
 			override fun execute(sender: CommandSender?, commandLabel: String, args: Array<String?>?): Boolean {
 				if (sender?.isOp == true) {
-					sender.spigot()
 					enabled = true
 					sender.sendMessage("Started paperbin")
 					if (sender !is ConsoleCommandSender) {
 						Bukkit.getLogger().log(Level.INFO, "Started paperbin")
 					}
 				}
+				return true
+			}
+		})
+		
+		Bukkit.getCommandMap().register("paperbin", object: Command("paperbin") {
+			override fun execute(sender: CommandSender?, commandLabel: String, args: Array<String?>?): Boolean {
+				sender?.sendMessage("§6This server is running Paper Bin $version")
 				return true
 			}
 		})

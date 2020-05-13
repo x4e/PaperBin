@@ -103,22 +103,23 @@ object FoodTpsCompensator: PaperFeature {
 				if (method.name == "cI" && method.desc == "()V") {
 					for (insn in method.instructions) {
 						if (insn.previous?.opcode == DUP_X1 && insn is FieldInsnNode && insn.owner == "net/minecraft/server/v1_12_R1/EntityLiving" && insn.name == "bp" && insn.desc == "I") {
+							val jump = insn.next as JumpInsnNode
+							val afterJump = LabelNode()
+							method.instructions.insert(jump, afterJump)
 							val falseJump = LabelNode()
 							val endJump = LabelNode()
 							val list = InsnList().apply {
 								add(VarInsnNode(ALOAD, 0))
 								add(FieldInsnNode(GETFIELD, "net/minecraft/server/v1_12_R1/EntityLiving", "activeItem", "Lnet/minecraft/server/v1_12_R1/ItemStack;"))
-								add(MethodInsnNode(INVOKEVIRTUAL, "net/minecraft/server/v1_12_R1/ItemStack", "getItem", "()Lnet/minecraft/server/v1_12_R1/Item;"))
+								add(MethodInsnNode(INVOKEVIRTUAL, "net/minecraft/server/v1_12_R1/ItemStack", "getItem", "()Lnet/minecraft/server/v1_12_R1/Item;", false))
 								add(TypeInsnNode(INSTANCEOF, "net/minecraft/server/v1_12_R1/ItemFood"))
 								add(JumpInsnNode(IFEQ, falseJump)) // Only run for food items
-								
 								add(VarInsnNode(ALOAD, 0))
 								add(FieldInsnNode(GETFIELD, "net/minecraft/server/v1_12_R1/EntityLiving", "eatStartTime", "J"))
 								add(InsnNode(ICONST_M1))
 								add(InsnNode(I2L))
 								add(LCMP)
 								add(JumpInsnNode(IFEQ, falseJump)) // If we have started eating
-								
 								add(MethodInsnNode(INVOKESTATIC, "java/lang/System", "nanoTime", "()J", false))
 								add(VarInsnNode(ALOAD, 0))
 								add(FieldInsnNode(GETFIELD, "net/minecraft/server/v1_12_R1/EntityLiving", "eatStartTime", "J"))
@@ -132,16 +133,12 @@ object FoodTpsCompensator: PaperFeature {
 								add(I2L)
 								add(LCMP)
 								add(JumpInsnNode(IFLE, falseJump)) // If we have been eating for longer than the needed eat time
-								
-								add(InsnNode(ICONST_1))
-								add(JumpInsnNode(GOTO, endJump))
+								add(JumpInsnNode(GOTO, afterJump))
 								
 								add(falseJump)
-								add(InsnNode(ICONST_0))
 								add(endJump)
-								add(InsnNode(IOR))
-								add(ICONST_1)
-								add(IXOR)
+								//add(ICONST_1)
+								//add(IXOR)
 							}
 							method.instructions.insert(insn, list)
 							
