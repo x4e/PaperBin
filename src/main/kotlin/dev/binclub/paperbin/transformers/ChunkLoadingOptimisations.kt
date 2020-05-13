@@ -3,6 +3,7 @@ package dev.binclub.paperbin.transformers
 import dev.binclub.paperbin.PaperFeature
 import dev.binclub.paperbin.utils.add
 import dev.binclub.paperbin.utils.printlnAsm
+import net.minecraft.server.v1_12_R1.StructureGenerator
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
 import java.util.concurrent.Semaphore
@@ -24,6 +25,10 @@ object ChunkLoadingOptimisations: PaperFeature {
 			
 			var count = 0
 			for (method in classNode.methods) {
+				if (method.name == "a" && method.desc == "(Lnet/minecraft/server/v1_12_R1/World;Lnet/minecraft/server/v1_12_R1/StructureGenerator;Lnet/minecraft/server/v1_12_R1/BlockPosition;IIIZIZ)Lnet/minecraft/server/v1_12_R1/BlockPosition;") {
+				
+				}
+				
 				if (method.name == "<init>") {
 					for (insn in method.instructions) {
 						if (insn.opcode == RETURN) {
@@ -41,6 +46,7 @@ object ChunkLoadingOptimisations: PaperFeature {
 					}
 				}
 				if (method.name == "a" && method.desc == "(Lnet/minecraft/server/v1_12_R1/World;Ljava/util/Random;Lnet/minecraft/server/v1_12_R1/ChunkCoordIntPair;)Z") {
+					method.access = ACC_PUBLIC // Remove ACC_SYNCRONISED
 					val sL = LabelNode()
 					val start = InsnList().apply {
 						val end = LabelNode()
