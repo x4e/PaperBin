@@ -31,6 +31,7 @@ object PaperBinInfo {
 		FasterGameRuleLookup,
 		FoodTpsCompensator,
 		MobAiRateLimiter,
+		PacketOptimisations,
 		TickCounter,
 		VillageRateLimiter
 	)

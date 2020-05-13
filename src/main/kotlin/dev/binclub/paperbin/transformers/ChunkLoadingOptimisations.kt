@@ -1,5 +1,6 @@
 package dev.binclub.paperbin.transformers
 
+import dev.binclub.paperbin.PaperBinConfig
 import dev.binclub.paperbin.PaperFeature
 import dev.binclub.paperbin.utils.add
 import dev.binclub.paperbin.utils.printlnAsm
@@ -13,6 +14,8 @@ import java.util.concurrent.Semaphore
  */
 object ChunkLoadingOptimisations: PaperFeature {
 	override fun registerTransformers() {
+		if (!PaperBinConfig.chunkLoadOptimisations) return
+		
 		register("net.minecraft.server.v1_12_R1.StructureGenerator") { classNode ->
 			val semaphore = FieldNode(
 				ACC_PRIVATE,

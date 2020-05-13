@@ -23,13 +23,16 @@ object PaperBinConfig {
 		} catch (t: Throwable) {}
 	}
 	
+	var antiChunkBan: Boolean by BooleanProperty(properties, "antiChunkBan")
 	var antiCrasher: Boolean by BooleanProperty(properties, "antiCrasher")
 	var antiDupe: Boolean by BooleanProperty(properties, "antiDupe")
 	var antiNetherRoof: Boolean by BooleanProperty(properties, "antiNetherRoof")
 	var blockRateLimit: Boolean by BooleanProperty(properties, "blockRateLimit")
+	var chunkLoadOptimisations: Boolean by BooleanProperty(properties, "chunkLoadOptimisations")
 	var fastGameRule: Boolean by BooleanProperty(properties, "fastGameRule")
 	var foodTpsCompensate: Boolean by BooleanProperty(properties, "foodTpsCompensate")
 	var mobAiRateLimit: Boolean by BooleanProperty(properties, "mobAiRateLimit")
+	var packetOptimisations: Boolean by BooleanProperty(properties, "packetOptimisations")
 	var villageRateLimit: Boolean by BooleanProperty(properties, "villageRateLimit")
 	var debug: Boolean by BooleanProperty(properties, "debug", false)
 }
