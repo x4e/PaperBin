@@ -65,7 +65,7 @@ object TickCounter: PaperFeature {
 	fun onServerTick(ticks: Int) {
 		PaperBinInfo.ticks = ticks
 		if (PaperBinConfig.debug) {
-			Thread.sleep(500) // simulate low tps enviroment
+			Thread.sleep(250) // simulate low tps enviroment
 		}
 		
 		if (!PaperBinInfo.started) {
