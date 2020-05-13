@@ -17,7 +17,7 @@ object BlockTickRateLimiter: PaperFeature {
 	fun shouldTickBlock(block: Any): Boolean {
 		block as Block
 		
-		if (!PaperBinInfo.enabled || PaperBinInfo.isTpsHigh()) return true
+		if (!PaperBinConfig.blockRateLimit) return true
 		
 		return when (block) {
 			block is BlockStationary -> {

@@ -10,17 +10,31 @@ import kotlin.reflect.KProperty
  */
 object PaperBinConfig {
 	val saveFile = File("paperbin.properties")
+	val properties = Properties()
 	
 	init {
-		Runtime.getRuntime().addShutdownHook(thread (start = false, isDaemon = false) {
-			properties.store(saveFile.writer(), "Paper Bin Configuration")
-		})
+		load()
+		Runtime.getRuntime().addShutdownHook(thread (start = false, isDaemon = false, block = this::save))
 	}
 	
-	val properties = Properties().also {
+	fun save(): Boolean {
 		try {
-			it.load(saveFile.reader())
-		} catch (t: Throwable) {}
+			properties.store(saveFile.writer(), "PaperBin Configuration")
+			return true
+		} catch (t: Throwable) {
+			t.printStackTrace()
+		}
+		return false
+	}
+	
+	fun load(): Boolean {
+		try {
+			properties.load(saveFile.reader())
+			return true
+		} catch (t: Throwable) {
+			t.printStackTrace()
+		}
+		return false
 	}
 	
 	var antiChunkBan: Boolean by BooleanProperty(properties, "antiChunkBan")

@@ -7,9 +7,9 @@ import dev.binclub.paperbin.utils.add
 import dev.binclub.paperbin.utils.internalName
 import dev.binclub.paperbin.utils.ldcInt
 import dev.binclub.paperbin.utils.printlnAsm
-import net.minecraft.server.v1_12_R1.EntityLiving
-import net.minecraft.server.v1_12_R1.PlayerInteractManager
+import net.minecraft.server.v1_12_R1.*
 import org.bukkit.Bukkit
+import org.bukkit.CropState
 import org.bukkit.block.Furnace
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
@@ -30,6 +30,7 @@ object FoodTpsCompensator: PaperFeature {
 	
 	override fun registerTransformers() {
 		if (!PaperBinConfig.foodTpsCompensate) return
+		
 		register("net.minecraft.server.v1_12_R1.PlayerInteractManager") { classNode ->
 			var count = 0
 			

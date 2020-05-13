@@ -18,7 +18,6 @@ import java.util.logging.Level
 object PaperBinInfo {
 	val version = 1.53f
 	
-	var enabled = true
 	var started = false
 	val transformers: MutableMap<String, MutableList<(ClassNode) -> Unit>> = hashMapOf()
 	val features = arrayOf(
@@ -63,26 +62,26 @@ object PaperBinInfo {
 		started = true
 		serverStartTime = System.nanoTime()
 		
-		Bukkit.getCommandMap().register("binstop", object: Command("binstop") {
+		Bukkit.getCommandMap().register("binreload", object: Command("binreload") {
 			override fun execute(sender: CommandSender?, commandLabel: String, args: Array<String?>?): Boolean {
 				if (sender?.isOp == true) {
-					enabled = false
-					sender.sendMessage("Stopped paperbin")
-					if (sender !is ConsoleCommandSender) {
-						Bukkit.getLogger().log(Level.INFO, "Stopped paperbin")
+					if (PaperBinConfig.load()) {
+						sender.sendMessage("§6Reloaded PaperBin config")
+					} else {
+						sender.sendMessage("§cFailed to reload PaperBin config")
 					}
 				}
 				return true
 			}
 		})
 		
-		Bukkit.getCommandMap().register("binstart", object: Command("binstart") {
+		Bukkit.getCommandMap().register("binsave", object: Command("binsave") {
 			override fun execute(sender: CommandSender?, commandLabel: String, args: Array<String?>?): Boolean {
 				if (sender?.isOp == true) {
-					enabled = true
-					sender.sendMessage("Started paperbin")
-					if (sender !is ConsoleCommandSender) {
-						Bukkit.getLogger().log(Level.INFO, "Started paperbin")
+					if (PaperBinConfig.save()) {
+						sender.sendMessage("§6Saved PaperBin config")
+					} else {
+						sender.sendMessage("§cFailed to save PaperBin config")
 					}
 				}
 				return true
@@ -91,7 +90,7 @@ object PaperBinInfo {
 		
 		Bukkit.getCommandMap().register("paperbin", object: Command("paperbin") {
 			override fun execute(sender: CommandSender?, commandLabel: String, args: Array<String?>?): Boolean {
-				sender?.sendMessage("§6This server is running Paper Bin $version")
+				sender?.sendMessage("§6This server is running PaperBin $version")
 				return true
 			}
 		})
@@ -99,12 +98,6 @@ object PaperBinInfo {
 		for (feature in features) {
 			feature.postStartup()
 		}
-	}
-	
-	// Disable some of the optimisations if the TPS is doing fine
-	fun isTpsHigh(): Boolean {
-		return false
-		//return Bukkit.getTPS()[0] >= 19
 	}
 	
 	var ticks: Int = 0

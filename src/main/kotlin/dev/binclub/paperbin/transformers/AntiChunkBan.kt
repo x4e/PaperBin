@@ -1,8 +1,10 @@
 package dev.binclub.paperbin.transformers
 
+import dev.binclub.paperbin.PaperBinConfig
 import dev.binclub.paperbin.PaperFeature
 import dev.binclub.paperbin.utils.add
 import dev.binclub.paperbin.utils.ldcInt
+import net.minecraft.server.v1_12_R1.NetworkManager
 import net.minecraft.server.v1_12_R1.PacketPlayOutMapChunk
 import net.minecraft.server.v1_12_R1.TileEntity
 import org.objectweb.asm.Opcodes.*
@@ -13,6 +15,8 @@ import org.objectweb.asm.tree.*
  */
 object AntiChunkBan: PaperFeature {
 	override fun registerTransformers() {
+		if (!PaperBinConfig.antiChunkBan) return
+		
 		register("net.minecraft.server.v1_12_R1.PacketPlayOutMapChunk") { classNode ->
 			var count = 0
 			for (method in classNode.methods) {
