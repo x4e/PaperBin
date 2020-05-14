@@ -16,7 +16,7 @@ import java.util.logging.Level
  * @author cookiedragon234 23/Apr/2020
  */
 object PaperBinInfo {
-	val version = 1.53f
+	val version = 1.55f
 	
 	var started = false
 	val transformers: MutableMap<String, MutableList<(ClassNode) -> Unit>> = hashMapOf()
