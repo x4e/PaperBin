@@ -1,7 +1,6 @@
 package dev.binclub.paperbin
 
-import dev.binclub.paperbin.utils.InstrumentationFactory
-import org.bukkit.Bukkit
+import org.apache.openjpa.enhance.InstrumentationFactory
 import java.io.File
 import java.lang.management.ManagementFactory
 import java.net.URL
@@ -24,7 +23,7 @@ fun main(args: Array<String>) {
 	val file = File(args[0])
 	val newArgs = args.drop(1).toTypedArray()
 	
-	InstrumentationFactory.instrumentation.addTransformer(PaperBinTransformer)
+	InstrumentationFactory.getInstrumentation().addTransformer(PaperBinTransformer)
 	println("Added transformer")
 	
 	val sysCl = ClassLoader.getSystemClassLoader() as URLClassLoader

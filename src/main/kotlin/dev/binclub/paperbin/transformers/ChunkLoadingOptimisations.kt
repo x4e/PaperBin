@@ -4,16 +4,16 @@ import dev.binclub.paperbin.PaperBinConfig
 import dev.binclub.paperbin.PaperFeature
 import dev.binclub.paperbin.utils.add
 import dev.binclub.paperbin.utils.printlnAsm
-import net.minecraft.server.v1_12_R1.*
-import org.bukkit.craftbukkit.v1_12_R1.chunkio.ChunkIOExecutor
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
-import java.util.concurrent.Semaphore
 
 /**
  * @author cookiedragon234 12/May/2020
  */
 object ChunkLoadingOptimisations: PaperFeature {
+	override fun postStartup() {
+	}
+	
 	override fun registerTransformers() {
 		if (!PaperBinConfig.chunkLoadOptimisations) return
 		
