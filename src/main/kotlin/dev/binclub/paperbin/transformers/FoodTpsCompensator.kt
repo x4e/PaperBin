@@ -23,88 +23,29 @@ object FoodTpsCompensator: PaperFeature {
 		return ((System.nanoTime() - PaperBinInfo.serverStartTime) / 50000000).toInt()
 	}
 	
+	fun compensate(classNode: ClassNode) {
+		for (method in classNode.methods) {
+			for (insn in method.instructions) {
+				if (insn is FieldInsnNode && insn.owner == "net/minecraft/server/v1_12_R1/MinecraftServer" && insn.name == "currentTick" && insn.desc == "I") {
+					val new = MethodInsnNode(INVOKESTATIC, FoodTpsCompensator::class.internalName, "getPerfectCurrentTick", "()I", false)
+					
+					method.instructions.insert(insn, new)
+					method.instructions.remove(insn)
+				}
+			}
+		}
+	}
+	
 	override fun registerTransformers() {
 		if (!PaperBinConfig.foodTpsCompensate) return
 		
-		register("net.minecraft.server.v1_12_R1.PlayerConnection") { classNode ->
-			var count = 0
-			
-			for (method in classNode.methods) {
-				for (insn in method.instructions) {
-					if (insn is FieldInsnNode && insn.owner == "net/minecraft/server/v1_12_R1/MinecraftServer" && insn.name == "currentTick" && insn.desc == "I") {
-						val new = MethodInsnNode(INVOKESTATIC, FoodTpsCompensator::class.internalName, "getPerfectCurrentTick", "()I", false)
-						
-						method.instructions.insert(insn, new)
-						method.instructions.remove(insn)
-						
-						count += 1
-					}
-				}
-			}
-			
-			if (count < 9) {
-				error("Couldnt find target $count")
-			}
-		}
-		register("net.minecraft.server.v1_12_R1.EntityItem") { classNode ->
-			var count = 0
-			
-			for (method in classNode.methods) {
-				for (insn in method.instructions) {
-					if (insn is FieldInsnNode && insn.owner == "net/minecraft/server/v1_12_R1/MinecraftServer" && insn.name == "currentTick" && insn.desc == "I") {
-						val new = MethodInsnNode(INVOKESTATIC, FoodTpsCompensator::class.internalName, "getPerfectCurrentTick", "()I", false)
-						
-						method.instructions.insert(insn, new)
-						method.instructions.remove(insn)
-						
-						count += 1
-					}
-				}
-			}
-			
-			if (count < 6) {
-				error("Couldnt find target $count")
-			}
-		}
-		register("net.minecraft.server.v1_12_R1.PlayerInteractManager") { classNode ->
-			var count = 0
-			
-			for (method in classNode.methods) {
-				for (insn in method.instructions) {
-					if (insn is FieldInsnNode && insn.owner == "net/minecraft/server/v1_12_R1/MinecraftServer" && insn.name == "currentTick" && insn.desc == "I") {
-						val new = MethodInsnNode(INVOKESTATIC, FoodTpsCompensator::class.internalName, "getPerfectCurrentTick", "()I", false)
-						
-						method.instructions.insert(insn, new)
-						method.instructions.remove(insn)
-						
-						count += 1
-					}
-				}
-			}
-			
-			if (count < 2) {
-				error("Couldnt find target $count")
-			}
-		}
-		register("net.minecraft.server.v1_12_R1.TileEntityFurnace") { classNode ->
-			var count = 0
-			for (method in classNode.methods) {
-				for (insn in method.instructions) {
-					if (insn is FieldInsnNode && insn.owner == "net/minecraft/server/v1_12_R1/MinecraftServer" && insn.name == "currentTick" && insn.desc == "I") {
-						val new = MethodInsnNode(INVOKESTATIC, FoodTpsCompensator::class.internalName, "getPerfectCurrentTick", "()I", false)
-						
-						method.instructions.insert(insn, new)
-						method.instructions.remove(insn)
-						
-						count += 1
-					}
-				}
-			}
-			if (count < 1) {
-				error("Couldnt find target $count")
-			}
-		}
-		register("net.minecraft.server.v1_12_R1.EntityLiving") { classNode ->
+		register("net.minecraft.server.v1_12_R1.TileEntityBrewingStand", this::compensate) // Brewing delays
+		register("net.minecraft.server.v1_12_R1.EntityZombieVillager", this::compensate) // Zombie villager conversion rates
+		register("net.minecraft.server.v1_12_R1.PlayerConnection", this::compensate) // Rate limiting for dropping items and typing in chat
+		register("net.minecraft.server.v1_12_R1.EntityItem", this::compensate) // Pickup/expire delays
+		register("net.minecraft.server.v1_12_R1.PlayerInteractManager", this::compensate) // Block breaking delays
+		register("net.minecraft.server.v1_12_R1.TileEntityFurnace", this::compensate) // Smelting and burning delays
+		register("net.minecraft.server.v1_12_R1.EntityLiving") { classNode -> // Food eating delays
 			classNode.fields.add(FieldNode(
 				ACC_PROTECTED,
 				"eatStartTime",
