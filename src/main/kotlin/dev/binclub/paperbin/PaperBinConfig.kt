@@ -37,12 +37,14 @@ object PaperBinConfig {
 		return false
 	}
 	
-	var antiChunkBan: Boolean by BooleanProperty(properties, "antiChunkBan")
+	var antiChunkBan: Boolean by BooleanProperty(properties, "antiChunkBan", false)
 	var antiCrasher: Boolean by BooleanProperty(properties, "antiCrasher")
 	var antiDupe: Boolean by BooleanProperty(properties, "antiDupe")
+	var antiGrief: Boolean by BooleanProperty(properties, "antiGrief")
 	var antiNetherRoof: Boolean by BooleanProperty(properties, "antiNetherRoof")
+	var antiNewChunks: Boolean by BooleanProperty(properties, "antiNewChunks")
 	var blockRateLimit: Boolean by BooleanProperty(properties, "blockRateLimit")
-	var chunkLoadOptimisations: Boolean by BooleanProperty(properties, "chunkLoadOptimisations")
+	var chunkLoadOptimisations: Boolean by BooleanProperty(properties, "chunkLoadOptimisations", false)
 	var fastGameRule: Boolean by BooleanProperty(properties, "fastGameRule")
 	var foodTpsCompensate: Boolean by BooleanProperty(properties, "foodTpsCompensate")
 	var mobAiRateLimit: Boolean by BooleanProperty(properties, "mobAiRateLimit")
