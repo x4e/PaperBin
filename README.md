@@ -3,12 +3,17 @@ An experiment at improving the performance of PaperMC.
 
 This project uses ASM and the attach api to modify Paper classes as they are defined.
 
-Usage:
+PaperBin is 100% compatible with any forks of paper, so you dont have to use vanilla paper.
+
+## Usage
+Make sure you have read the License.
+Then download paperbin and run the following command:
 ```
 java [any jvm arguments] -noverify -jar PaperBin.jar ActualPaper.jar [any paper arguments]
 ```
 
-PaperBin is 100% compatible with any forks of paper, so you dont have to use vanilla paper.
+## Test Server
+This plugin is currently active on `oldfag.org`, feel free to connect and test it out, there are no rules.
 
 ## Features:
 
