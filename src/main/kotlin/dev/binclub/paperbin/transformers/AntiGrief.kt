@@ -17,6 +17,13 @@ import org.objectweb.asm.tree.*
  * @author cookiedragon234 15/May/2020
  */
 object AntiGrief: PaperFeature {
+	val protectedBlocks = arrayOf(
+		Material.END_GATEWAY,
+		Material.ENDER_PORTAL,
+		Material.ENDER_PORTAL_FRAME,
+		Material.BEDROCK
+	)
+	
 	override fun postStartup() {
 		if (!PaperBinConfig.antiGrief) return
 		
@@ -35,7 +42,7 @@ object AntiGrief: PaperFeature {
 		
 		val relative = event.blockClicked.getRelative(event.blockFace)
 		
-		if (relative.type == Material.END_GATEWAY) {
+		if (protectedBlocks.contains(relative.type)) {
 			event.isCancelled = true
 		}
 	}
