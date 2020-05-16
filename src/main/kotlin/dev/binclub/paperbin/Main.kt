@@ -1,11 +1,13 @@
 package dev.binclub.paperbin
 
-import dev.binclub.paperbin.utils.InstrumentationFactory
-import org.bukkit.Bukkit
+import org.apache.openjpa.enhance.InstrumentationFactory
 import java.io.File
 import java.lang.management.ManagementFactory
 import java.net.URL
 import java.net.URLClassLoader
+import java.util.jar.Attributes
+import java.util.jar.Attributes.Name.MAIN_CLASS
+import java.util.jar.JarFile
 
 /**
  * @author cookiedragon234 12/Apr/2020
@@ -24,7 +26,7 @@ fun main(args: Array<String>) {
 	val file = File(args[0])
 	val newArgs = args.drop(1).toTypedArray()
 	
-	InstrumentationFactory.instrumentation.addTransformer(PaperBinTransformer)
+	InstrumentationFactory.getInstrumentation().addTransformer(PaperBinTransformer)
 	println("Added transformer")
 	
 	val sysCl = ClassLoader.getSystemClassLoader() as URLClassLoader
@@ -34,7 +36,13 @@ fun main(args: Array<String>) {
 		it.invoke(sysCl, file.toURI().toURL())
 	}
 	
-	Class.forName("com.destroystokyo.paperclip.Main")?.getDeclaredMethod("main", Array<String>::class.java)?.also {
-		it.invoke(null, newArgs)
-	} ?: error("Please provide a valid paperclip jar")
+	val mainClass = run {
+		JarFile(file).manifest.mainAttributes.getValue(MAIN_CLASS)
+	}
+	
+	try {
+		Class.forName(mainClass)!!.getDeclaredMethod("main", Array<String>::class.java)!!.invoke(null, newArgs)
+	} catch (t: Throwable) {
+		throw IllegalStateException("Please provide a valid paperclip jar", t)
+	}
 }

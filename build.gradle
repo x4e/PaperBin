@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'dev.binclub'
-version '1.0'
+version ''
 
 sourceCompatibility = 1.8
 
@@ -28,7 +28,7 @@ dependencies {
     compile 'org.ow2.asm:asm-commons:7.1'
     compile 'org.ow2.asm:asm-util:7.1'
     implementation files("build/libs/cache/patched_1.12.2.jar")
-    compile files("lib/sa-jdi.jar", "lib/tools.jar")
+    //compile files("${System.properties['java.home']}/../lib/sa-jdi.jar", "${System.properties['java.home']}/../lib/tools.jar")
 }
 
 compileKotlin {

@@ -16,27 +16,33 @@ import java.util.logging.Level
  * @author cookiedragon234 23/Apr/2020
  */
 object PaperBinInfo {
+	val version = 1.55f
+	
+	var started = false
 	val transformers: MutableMap<String, MutableList<(ClassNode) -> Unit>> = hashMapOf()
 	val features = arrayOf(
+		AntiChunkBan,
 		AntiCrasher,
 		AntiDupe,
+		AntiGrief,
 		AntiNetherRoof,
+		AntiNewChunks,
 		BlockTickRateLimiter,
 		ChunkLoadingOptimisations,
 		FasterGameRuleLookup,
 		FoodTpsCompensator,
 		MobAiRateLimiter,
+		PacketOptimisations,
 		TickCounter,
 		VillageRateLimiter
 	)
-	var enabled = true
-	var started = false
 	var serverStartTime: Long = 0
 	val paperPlugin: Plugin by lazy {
 		Proxy.newProxyInstance(this::class.java.classLoader, arrayOf(Plugin::class.java)) { instance, method, args ->
 			when (method.name) {
 				"isEnabled" -> true
 				"getName" -> "PaperBin"
+				"equals" -> args[0] == instance
 				else -> throw UnsupportedOperationException(method.name)
 			}
 		} as Plugin
@@ -58,29 +64,35 @@ object PaperBinInfo {
 		started = true
 		serverStartTime = System.nanoTime()
 		
-		Bukkit.getCommandMap().register("binstop", object: Command("binstop") {
+		Bukkit.getCommandMap().register("binreload", object: Command("binreload") {
 			override fun execute(sender: CommandSender?, commandLabel: String, args: Array<String?>?): Boolean {
 				if (sender?.isOp == true) {
-					enabled = false
-					sender.sendMessage("Stopped paperbin")
-					if (sender !is ConsoleCommandSender) {
-						Bukkit.getLogger().log(Level.INFO, "Stopped paperbin")
+					if (PaperBinConfig.load()) {
+						sender.sendMessage("§6Reloaded PaperBin config")
+					} else {
+						sender.sendMessage("§cFailed to reload PaperBin config")
 					}
 				}
 				return true
 			}
 		})
 		
-		Bukkit.getCommandMap().register("binstart", object: Command("binstart") {
+		Bukkit.getCommandMap().register("binsave", object: Command("binsave") {
 			override fun execute(sender: CommandSender?, commandLabel: String, args: Array<String?>?): Boolean {
 				if (sender?.isOp == true) {
-					sender.spigot()
-					enabled = true
-					sender.sendMessage("Started paperbin")
-					if (sender !is ConsoleCommandSender) {
-						Bukkit.getLogger().log(Level.INFO, "Started paperbin")
+					if (PaperBinConfig.save()) {
+						sender.sendMessage("§6Saved PaperBin config")
+					} else {
+						sender.sendMessage("§cFailed to save PaperBin config")
 					}
 				}
+				return true
+			}
+		})
+		
+		Bukkit.getCommandMap().register("paperbin", object: Command("paperbin") {
+			override fun execute(sender: CommandSender?, commandLabel: String, args: Array<String?>?): Boolean {
+				sender?.sendMessage("§6This server is running PaperBin $version")
 				return true
 			}
 		})
@@ -88,12 +100,6 @@ object PaperBinInfo {
 		for (feature in features) {
 			feature.postStartup()
 		}
-	}
-	
-	// Disable some of the optimisations if the TPS is doing fine
-	fun isTpsHigh(): Boolean {
-		return false
-		//return Bukkit.getTPS()[0] >= 19
 	}
 	
 	var ticks: Int = 0
