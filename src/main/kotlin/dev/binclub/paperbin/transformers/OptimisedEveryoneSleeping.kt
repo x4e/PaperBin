@@ -1,5 +1,6 @@
 package dev.binclub.paperbin.transformers
 
+import dev.binclub.paperbin.PaperBinConfig
 import dev.binclub.paperbin.PaperFeature
 import dev.binclub.paperbin.utils.add
 import dev.binclub.paperbin.utils.insnBuilder
@@ -16,6 +17,8 @@ import org.objectweb.asm.tree.MethodInsnNode
  */
 object OptimisedEveryoneSleeping: PaperFeature {
 	override fun registerTransformers() {
+		if (!PaperBinConfig.optimisedEveryoneSleeping) return
+		
 		register("net.minecraft.server.v1_12_R1.WorldServer") { classNode ->
 			for (method in classNode.methods) {
 				if (method.name == "everyoneDeeplySleeping" && method.desc == "()Z") {

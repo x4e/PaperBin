@@ -57,6 +57,7 @@ object PaperBinInfo {
 		AntiGrief,
 		AntiNetherRoof,
 		AntiNewChunks,
+		AntiUnicodeChat,
 		BlockTickRateLimiter,
 		ChunkLoadingOptimisations,
 		CustomNbtEvents,

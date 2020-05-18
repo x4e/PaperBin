@@ -2,8 +2,9 @@
 An experiment at improving the performance of PaperMC. 
 
 This project uses ASM and the attach api to modify Paper classes as they are defined.
+Because of this paperbin can even **be run on top of other paperforks**!
 
-PaperBin is 100% compatible with any forks of paper, so you dont have to use vanilla paper.
+For discussion join [my discord server](https://www.discord.gg/MaqN7gA).
 
 ## Usage
 Make sure you have read the License.

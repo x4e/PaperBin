@@ -14,6 +14,7 @@ fun insnBuilder(application: InsnBuilder.() -> Unit): InsnList {
 class InsnBuilder {
 	internal val list = InsnList()
 	
+	operator fun InsnList.unaryPlus() = list.add(this)
 	operator fun AbstractInsnNode.unaryPlus() = list.add(this)
 	fun Int.insn() = InsnNode(this)
 }
