@@ -1,9 +1,11 @@
 package dev.binclub.paperbin.transformers
 
 import dev.binclub.paperbin.PaperBinConfig
+import dev.binclub.paperbin.PaperBinInfo
 import dev.binclub.paperbin.PaperFeature
 import dev.binclub.paperbin.utils.add
-import dev.binclub.paperbin.utils.printlnAsm
+import org.bukkit.Bukkit
+import org.bukkit.entity.Player
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
 
@@ -61,45 +63,7 @@ object ChunkLoadingOptimisations: PaperFeature {
 				}
 				if (method.name == "a" && method.desc == "(Lnet/minecraft/server/v1_12_R1/World;Ljava/util/Random;Lnet/minecraft/server/v1_12_R1/ChunkCoordIntPair;)Z") {
 					method.access = ACC_PUBLIC // Remove ACC_SYNCRONISED
-					val sL = LabelNode()
-					val start = InsnList().apply {
-						val end = LabelNode()
-						add(sL)
-						add(VarInsnNode(ALOAD, 0))
-						add(FieldInsnNode(GETFIELD, classNode.name, semaphore.name, semaphore.desc))
-						add(MethodInsnNode(INVOKEVIRTUAL, "java/util/concurrent/Semaphore", "acquire", "()V", false))
-						add(MethodInsnNode(INVOKESTATIC, "org/bukkit/Bukkit", "isPrimaryThread", "()Z", false))
-						add(JumpInsnNode(IFNE, end))
-						add(printlnAsm("async chunk loading"))
-						add(end)
-					}
-					method.instructions.insert(start)
-					
-					for (insn in method.instructions) {
-						if (insn.opcode == IRETURN) {
-							val release = LabelNode()
-							val handler = LabelNode()
-							val endL = LabelNode()
-							val end = InsnList().apply {
-								add(endL)
-								add(JumpInsnNode(GOTO, release))
-								add(handler)
-								add(VarInsnNode(ALOAD, 0))
-								add(FieldInsnNode(GETFIELD, classNode.name, semaphore.name, semaphore.desc))
-								add(MethodInsnNode(INVOKEVIRTUAL, "java/util/concurrent/Semaphore", "release", "()V", false))
-								add(ATHROW)
-								add(release)
-								add(VarInsnNode(ALOAD, 0))
-								add(FieldInsnNode(GETFIELD, classNode.name, semaphore.name, semaphore.desc))
-								add(MethodInsnNode(INVOKEVIRTUAL, "java/util/concurrent/Semaphore", "release", "()V", false))
-							}
-							method.instructions.insertBefore(insn, end)
-							method.tryCatchBlocks = method.tryCatchBlocks ?: arrayListOf()
-							method.tryCatchBlocks.add(TryCatchBlockNode(sL, endL, handler, null))
-							count += 1
-							break
-						}
-					}
+					count += 1
 				}
 			}
 			if (count != 2) {

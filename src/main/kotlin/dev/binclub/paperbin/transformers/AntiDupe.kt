@@ -3,7 +3,6 @@ package dev.binclub.paperbin.transformers
 import dev.binclub.paperbin.PaperBinConfig
 import dev.binclub.paperbin.PaperFeature
 import dev.binclub.paperbin.utils.add
-import dev.binclub.paperbin.utils.printlnAsm
 import net.minecraft.server.v1_12_R1.BlockShulkerBox
 import net.minecraft.server.v1_12_R1.Entity
 import org.bukkit.craftbukkit.v1_12_R1.CraftWorld

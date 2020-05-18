@@ -27,7 +27,6 @@ fun main(args: Array<String>) {
 	val newArgs = args.drop(1).toTypedArray()
 	
 	InstrumentationFactory.getInstrumentation().addTransformer(PaperBinTransformer)
-	println("Added transformer")
 	
 	val sysCl = ClassLoader.getSystemClassLoader() as URLClassLoader
 	
@@ -41,7 +40,7 @@ fun main(args: Array<String>) {
 	}
 	
 	try {
-		Class.forName(mainClass)!!.getDeclaredMethod("main", Array<String>::class.java)!!.invoke(null, newArgs)
+		Class.forName(mainClass, true, sysCl)!!.getDeclaredMethod("main", Array<String>::class.java)!!.invoke(null, newArgs)
 	} catch (t: Throwable) {
 		throw IllegalStateException("Please provide a valid paperclip jar", t)
 	}

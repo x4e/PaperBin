@@ -1,5 +1,6 @@
 package dev.binclub.paperbin.utils
 
+import dev.binclub.paperbin.PaperBinInfo
 import org.objectweb.asm.Type
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
@@ -42,7 +43,7 @@ fun printlnAsm(): InsnList {
 	return InsnList().apply {
 		add(FieldInsnNode(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;"))
 		add(SWAP)
-		add(MethodInsnNode(INVOKEVIRTUAL, PrintStream::class.internalName, "println", "(Ljava/lang/Object;)V"))
+		add(MethodInsnNode(INVOKEVIRTUAL, PrintStream::class.internalName, "PaperBinInfo.logger.info", "(Ljava/lang/Object;)V", false))
 	}
 }
 
@@ -50,7 +51,7 @@ fun printlnAsm(text: String): InsnList {
 	return InsnList().also {
 		it.add(FieldInsnNode(GETSTATIC, System::class.internalName, "out", "Ljava/io/PrintStream;"))
 		it.add(LdcInsnNode(text))
-		it.add(MethodInsnNode(INVOKEVIRTUAL, PrintStream::class.internalName, "println", "(Ljava/lang/String;)V"))
+		it.add(MethodInsnNode(INVOKEVIRTUAL, PrintStream::class.internalName, "PaperBinInfo.logger.info", "(Ljava/lang/String;)V", false))
 	}
 }
 
@@ -58,6 +59,6 @@ fun printlnIntAsm(): InsnList {
 	return InsnList().also {
 		it.add(FieldInsnNode(GETSTATIC, System::class.internalName, "out", "Ljava/io/PrintStream;"))
 		it.add(InsnNode(SWAP))
-		it.add(MethodInsnNode(INVOKEVIRTUAL, PrintStream::class.internalName, "println", "(I)V"))
+		it.add(MethodInsnNode(INVOKEVIRTUAL, PrintStream::class.internalName, "PaperBinInfo.logger.info", "(I)V", false))
 	}
 }

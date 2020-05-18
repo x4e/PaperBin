@@ -3,9 +3,6 @@ package dev.binclub.paperbin.transformers
 import dev.binclub.paperbin.PaperBinConfig
 import dev.binclub.paperbin.PaperFeature
 import dev.binclub.paperbin.utils.add
-import dev.binclub.paperbin.utils.printlnAsm
-import net.minecraft.server.v1_12_R1.ItemStack
-import net.minecraft.server.v1_12_R1.Items
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
 

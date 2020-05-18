@@ -34,7 +34,6 @@ object AntiChunkBan: PaperFeature {
 	
 	@JvmStatic
 	fun shouldLimit(tileEntity: Any): Boolean {
-		println("Should limit $tileEntity")
 		return (
 			tileEntity is TileEntity
 			&&

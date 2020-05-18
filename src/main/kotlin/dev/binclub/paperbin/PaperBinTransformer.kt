@@ -30,7 +30,7 @@ object PaperBinTransformer: ClassFileTransformer {
 				try {
 					Bukkit.getLogger().log(Level.INFO, "Transforming [$className]...")
 				} catch (t: Throwable) {
-					println("Transforming [$className]...")
+					PaperBinInfo.logger.info("Transforming [$className]...")
 				}
 				val classNode = ClassNode()
 				ClassReader(classfileBuffer).accept(classNode, 0)

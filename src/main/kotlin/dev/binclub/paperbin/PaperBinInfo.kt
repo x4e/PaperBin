@@ -4,12 +4,15 @@ import dev.binclub.paperbin.transformers.*
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
-import org.bukkit.command.ConsoleCommandSender
 import org.bukkit.plugin.Plugin
-import org.objectweb.asm.Opcodes
 import org.objectweb.asm.tree.ClassNode
+import java.io.PrintWriter
+import java.io.StringWriter
 import java.lang.reflect.Proxy
-import java.util.logging.Level
+import java.util.logging.ConsoleHandler
+import java.util.logging.Formatter
+import java.util.logging.LogRecord
+import java.util.logging.Logger
 
 
 /**
@@ -17,6 +20,33 @@ import java.util.logging.Level
  */
 object PaperBinInfo {
 	val version = 1.55f
+	val logger by lazy {
+		Logger.getLogger("PaperBin").also {
+			for (handler in it.handlers) {
+				it.removeHandler(handler)
+			}
+			it.useParentHandlers = false
+			it.addHandler(ConsoleHandler().also {
+				it.formatter = object: Formatter() {
+					override fun format(record: LogRecord): String {
+						val builder = StringBuilder()
+						val ex = record.thrown
+						builder.append("[paperbin ")
+						builder.append(record.level.localizedName.toUpperCase())
+						builder.append("] ")
+						builder.append(formatMessage(record))
+						builder.append('\n')
+						if (ex != null) {
+							val writer = StringWriter()
+							ex.printStackTrace(PrintWriter(writer))
+							builder.append(writer)
+						}
+						return builder.toString()
+					}
+				}
+			})
+		}
+	}
 	
 	var started = false
 	val transformers: MutableMap<String, MutableList<(ClassNode) -> Unit>> = hashMapOf()
@@ -29,9 +59,11 @@ object PaperBinInfo {
 		AntiNewChunks,
 		BlockTickRateLimiter,
 		ChunkLoadingOptimisations,
+		CustomNbtEvents,
 		FasterGameRuleLookup,
 		FoodTpsCompensator,
 		MobAiRateLimiter,
+		OptimisedEveryoneSleeping,
 		PacketOptimisations,
 		TickCounter,
 		VillageRateLimiter
@@ -49,7 +81,7 @@ object PaperBinInfo {
 	}
 	
 	init {
-		println("Registering transformers...")
+		logger.info("Registering transformers...")
 		
 		for (feature in features) {
 			feature.registerTransformers()
@@ -72,8 +104,9 @@ object PaperBinInfo {
 					} else {
 						sender.sendMessage("§cFailed to reload PaperBin config")
 					}
+					return true
 				}
-				return true
+				return false
 			}
 		})
 		
@@ -85,8 +118,9 @@ object PaperBinInfo {
 					} else {
 						sender.sendMessage("§cFailed to save PaperBin config")
 					}
+					return true
 				}
-				return true
+				return false
 			}
 		})
 		

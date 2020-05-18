@@ -145,8 +145,7 @@ public class InstrumentationFactory {
 		
 		PrintWriter writer = new PrintWriter(new OutputStreamWriter(zout));
 		
-		writer
-		.println("Agent-Class: " + InstrumentationFactory.class.getName());
+		writer.println("Agent-Class: " + InstrumentationFactory.class.getName());
 		writer.println("Can-Redefine-Classes: true");
 		// IBM doesn't support retransform
 		writer.println("Can-Retransform-Classes: " + Boolean.toString(JavaVendors.getCurrentVendor().isIBM() == false));
@@ -169,7 +168,7 @@ public class InstrumentationFactory {
 		
 		File toolsJarFile = new File(javaHomeFile, "lib" + File.separator + "tools.jar");
 		if (toolsJarFile.exists() == false) {
-			new IllegalStateException(_name + ".findToolsJar() -- couldn't find default " + toolsJarFile.getAbsolutePath()).printStackTrace();
+			//new IllegalStateException(_name + ".findToolsJar() -- couldn't find default " + toolsJarFile.getAbsolutePath()).printStackTrace();
 			// If we're on an IBM SDK, then remove /jre off of java.home and try again.
 			if (javaHomeFile.getAbsolutePath().endsWith(File.separator + "jre") == true) {
 				javaHomeFile = javaHomeFile.getParentFile();
@@ -194,7 +193,7 @@ public class InstrumentationFactory {
 		if (toolsJarFile.exists() == false) {
 			return null;
 		} else {
-			System.out.println(_name + ".findToolsJar() -- found " + toolsJarFile.getAbsolutePath());
+			//System.out.println(_name + ".findToolsJar() -- found " + toolsJarFile.getAbsolutePath());
 			return toolsJarFile;
 		}
 	}
