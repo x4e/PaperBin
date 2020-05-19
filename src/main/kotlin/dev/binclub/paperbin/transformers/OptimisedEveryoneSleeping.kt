@@ -49,7 +49,7 @@ object OptimisedEveryoneSleeping: PaperFeature {
 		
 		val players = worldServer.players
 		
-		return if(players.size == 0)
+		return if (players.size == 0)
 			false
 		else
 			players.all { player ->

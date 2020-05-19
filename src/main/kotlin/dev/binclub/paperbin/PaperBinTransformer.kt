@@ -7,6 +7,8 @@ import org.objectweb.asm.tree.ClassNode
 import java.io.File
 import java.lang.instrument.ClassFileTransformer
 import java.security.ProtectionDomain
+import java.util.jar.JarEntry
+import java.util.jar.JarOutputStream
 import java.util.logging.Level
 import kotlin.system.exitProcess
 
@@ -14,6 +16,13 @@ import kotlin.system.exitProcess
  * @author cookiedragon234 12/Apr/2020
  */
 object PaperBinTransformer: ClassFileTransformer {
+	val jar: JarOutputStream? =
+		if (PaperBinConfig.debug) {
+			JarOutputStream(File("paperbin_patched.jar").outputStream()).also { jar ->
+				Runtime.getRuntime().addShutdownHook(Thread {jar.close()})
+			}
+		} else null
+	
 	override fun transform(
 		loader: ClassLoader?,
 		className: String?,
@@ -27,11 +36,7 @@ object PaperBinTransformer: ClassFileTransformer {
 			}
 			
 			PaperBinInfo.transformers[className.replace('/', '.')]?.let { transformers ->
-				try {
-					Bukkit.getLogger().log(Level.INFO, "Transforming [$className]...")
-				} catch (t: Throwable) {
-					PaperBinInfo.logger.info("Transforming [$className]...")
-				}
+				PaperBinInfo.logger.log(Level.INFO, "Transforming [$className]...")
 				val classNode = ClassNode()
 				ClassReader(classfileBuffer).accept(classNode, 0)
 				
@@ -43,12 +48,10 @@ object PaperBinTransformer: ClassFileTransformer {
 				classNode.accept(writer)
 				
 				return writer.toByteArray().also {
-					if (PaperBinConfig.debug) {
-						val f = File("$className.class")
-						if (!f.exists()) {
-							f.parentFile.mkdirs()
-						}
-						f.writeBytes(it)
+					if (jar != null) {
+						jar.putNextEntry(JarEntry("$className.class"))
+						jar.write(it)
+						jar.closeEntry()
 					}
 				}
 			}

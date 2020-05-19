@@ -31,7 +31,7 @@ object PaperBinInfo {
 					override fun format(record: LogRecord): String {
 						val builder = StringBuilder()
 						val ex = record.thrown
-						builder.append("[paperbin ")
+						builder.append("\r[paperbin ")
 						builder.append(record.level.localizedName.toUpperCase())
 						builder.append("] ")
 						builder.append(formatMessage(record))
@@ -97,6 +97,13 @@ object PaperBinInfo {
 	fun onStartup() {
 		started = true
 		serverStartTime = System.nanoTime()
+		
+		if (PaperBinConfig.debug) {
+			logger.warning("--------------------------------------------------")
+			logger.warning("WARNING: PaperBin has been started with DEBUG mode")
+			logger.warning("This WILL impact performance!")
+			logger.warning("--------------------------------------------------")
+		}
 		
 		Bukkit.getCommandMap().register("binreload", object: Command("binreload") {
 			override fun execute(sender: CommandSender?, commandLabel: String, args: Array<String?>?): Boolean {
