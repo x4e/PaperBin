@@ -1,6 +1,7 @@
 package dev.binclub.paperbin
 
 import dev.binclub.paperbin.transformers.*
+import dev.binclub.paperbin.utils.checkForUpdate
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
@@ -19,7 +20,7 @@ import java.util.logging.Logger
  * @author cookiedragon234 23/Apr/2020
  */
 object PaperBinInfo {
-	val version = 1.56f
+	val version = 1.561f
 	val logger by lazy {
 		Logger.getLogger("PaperBin").also {
 			for (handler in it.handlers) {
@@ -98,6 +99,7 @@ object PaperBinInfo {
 		started = true
 		serverStartTime = System.nanoTime()
 		
+		checkForUpdate()
 		if (PaperBinConfig.debug) {
 			logger.warning("--------------------------------------------------")
 			logger.warning("WARNING: PaperBin has been started with DEBUG mode")
