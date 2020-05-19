@@ -34,7 +34,7 @@ object VillageRateLimiter: PaperFeature {
 	
 	override fun registerTransformers() {
 		if (!PaperBinConfig.villageRateLimit) return
-		println("Village rate limit")
+		
 		register("net.minecraft.server.v1_12_R1.PersistentVillage") { classNode ->
 			for (method in classNode.methods) {
 				if (method.name == "tick" && method.desc == "()V") {

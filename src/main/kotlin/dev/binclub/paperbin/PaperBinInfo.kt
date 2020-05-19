@@ -19,7 +19,7 @@ import java.util.logging.Logger
  * @author cookiedragon234 23/Apr/2020
  */
 object PaperBinInfo {
-	val version = 1.55f
+	val version = 1.56f
 	val logger by lazy {
 		Logger.getLogger("PaperBin").also {
 			for (handler in it.handlers) {
