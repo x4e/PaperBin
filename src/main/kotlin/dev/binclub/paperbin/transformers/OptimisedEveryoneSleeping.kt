@@ -25,7 +25,7 @@ object OptimisedEveryoneSleeping: PaperFeature {
 					for (insn in method.instructions) {
 						if (insn is FieldInsnNode && insn.owner == "net/minecraft/server/v1_12_R1/WorldServer" && insn.name == "players" && insn.desc == "Ljava/util/List;") {
 							val list = insnBuilder {
-								+MethodInsnNode(INVOKESTATIC, "dev/binclub/paperbin/transformers/WorldServerOptimisations", "everyoneDeeplySleeping", "(Ljava/lang/Object;)Z", false)
+								+MethodInsnNode(INVOKESTATIC, "dev/binclub/paperbin/transformers/OptimisedEveryoneSleeping", "everyoneDeeplySleeping", "(Ljava/lang/Object;)Z", false)
 								+IRETURN.insn()
 							}
 							method.instructions.insertBefore(insn, list)
@@ -47,12 +47,18 @@ object OptimisedEveryoneSleeping: PaperFeature {
 	fun everyoneDeeplySleeping(worldServer: Any): Boolean {
 		worldServer as WorldServer
 		
-		for (player in worldServer.players) {
-			// All players must either be fake, deeply sleeping or a spectator
-			if (!player.isDeeplySleeping && !player.fauxSleeping && !player.isSpectator) {
-				return false
+		val players = worldServer.players
+		
+		var arePlayers = false
+		players.forEach { player ->
+			if (!player.isSpectator) {
+				// All players must either be fake, deeply sleeping or a spectator
+				if (!player.isDeeplySleeping && !player.fauxSleeping) {
+					return false
+				}
+				arePlayers = true
 			}
 		}
-		return true
+		return arePlayers
 	}
 }
