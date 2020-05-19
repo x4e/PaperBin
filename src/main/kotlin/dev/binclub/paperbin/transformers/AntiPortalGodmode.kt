@@ -64,20 +64,5 @@ object AntiPortalGodmode: PaperFeature {
 			}
 			error("Couldnt find target")
 		}
-		/*
-   public void a(PacketPlayInTeleportAccept packetplayinteleportaccept) {
-      PlayerConnectionUtils.ensureMainThread(packetplayinteleportaccept, this, this.player.x());
-      if (packetplayinteleportaccept.a() == this.teleportAwait && this.teleportPos != null) {
-         this.player.setLocation(this.teleportPos.x, this.teleportPos.y, this.teleportPos.z, this.player.yaw, this.player.pitch);
-         if (this.player.L()) {
-            this.o = this.teleportPos.x;
-            this.p = this.teleportPos.y;
-            this.q = this.teleportPos.z;
-            this.player.M();
-         }
-         this.teleportPos = null;
-      }
-   }
-		 */
 	}
 }
