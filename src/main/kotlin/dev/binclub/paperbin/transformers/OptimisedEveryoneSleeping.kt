@@ -49,16 +49,11 @@ object OptimisedEveryoneSleeping: PaperFeature {
 		
 		val players = worldServer.players
 		
-		var arePlayers = false
-		players.forEach { player ->
-			if (!player.isSpectator) {
-				// All players must either be fake, deeply sleeping or a spectator
-				if (!player.isDeeplySleeping && !player.fauxSleeping) {
-					return false
-				}
-				arePlayers = true
+		return if(players.size == 0)
+			false
+		else
+			players.all { player ->
+				player.isSpectator || (player.isDeeplySleeping && player.fauxSleeping)
 			}
-		}
-		return arePlayers
 	}
 }
