@@ -2,6 +2,7 @@
 An experiment at improving the performance of PaperMC. 
 
 [![Downloads](https://img.shields.io/github/downloads/cookiedragon234/paperbin/total?logo=github&logoColor=white)](https://github.com/cookiedragon234/PaperBin/releases/latest)
+[![Discord](https://img.shields.io/discord/658373639137132595?logo=discord&logoColor=white)](https://discord.gg/9wA2G8E)
 
 This project uses ASM and the attach api to modify Paper classes as they are defined.
 Because of this paperbin can even **be run on top of other paperforks**!
