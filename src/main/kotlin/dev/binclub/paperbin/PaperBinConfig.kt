@@ -43,6 +43,7 @@ object PaperBinConfig {
 	var antiGrief: Boolean by BooleanProperty(properties, "antiGrief")
 	var antiNetherRoof: Boolean by BooleanProperty(properties, "antiNetherRoof")
 	var antiNewChunks: Boolean by BooleanProperty(properties, "antiNewChunks", false)
+	var antiPortalGodmode: Boolean by BooleanProperty(properties, "antiPortalGodmode", false)
 	var antiUnicodeChat: Boolean by BooleanProperty(properties, "antiUnicodeChat", false)
 	var blockRateLimit: Boolean by BooleanProperty(properties, "blockRateLimit")
 	var chunkLoadOptimisations: Boolean by BooleanProperty(properties, "chunkLoadOptimisations", false)
