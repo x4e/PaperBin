@@ -23,10 +23,10 @@ jar {
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    compile 'org.ow2.asm:asm:7.1'
-    compile 'org.ow2.asm:asm-tree:7.1'
-    compile 'org.ow2.asm:asm-commons:7.1'
-    compile 'org.ow2.asm:asm-util:7.1'
+    runtime 'org.ow2.asm:asm:7.1'
+    runtime 'org.ow2.asm:asm-tree:7.1'
+    runtime 'org.ow2.asm:asm-commons:7.1'
+    runtime 'org.ow2.asm:asm-util:7.1'
     implementation files("build/libs/cache/patched_1.12.2.jar")
     //compile files("${System.properties['java.home']}/../lib/sa-jdi.jar", "${System.properties['java.home']}/../lib/tools.jar")
 }

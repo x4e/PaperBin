@@ -65,6 +65,7 @@ object PaperBinInfo {
 		FoodTpsCompensator,
 		MobAiRateLimiter,
 		OptimisedEveryoneSleeping,
+		OptimisedGetEntityPassengers,
 		PacketOptimisations,
 		TickCounter,
 		VillageRateLimiter
