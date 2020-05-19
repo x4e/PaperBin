@@ -5,7 +5,6 @@ import dev.binclub.paperbin.PaperBinInfo
 import dev.binclub.paperbin.PaperFeature
 import dev.binclub.paperbin.utils.internalName
 import net.minecraft.server.v1_12_R1.*
-import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
 

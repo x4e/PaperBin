@@ -9,11 +9,21 @@ import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
 import java.lang.IllegalStateException
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
+import java.util.concurrent.ThreadPoolExecutor
 
 /**
  * @author cookiedragon234 11/May/2020
  */
 object MobAiRateLimiter: PaperFeature {
+	val goalSelectionDispatcher = Executors.newCachedThreadPool().also {
+		it as ThreadPoolExecutor
+		it.maximumPoolSize = Runtime.getRuntime().availableProcessors() / 2
+	}
+	
+	
+	
 	override fun registerTransformers() {
 		if (!PaperBinConfig.mobAiRateLimit) return
 		

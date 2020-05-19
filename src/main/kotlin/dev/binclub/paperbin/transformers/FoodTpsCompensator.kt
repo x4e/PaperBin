@@ -4,6 +4,7 @@ import dev.binclub.paperbin.PaperBinConfig
 import dev.binclub.paperbin.PaperBinInfo
 import dev.binclub.paperbin.PaperFeature
 import dev.binclub.paperbin.utils.add
+import dev.binclub.paperbin.utils.insnBuilder
 import dev.binclub.paperbin.utils.internalName
 import dev.binclub.paperbin.utils.ldcInt
 import net.minecraft.server.v1_12_R1.*
@@ -23,7 +24,14 @@ object FoodTpsCompensator: PaperFeature {
 		return ((System.nanoTime() - PaperBinInfo.serverStartTime) / 50000000).toInt()
 	}
 	
-	fun compensate(classNode: ClassNode) {
+	@JvmStatic
+	fun shouldCompensate(item: Any): Boolean {
+		if (!PaperBinConfig.foodTpsCompensate) return false
+		
+		return item is ItemFood || item is ItemPotion || item is ItemMilkBucket// || item is ItemBow || item is ItemShield
+	}
+	
+	private fun compensate(classNode: ClassNode) {
 		for (method in classNode.methods) {
 			for (insn in method.instructions) {
 				if (insn is FieldInsnNode && insn.owner == "net/minecraft/server/v1_12_R1/MinecraftServer" && insn.name == "currentTick" && insn.desc == "I") {
@@ -45,6 +53,50 @@ object FoodTpsCompensator: PaperFeature {
 		register("net.minecraft.server.v1_12_R1.EntityItem", this::compensate) // Pickup/expire delays
 		register("net.minecraft.server.v1_12_R1.PlayerInteractManager", this::compensate) // Block breaking delays
 		register("net.minecraft.server.v1_12_R1.TileEntityFurnace", this::compensate) // Smelting and burning delays
+		register("net.minecraft.server.v1_12_R1.PathfinderGoalMakeLove") { classNode -> // Mating
+			val startFrickTick = FieldNode(
+				ACC_PUBLIC,
+				"startFrickTick",
+				"I",
+				null,
+				-1
+			)
+			classNode.fields.add(startFrickTick)
+			
+			for (method in classNode.methods) {
+				if (method.name == "c" && method.desc == "()V") {
+					insnLoop@for (insn in method.instructions) {
+						if (insn is FieldInsnNode && insn.owner == "net/minecraft/server/v1_12_R1/PathfinderGoalMakeLove" && insn.name == "e" && insn.desc == "I") {
+							val insert = insnBuilder {
+								+VarInsnNode(ALOAD, 0)
+								+MethodInsnNode(INVOKESTATIC, FoodTpsCompensator::class.internalName, "getPerfectCurrentTick", "()I", false)
+								+FieldInsnNode(PUTFIELD, classNode.name, startFrickTick.name, startFrickTick.desc)
+							}
+							method.instructions.insertBefore(insn, insert)
+							break@insnLoop
+						}
+					}
+				}
+				if (method.name == "e" && method.desc == "()V") {
+					for (insn in method.instructions) {
+						if (insn is FieldInsnNode && insn.opcode == PUTFIELD && insn.owner == "net/minecraft/server/v1_12_R1/PathfinderGoalMakeLove" && insn.name == "e" && insn.desc == "I") {
+							val insert = insnBuilder {
+								+POP2.insn()
+								+VarInsnNode(ALOAD, 0)
+								+FieldInsnNode(GETFIELD, classNode.name, startFrickTick.name, startFrickTick.desc)
+								+MethodInsnNode(INVOKESTATIC, FoodTpsCompensator::class.internalName, "getPerfectCurrentTick", "()I", false)
+								
+								+VarInsnNode(ALOAD, 0)
+								+FieldInsnNode(GETFIELD, "net/minecraft/server/v1_12_R1/PathfinderGoalMakeLove", "e", "I")
+							}
+							method.instructions.insert(insn, insert)
+							method.instructions.remove(insn)
+						}
+					}
+					//PUTFIELD .e : I
+				}
+			}
+		}
 		register("net.minecraft.server.v1_12_R1.EntityLiving") { classNode -> // Food eating delays
 			classNode.fields.add(FieldNode(
 				ACC_PROTECTED,
@@ -115,7 +167,7 @@ object FoodTpsCompensator: PaperFeature {
 								add(VarInsnNode(ALOAD, 0))
 								add(FieldInsnNode(GETFIELD, "net/minecraft/server/v1_12_R1/EntityLiving", "activeItem", "Lnet/minecraft/server/v1_12_R1/ItemStack;"))
 								add(MethodInsnNode(INVOKEVIRTUAL, "net/minecraft/server/v1_12_R1/ItemStack", "getItem", "()Lnet/minecraft/server/v1_12_R1/Item;", false))
-								add(TypeInsnNode(INSTANCEOF, "net/minecraft/server/v1_12_R1/ItemFood"))
+								add(MethodInsnNode(INVOKESTATIC, FoodTpsCompensator::class.internalName, "shouldCompensate", "(Ljava/lang/Object;)Z", false))
 								add(JumpInsnNode(IFEQ, falseJump)) // Only run for food items
 								add(VarInsnNode(ALOAD, 0))
 								add(FieldInsnNode(GETFIELD, "net/minecraft/server/v1_12_R1/EntityLiving", "eatStartTime", "J"))

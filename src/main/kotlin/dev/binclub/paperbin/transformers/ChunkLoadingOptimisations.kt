@@ -30,43 +30,14 @@ object ChunkLoadingOptimisations: PaperFeature {
 		}
 		
 		register("net.minecraft.server.v1_12_R1.StructureGenerator") { classNode ->
-			val semaphore = FieldNode(
-				ACC_PRIVATE,
-				"paperbin\$barrier",
-				"Ljava/util/concurrent/Semaphore;",
-				null,
-				null
-			)
-			classNode.fields.add(semaphore)
-			
 			var count = 0
 			for (method in classNode.methods) {
-				if (method.name == "a" && method.desc == "(Lnet/minecraft/server/v1_12_R1/World;Lnet/minecraft/server/v1_12_R1/StructureGenerator;Lnet/minecraft/server/v1_12_R1/BlockPosition;IIIZIZ)Lnet/minecraft/server/v1_12_R1/BlockPosition;") {
-				
-				}
-				
-				if (method.name == "<init>") {
-					for (insn in method.instructions) {
-						if (insn.opcode == RETURN) {
-							val list = InsnList().apply {
-								add(VarInsnNode(ALOAD, 0))
-								add(TypeInsnNode(NEW, "java/util/concurrent/Semaphore"))
-								add(DUP)
-								add(ICONST_1)
-								add(MethodInsnNode(INVOKEVIRTUAL, "java/util/concurrent/Semaphore", "<init>", "(I)V", false))
-								add(FieldInsnNode(PUTFIELD, classNode.name, semaphore.name, semaphore.desc))
-							}
-							method.instructions.insertBefore(insn, list)
-							count += 1
-						}
-					}
-				}
 				if (method.name == "a" && method.desc == "(Lnet/minecraft/server/v1_12_R1/World;Ljava/util/Random;Lnet/minecraft/server/v1_12_R1/ChunkCoordIntPair;)Z") {
 					method.access = ACC_PUBLIC // Remove ACC_SYNCRONISED
 					count += 1
 				}
 			}
-			if (count != 2) {
+			if (count != 1) {
 				error("Couldnt find target")
 			}
 		}
