@@ -53,7 +53,7 @@ object OptimisedEveryoneSleeping: PaperFeature {
 			false
 		else
 			players.all { player ->
-				player.isSpectator || (player.isDeeplySleeping && player.fauxSleeping)
+				player.isSpectator || player.isDeeplySleeping || player.fauxSleeping
 			}
 	}
 }
