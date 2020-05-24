@@ -50,6 +50,7 @@ object PaperBinConfig {
 	var fastGameRule: Boolean by BooleanProperty(properties, "fastGameRule")
 	var tpsCompensation: Boolean by BooleanProperty(properties, "tpsCompensation")
 	var mobAiRateLimit: Boolean by BooleanProperty(properties, "mobAiRateLimit")
+	var mobAiMultithreading: Boolean by BooleanProperty(properties, "mobAiMultithreading")
 	var optimisedEveryoneSleeping: Boolean by BooleanProperty(properties, "optimisedEveryoneSleeping")
 	var packetOptimisations: Boolean by BooleanProperty(properties, "packetOptimisations")
 	var villageRateLimit: Boolean by BooleanProperty(properties, "villageRateLimit")

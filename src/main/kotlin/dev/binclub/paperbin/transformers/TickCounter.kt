@@ -63,13 +63,17 @@ object TickCounter: PaperFeature {
 	
 	@JvmStatic
 	fun onServerTick(ticks: Int) {
-		PaperBinInfo.ticks = ticks
-		if (PaperBinConfig.debug) {
-			Thread.sleep(250) // simulate low tps enviroment
-		}
-		
-		if (!PaperBinInfo.started) {
-			PaperBinInfo.onStartup()
+		if (ticks != PaperBinInfo.ticks) {
+			PaperBinInfo.ticks = ticks
+			if (PaperBinConfig.debug) {
+				Thread.sleep(250) // simulate low tps enviroment
+			}
+			
+			MobAiRateLimiter.onTick()
+			
+			if (!PaperBinInfo.started) {
+				PaperBinInfo.onStartup()
+			}
 		}
 	}
 }
