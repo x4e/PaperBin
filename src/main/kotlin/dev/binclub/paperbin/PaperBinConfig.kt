@@ -48,7 +48,7 @@ object PaperBinConfig {
 	var blockRateLimit: Boolean by BooleanProperty(properties, "blockRateLimit")
 	var chunkLoadOptimisations: Boolean by BooleanProperty(properties, "chunkLoadOptimisations", false)
 	var fastGameRule: Boolean by BooleanProperty(properties, "fastGameRule")
-	var foodTpsCompensate: Boolean by BooleanProperty(properties, "foodTpsCompensate")
+	var tpsCompensation: Boolean by BooleanProperty(properties, "tpsCompensation")
 	var mobAiRateLimit: Boolean by BooleanProperty(properties, "mobAiRateLimit")
 	var optimisedEveryoneSleeping: Boolean by BooleanProperty(properties, "optimisedEveryoneSleeping")
 	var packetOptimisations: Boolean by BooleanProperty(properties, "packetOptimisations")

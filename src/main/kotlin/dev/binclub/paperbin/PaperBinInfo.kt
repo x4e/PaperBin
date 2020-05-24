@@ -64,7 +64,7 @@ object PaperBinInfo {
 		ChunkLoadingOptimisations,
 		CustomNbtEvents,
 		FasterGameRuleLookup,
-		FoodTpsCompensator,
+		TpsCompensation,
 		MobAiRateLimiter,
 		OptimisedEveryoneSleeping,
 		PacketOptimisations,

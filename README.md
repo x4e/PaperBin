@@ -11,7 +11,7 @@ For discussion join [my discord server](https://www.discord.gg/MaqN7gA).
 
 ## Usage
 Make sure you have read the License.
-Then download paperbin and run the following command:
+Then download paperbin and run the following command **using a version 8 JVM**, ideally either hotspot, openjdk or graal:
 ```
 java [any jvm arguments] -noverify -jar PaperBin.jar ActualPaper.jar [any paper arguments]
 ```

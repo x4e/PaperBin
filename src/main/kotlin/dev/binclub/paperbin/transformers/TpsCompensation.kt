@@ -16,7 +16,7 @@ import org.objectweb.asm.tree.*
  *
  * @author cookiedragon234 11/May/2020
  */
-object FoodTpsCompensator: PaperFeature {
+object TpsCompensation: PaperFeature {
 	@JvmStatic
 	fun getPerfectCurrentTick(): Int {
 		// MinecraftServer.currentTick is affected by TPS (obviously)
@@ -26,7 +26,7 @@ object FoodTpsCompensator: PaperFeature {
 	
 	@JvmStatic
 	fun shouldCompensate(item: Any): Boolean {
-		if (!PaperBinConfig.foodTpsCompensate) return false
+		if (!PaperBinConfig.tpsCompensation) return false
 		
 		return item is ItemFood || item is ItemPotion || item is ItemMilkBucket// || item is ItemBow || item is ItemShield
 	}
@@ -35,7 +35,7 @@ object FoodTpsCompensator: PaperFeature {
 		for (method in classNode.methods) {
 			for (insn in method.instructions) {
 				if (insn is FieldInsnNode && insn.owner == "net/minecraft/server/v1_12_R1/MinecraftServer" && insn.name == "currentTick" && insn.desc == "I") {
-					val new = MethodInsnNode(INVOKESTATIC, FoodTpsCompensator::class.internalName, "getPerfectCurrentTick", "()I", false)
+					val new = MethodInsnNode(INVOKESTATIC, TpsCompensation::class.internalName, "getPerfectCurrentTick", "()I", false)
 					
 					method.instructions.insert(insn, new)
 					method.instructions.remove(insn)
@@ -45,7 +45,7 @@ object FoodTpsCompensator: PaperFeature {
 	}
 	
 	override fun registerTransformers() {
-		if (!PaperBinConfig.foodTpsCompensate) return
+		if (!PaperBinConfig.tpsCompensation) return
 		
 		register("net.minecraft.server.v1_12_R1.TileEntityBrewingStand", this::compensate) // Brewing delays
 		register("net.minecraft.server.v1_12_R1.EntityZombieVillager", this::compensate) // Zombie villager conversion rates
@@ -69,7 +69,7 @@ object FoodTpsCompensator: PaperFeature {
 						if (insn is FieldInsnNode && insn.owner == "net/minecraft/server/v1_12_R1/PathfinderGoalMakeLove" && insn.name == "e" && insn.desc == "I") {
 							val insert = insnBuilder {
 								+VarInsnNode(ALOAD, 0)
-								+MethodInsnNode(INVOKESTATIC, FoodTpsCompensator::class.internalName, "getPerfectCurrentTick", "()I", false)
+								+MethodInsnNode(INVOKESTATIC, TpsCompensation::class.internalName, "getPerfectCurrentTick", "()I", false)
 								+FieldInsnNode(PUTFIELD, classNode.name, startFrickTick.name, startFrickTick.desc)
 							}
 							method.instructions.insertBefore(insn, insert)
@@ -84,7 +84,7 @@ object FoodTpsCompensator: PaperFeature {
 								+POP2.insn()
 								+VarInsnNode(ALOAD, 0)
 								+FieldInsnNode(GETFIELD, classNode.name, startFrickTick.name, startFrickTick.desc)
-								+MethodInsnNode(INVOKESTATIC, FoodTpsCompensator::class.internalName, "getPerfectCurrentTick", "()I", false)
+								+MethodInsnNode(INVOKESTATIC, TpsCompensation::class.internalName, "getPerfectCurrentTick", "()I", false)
 								
 								+VarInsnNode(ALOAD, 0)
 								+FieldInsnNode(GETFIELD, "net/minecraft/server/v1_12_R1/PathfinderGoalMakeLove", "e", "I")
@@ -167,7 +167,7 @@ object FoodTpsCompensator: PaperFeature {
 								add(VarInsnNode(ALOAD, 0))
 								add(FieldInsnNode(GETFIELD, "net/minecraft/server/v1_12_R1/EntityLiving", "activeItem", "Lnet/minecraft/server/v1_12_R1/ItemStack;"))
 								add(MethodInsnNode(INVOKEVIRTUAL, "net/minecraft/server/v1_12_R1/ItemStack", "getItem", "()Lnet/minecraft/server/v1_12_R1/Item;", false))
-								add(MethodInsnNode(INVOKESTATIC, FoodTpsCompensator::class.internalName, "shouldCompensate", "(Ljava/lang/Object;)Z", false))
+								add(MethodInsnNode(INVOKESTATIC, TpsCompensation::class.internalName, "shouldCompensate", "(Ljava/lang/Object;)Z", false))
 								add(JumpInsnNode(IFEQ, falseJump)) // Only run for food items
 								add(VarInsnNode(ALOAD, 0))
 								add(FieldInsnNode(GETFIELD, "net/minecraft/server/v1_12_R1/EntityLiving", "eatStartTime", "J"))
