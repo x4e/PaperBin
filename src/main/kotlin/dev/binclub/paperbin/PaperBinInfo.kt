@@ -56,6 +56,7 @@ object PaperBinInfo {
 		AntiChunkBan,
 		AntiCrasher,
 		AntiDupe,
+		AntiElytraFly,
 		AntiGrief,
 		AntiNetherRoof,
 		AntiNewChunks,
