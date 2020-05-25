@@ -47,21 +47,25 @@ object AsyncMobAi: PaperFeature {
 					
 					val entities = (world.entityList as ArrayList).toArray()
 					for (entity in entities) {
-						entity as Entity
-						val entity1 = entity.bJ()
-						if (entity1 != null) {
-							if (!entity1.dead && entity1.w(entity)) {
-								continue
-							}
-						}
-						
-						if (!entity.dead && entity !is EntityPlayer) {
-							if (entity is EntityInsentient) {
-								if (!entity.isFrozen() && entity.cC() && !entity.fromMobSpawner) {
-									//.a()
-									setupGoals.invoke(entity.goalSelector)
+						try {
+							entity as Entity
+							val entity1 = entity.bJ()
+							if (entity1 != null) {
+								if (!entity1.dead && entity1.w(entity)) {
+									continue
 								}
 							}
+							
+							if (!entity.dead && entity !is EntityPlayer) {
+								if (entity is EntityInsentient) {
+									if (!entity.isFrozen() && entity.cC() && !entity.fromMobSpawner) {
+										//.a()
+										setupGoals.invoke(entity.goalSelector)
+									}
+								}
+							}
+						} catch (t: Throwable) {
+							IllegalStateException("Exception while updating mob AI for $entity", t).printStackTrace()
 						}
 					}
 				}
