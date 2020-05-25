@@ -3,6 +3,7 @@ package dev.binclub.paperbin.transformers
 import dev.binclub.paperbin.PaperBinConfig
 import dev.binclub.paperbin.PaperBinInfo
 import dev.binclub.paperbin.PaperFeature
+import dev.binclub.paperbin.transformers.asyncai.AsyncMobAi
 import dev.binclub.paperbin.utils.internalName
 import net.minecraft.server.v1_12_R1.EntityHuman
 import net.minecraft.server.v1_12_R1.EntityPlayer
@@ -69,7 +70,7 @@ object TickCounter: PaperFeature {
 				Thread.sleep(250) // simulate low tps enviroment
 			}
 			
-			MobAiRateLimiter.onTick()
+			AsyncMobAi.onTick()
 			
 			if (!PaperBinInfo.started) {
 				PaperBinInfo.onStartup()

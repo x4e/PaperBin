@@ -1,6 +1,7 @@
 package dev.binclub.paperbin
 
 import dev.binclub.paperbin.transformers.*
+import dev.binclub.paperbin.transformers.asyncai.AsyncMobAi
 import dev.binclub.paperbin.utils.checkForUpdate
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
@@ -60,6 +61,7 @@ object PaperBinInfo {
 		AntiNewChunks,
 		AntiPortalGodmode,
 		AntiUnicodeChat,
+		AsyncMobAi,
 		BlockTickRateLimiter,
 		ChunkLoadingOptimisations,
 		CustomNbtEvents,
