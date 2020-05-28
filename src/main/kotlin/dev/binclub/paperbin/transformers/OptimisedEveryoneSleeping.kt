@@ -2,36 +2,32 @@ package dev.binclub.paperbin.transformers
 
 import dev.binclub.paperbin.PaperBinConfig
 import dev.binclub.paperbin.PaperFeature
-import dev.binclub.paperbin.utils.add
 import dev.binclub.paperbin.utils.insnBuilder
-import net.minecraft.server.v1_12_R1.EntityHuman
+import dev.binclub.paperbin.utils.internalName
 import net.minecraft.server.v1_12_R1.WorldServer
-import org.objectweb.asm.Opcodes.INVOKESTATIC
-import org.objectweb.asm.Opcodes.IRETURN
-import org.objectweb.asm.tree.FieldInsnNode
-import org.objectweb.asm.tree.InsnList
+import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.MethodInsnNode
+import org.objectweb.asm.tree.VarInsnNode
 
 /**
  * @author cookiedragon234 18/May/2020
+ *
+ * Fixed by Tigermouthbear on 28/May/2020
  */
 object OptimisedEveryoneSleeping: PaperFeature {
 	override fun registerTransformers() {
 		if (!PaperBinConfig.optimisedEveryoneSleeping) return
-		
+
 		register("net.minecraft.server.v1_12_R1.WorldServer") { classNode ->
 			for (method in classNode.methods) {
 				if (method.name == "everyoneDeeplySleeping" && method.desc == "()Z") {
-					for (insn in method.instructions) {
-						if (insn is FieldInsnNode && insn.owner == "net/minecraft/server/v1_12_R1/WorldServer" && insn.name == "players" && insn.desc == "Ljava/util/List;") {
-							val list = insnBuilder {
-								+MethodInsnNode(INVOKESTATIC, "dev/binclub/paperbin/transformers/OptimisedEveryoneSleeping", "everyoneDeeplySleeping", "(Ljava/lang/Object;)Z", false)
-								+IRETURN.insn()
-							}
-							method.instructions.insertBefore(insn, list)
-							return@register
-						}
-					}
+					method.instructions.clear()
+					method.instructions.add(insnBuilder {
+						+VarInsnNode(ALOAD, 0)
+						+MethodInsnNode(INVOKESTATIC, OptimisedEveryoneSleeping::class.internalName, "everyoneDeeplySleeping", "(Ljava/lang/Object;)Z", false)
+						+IRETURN.insn()
+					})
+					return@register
 				}
 			}
 			error("Couldnt find target")
