@@ -24,7 +24,11 @@ object OptimisedEveryoneSleeping: PaperFeature {
 					method.instructions.clear()
 					method.instructions.add(insnBuilder {
 						+VarInsnNode(ALOAD, 0)
-						+MethodInsnNode(INVOKESTATIC, OptimisedEveryoneSleeping::class.internalName, "everyoneDeeplySleeping", "(Ljava/lang/Object;)Z", false)
+						+VarInsnNode(ALOAD, 0) // load Q
+
+						+VarInsnNode(ALOAD, 0) // load `this`
+
+						+MethodInsnNode(INVOKESTATIC, OptimisedEveryoneSleeping::class.internalName, "everyoneDeeplySleeping", "(ZLjava/lang/Object;)Z", false)
 						+IRETURN.insn()
 					})
 					return@register
@@ -40,12 +44,12 @@ object OptimisedEveryoneSleeping: PaperFeature {
 	 * This also fixes MC-47080
 	 */
 	@JvmStatic
-	fun everyoneDeeplySleeping(worldServer: Any): Boolean {
+	fun everyoneDeeplySleeping(flag: Boolean, worldServer: Any): Boolean {
 		worldServer as WorldServer
 		
 		val players = worldServer.players
-		
-		return if (players.size == 0)
+
+		return if (players.size == 0 || worldServer.isClientSide || !flag)
 			false
 		else
 			players.all { player ->
