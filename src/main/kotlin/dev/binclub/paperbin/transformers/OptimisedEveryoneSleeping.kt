@@ -6,6 +6,7 @@ import dev.binclub.paperbin.utils.insnBuilder
 import dev.binclub.paperbin.utils.internalName
 import net.minecraft.server.v1_12_R1.WorldServer
 import org.objectweb.asm.Opcodes.*
+import org.objectweb.asm.tree.FieldInsnNode
 import org.objectweb.asm.tree.MethodInsnNode
 import org.objectweb.asm.tree.VarInsnNode
 
@@ -24,7 +25,8 @@ object OptimisedEveryoneSleeping: PaperFeature {
 					method.instructions.clear()
 					method.instructions.add(insnBuilder {
 						+VarInsnNode(ALOAD, 0)
-						+VarInsnNode(ALOAD, 0) // load Q
+						+VarInsnNode(ALOAD, 0)
+						+FieldInsnNode(GETFIELD, "net/minecraft/server/v1_12_R1/WorldServer", "Q", "Z") // load Q
 
 						+VarInsnNode(ALOAD, 0) // load `this`
 
