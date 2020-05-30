@@ -1,14 +1,9 @@
 package dev.binclub.paperbin.transformers
 
-import com.destroystokyo.paper.PaperConfig
 import dev.binclub.paperbin.PaperBinConfig
 import dev.binclub.paperbin.PaperFeature
 import dev.binclub.paperbin.utils.add
-import dev.binclub.paperbin.utils.ldcInt
-import io.netty.util.concurrent.Future
-import io.netty.util.concurrent.GenericFutureListener
 import net.minecraft.server.v1_12_R1.*
-import org.bukkit.Bukkit
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
 
@@ -26,9 +21,17 @@ object AntiChunkBan: PaperFeature {
 	fun sendExtraPackets(networkManager: Any, packet: Any, listeners: Any?) {
 		packet as Packet<*>
 		
-		dispatchPackets(networkManager, packet, listeners)
+		dispatchPackets(
+			networkManager,
+			packet,
+			listeners
+		)
 		packet.extraPackets?.forEach { extra ->
-			dispatchPackets(networkManager, extra, listeners)
+			dispatchPackets(
+				networkManager,
+				extra,
+				listeners
+			)
 		}
 	}
 	

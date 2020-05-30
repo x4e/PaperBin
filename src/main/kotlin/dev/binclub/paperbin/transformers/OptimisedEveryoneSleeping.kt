@@ -2,14 +2,11 @@ package dev.binclub.paperbin.transformers
 
 import dev.binclub.paperbin.PaperBinConfig
 import dev.binclub.paperbin.PaperFeature
-import dev.binclub.paperbin.utils.add
 import dev.binclub.paperbin.utils.insnBuilder
-import net.minecraft.server.v1_12_R1.EntityHuman
 import net.minecraft.server.v1_12_R1.WorldServer
 import org.objectweb.asm.Opcodes.INVOKESTATIC
 import org.objectweb.asm.Opcodes.IRETURN
 import org.objectweb.asm.tree.FieldInsnNode
-import org.objectweb.asm.tree.InsnList
 import org.objectweb.asm.tree.MethodInsnNode
 
 /**

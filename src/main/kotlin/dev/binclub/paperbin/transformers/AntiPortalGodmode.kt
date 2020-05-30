@@ -5,9 +5,7 @@ import dev.binclub.paperbin.PaperFeature
 import dev.binclub.paperbin.utils.insnBuilder
 import net.minecraft.server.v1_12_R1.EntityPlayer
 import net.minecraft.server.v1_12_R1.PacketPlayInFlying
-import net.minecraft.server.v1_12_R1.PlayerConnection
 import net.minecraft.server.v1_12_R1.Vec3D
-import org.bukkit.entity.Player
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.FieldInsnNode
 import org.objectweb.asm.tree.JumpInsnNode

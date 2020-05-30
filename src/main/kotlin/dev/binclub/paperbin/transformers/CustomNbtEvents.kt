@@ -4,13 +4,11 @@ import dev.binclub.paperbin.PaperFeature
 import dev.binclub.paperbin.utils.add
 import net.minecraft.server.v1_12_R1.Entity
 import net.minecraft.server.v1_12_R1.NBTTagCompound
-import org.bukkit.Bukkit
 import org.bukkit.event.Event
 import org.bukkit.event.HandlerList
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.InsnList
 import org.objectweb.asm.tree.MethodInsnNode
-import org.objectweb.asm.tree.TypeInsnNode
 import org.objectweb.asm.tree.VarInsnNode
 
 /**

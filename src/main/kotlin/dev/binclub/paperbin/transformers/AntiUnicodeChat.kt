@@ -3,7 +3,6 @@ package dev.binclub.paperbin.transformers
 import dev.binclub.paperbin.PaperBinConfig
 import dev.binclub.paperbin.PaperFeature
 import dev.binclub.paperbin.utils.insnBuilder
-import dev.binclub.paperbin.utils.printlnAsm
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.MethodInsnNode
 import org.objectweb.asm.tree.VarInsnNode

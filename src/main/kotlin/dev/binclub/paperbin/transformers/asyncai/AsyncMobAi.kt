@@ -105,45 +105,6 @@ object AsyncMobAi: PaperFeature {
 		}
 	}
 	
-	/**
-	 * Better version that does not load chunks!
-	 */
-	@JvmStatic
-	fun betterCanEntityStandOn(world: Any, blockPosition: Any): Boolean {
-		world as World
-		blockPosition as BlockPosition
-		return world.getTypeIfLoaded(blockPosition.down())?.b() ?: false
-	}
-	
-	/**
-	 * Again, does not load chunks!
-	 */
-	@JvmStatic
-	fun betterIsMaterialInBB(world: Any, axisalignedbb: Any, material: Any): Boolean {
-		world as World
-		axisalignedbb as AxisAlignedBB
-		material as Material
-		val i = MathHelper.floor(axisalignedbb.a)
-		val j = MathHelper.f(axisalignedbb.d)
-		val k = MathHelper.floor(axisalignedbb.b)
-		val l = MathHelper.f(axisalignedbb.e)
-		val i1 = MathHelper.floor(axisalignedbb.c)
-		val j1 = MathHelper.f(axisalignedbb.f)
-		val blockposition_pooledblockposition = PooledBlockPosition.s()
-		for (k1 in i until j) {
-			for (l1 in k until l) {
-				for (i2 in i1 until j1) {
-					if (world.getTypeIfLoaded(blockposition_pooledblockposition.f(k1, l1, i2))?.material === material) {
-						blockposition_pooledblockposition.t()
-						return true
-					}
-				}
-			}
-		}
-		blockposition_pooledblockposition.t()
-		return false
-	}
-	
 	fun fixGetType(classNode: ClassNode) {
 		for (method in classNode.methods) {
 			for (insn in method.instructions) {
@@ -222,25 +183,6 @@ object AsyncMobAi: PaperFeature {
 							+JumpInsnNode(IFNONNULL, jmp)
 							+ICONST_0.insn()
 							+IRETURN.insn()
-							+jmp
-						}
-						method.instructions.insert(insn, after)
-						return@register
-					}
-				}
-			}
-			error("Couldnt find target")
-		}
-		register("net.minecraft.server.v1_12_R1.PathfinderGoalPanic") { classNode ->
-			for (method in classNode.methods) {
-				for (insn in method.instructions) {
-					if (insn is MethodInsnNode && insn.owner == "net/minecraft/server/v1_12_R1/World" && insn.name == "getType" && insn.desc == "(Lnet/minecraft/server/v1_12_R1/BlockPosition;)Lnet/minecraft/server/v1_12_R1/IBlockData;") {
-						insn.name = "getTypeIfLoaded"
-						val after = insnBuilder {
-							val jmp = LabelNode()
-							+DUP.insn()
-							+JumpInsnNode(IFNONNULL, jmp)
-							+ARETURN.insn()
 							+jmp
 						}
 						method.instructions.insert(insn, after)

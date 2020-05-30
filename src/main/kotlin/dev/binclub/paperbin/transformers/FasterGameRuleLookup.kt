@@ -16,7 +16,8 @@ object FasterGameRuleLookup: PaperFeature {
 		register("net.minecraft.server.v1_12_R1.GameRules") { classNode ->
 			for (field in classNode.fields) {
 				if (field.name == "a") {
-					field.desc = changeType(field.desc)
+					field.desc =
+						changeType(field.desc)
 				}
 			}
 			
@@ -24,17 +25,38 @@ object FasterGameRuleLookup: PaperFeature {
 				for (insn in method.instructions) {
 					when (insn) {
 						is TypeInsnNode -> {
-							insn.desc = changeType(insn.desc)
+							insn.desc =
+								changeType(
+									insn.desc
+								)
 						}
 						is MethodInsnNode -> {
-							insn.owner = changeType(insn.owner)
-							insn.name = changeType(insn.name)
-							insn.desc = changeType(insn.desc)
+							insn.owner =
+								changeType(
+									insn.owner
+								)
+							insn.name =
+								changeType(
+									insn.name
+								)
+							insn.desc =
+								changeType(
+									insn.desc
+								)
 						}
 						is FieldInsnNode -> {
-							insn.owner = changeType(insn.owner)
-							insn.name = changeType(insn.name)
-							insn.desc = changeType(insn.desc)
+							insn.owner =
+								changeType(
+									insn.owner
+								)
+							insn.name =
+								changeType(
+									insn.name
+								)
+							insn.desc =
+								changeType(
+									insn.desc
+								)
 						}
 					}
 				}
