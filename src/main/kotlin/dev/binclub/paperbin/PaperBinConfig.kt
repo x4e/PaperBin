@@ -1,6 +1,7 @@
 package dev.binclub.paperbin
 
 import java.io.File
+import java.io.FileNotFoundException
 import java.util.*
 import kotlin.concurrent.thread
 import kotlin.reflect.KProperty
@@ -14,6 +15,7 @@ object PaperBinConfig {
 	
 	init {
 		load()
+		save()
 		//Runtime.getRuntime().addShutdownHook(thread (start = false, isDaemon = false) { this.save() })
 	}
 	
