@@ -119,19 +119,54 @@ object AsyncMobAi: PaperFeature {
 	override fun registerTransformers() {
 		if (!PaperBinConfig.mobAiMultithreading) return
 		
+		
+		register("net.minecraft.server.v1_12_R1.PathfinderGoalPanic") { classNode ->
+			for (method in classNode.methods) {
+				if (method.name == "a" && method.desc == "(Lnet/minecraft/server/v1_12_R1/World;Lnet/minecraft/server/v1_12_R1/Entity;II)Lnet/minecraft/server/v1_12_R1/BlockPosition;") {
+					val insert = insnBuilder {
+						+VarInsnNode(ALOAD, 1)
+						+VarInsnNode(ALOAD, 2)
+						+VarInsnNode(ILOAD, 3)
+						+VarInsnNode(ILOAD, 4)
+						+MethodInsnNode(
+							INVOKESTATIC,
+							"dev/binclub/paperbin/transformers/asyncai/AsyncMobAiReplacedFunctions",
+							"PathfinderGoalPanica",
+							"(Lnet/minecraft/server/v1_12_R1/World;Lnet/minecraft/server/v1_12_R1/Entity;II)Lnet/minecraft/server/v1_12_R1/BlockPosition;",
+							false
+						)
+						+ARETURN.insn()
+					}
+					method.instructions.insert(insert)
+					return@register
+				}
+			}
+			error("Couldn't find target")
+		}
+		
 		register("net.minecraft.server.v1_12_R1.PathfinderGoalDoorInteract") { classNode ->
 			for (method in classNode.methods) {
 				if (method.name == "a" && method.desc == "(Lnet/minecraft/server/v1_12_R1/BlockPosition;)Lnet/minecraft/server/v1_12_R1/BlockDoor;") {
-					val list = insnBuilder {
-						+FieldInsnNode(GETFIELD, "net/minecraft/server/v1_12_R1/PathfinderGoalDoorInteract", "a", "Lnet/minecraft/server/v1_12_R1/EntityInsentient;")
-						+FieldInsnNode(GETFIELD, "net/minecraft/server/v1_12_R1/EntityInsentient", "world", "Lnet/minecraft/server/v1_12_R1/World;")
-						+VarInsnNode(ALOAD, 1)
-						+MethodInsnNode(INVOKESTATIC, AsyncMobAi::class.internalName, "betterDoorInteract", "(Lnet/minecraft/server/v1_12_R1/World;Lnet/minecraft/server/v1_12_R1/BlockPosition;)Lnet/minecraft/server/v1_12_R1/BlockDoor;", false)
-						+ARETURN.insn()
+					for (insn in method.instructions) {
+						if (insn is MethodInsnNode && insn.owner == "net/minecraft/server/v1_12_R1/World" && insn.name == "getType" && insn.desc == "(Lnet/minecraft/server/v1_12_R1/BlockPosition;)Lnet/minecraft/server/v1_12_R1/IBlockData;") {
+							insn.name = "getTypeIfLoaded"
+							val after = insnBuilder {
+								val jmp = LabelNode()
+								+DUP.insn()
+								+JumpInsnNode(IFNONNULL, jmp)
+								+ACONST_NULL.insn()
+								+ARETURN.insn()
+								+jmp
+							}
+							method.instructions.insert(insn, after)
+							return@register
+						}
 					}
 				}
 			}
+			error("Couldn't find target")
 		}
+		
 		register("net.minecraft.server.v1_12_R1.PathfinderGoalFollowOwner") { classNode ->
 			for (method in classNode.methods) {
 				for (insn in method.instructions) {
@@ -150,8 +185,9 @@ object AsyncMobAi: PaperFeature {
 					}
 				}
 			}
-			error("Couldnt find target")
+			error("Couldn't find target")
 		}
+		
 		register("net.minecraft.server.v1_12_R1.PathfinderGoalFollowOwnerParrot") { classNode ->
 			for (method in classNode.methods) {
 				for (insn in method.instructions) {
@@ -170,8 +206,9 @@ object AsyncMobAi: PaperFeature {
 					}
 				}
 			}
-			error("Couldnt find target")
+			error("Couldn't find target")
 		}
+		
 		register("net.minecraft.server.v1_12_R1.PathfinderGoalJumpOnBlock") { classNode ->
 			for (method in classNode.methods) {
 				for (insn in method.instructions) {
@@ -190,10 +227,77 @@ object AsyncMobAi: PaperFeature {
 					}
 				}
 			}
-			error("Couldnt find target")
+			error("Couldn't find target")
 		}
-		register("net.minecraft.server.v1_12_R1.PathfinderGoalRandomFly", this::fixGetType)
-		register("net.minecraft.server.v1_12_R1.PathfinderGoalVillagerFarm", this::fixGetType)
+		
+		register("net.minecraft.server.v1_12_R1.PathfinderGoalRandomFly") { classNode ->
+			for (method in classNode.methods) {
+				if (method.name == "") {
+					val insert = insnBuilder {
+						+VarInsnNode(ALOAD, 0)
+						+FieldInsnNode(GETFIELD, "net/minecraft/server/v1_12_R1/PathfinderGoalRandomFly", "a", "Lnet/minecraft/server/v1_12_R1/EntityCreature;")
+						+MethodInsnNode(
+							INVOKESTATIC,
+							"dev/binclub/paperbin/transformers/asyncai/AsyncMobAiReplacedFunctions",
+							"PathfinderGoalRandomFlyj",
+							"(Lnet/minecraft/server/v1_12_R1/EntityCreature;)Lnet/minecraft/server/v1_12_R1/Vec3D;",
+							false
+						)
+						+ARETURN.insn()
+					}
+					method.instructions.insert(insert)
+					return@register
+				}
+			}
+			error("Couldn't find target")
+		}
+		
+		register("net.minecraft.server.v1_12_R1.PathfinderGoalVillagerFarm") { classNode ->
+			for (method in classNode.methods) {
+				if (method.name == "a" && method.desc == "(Lnet/minecraft/server/v1_12_R1/World;Lnet/minecraft/server/v1_12_R1/BlockPosition;)Z") {
+					var i = 0
+					for (insn in method.instructions) {
+						if (insn is MethodInsnNode && insn.owner == "net/minecraft/server/v1_12_R1/World" && insn.name == "getType" && insn.desc == "(Lnet/minecraft/server/v1_12_R1/BlockPosition;)Lnet/minecraft/server/v1_12_R1/IBlockData;") {
+							if (i == 0) {
+								insn.name = "getTypeIfLoaded"
+								i = 1
+							} else if (i == 1) {
+								insn.name = "getTypeIfLoaded"
+								i = 2
+							}
+						} else if (insn is MethodInsnNode && insn.owner == "net/minecraft/server/v1_12_R1/IBlockData" && insn.name == "getBlock" && insn.desc == "()Lnet/minecraft/server/v1_12_R1/Block;") {
+							if (i == 2) {
+								val after = LabelNode()
+								val before = insnBuilder {
+									+DUP.insn()
+									+JumpInsnNode(IFNULL, after)
+								}
+								method.instructions.insertBefore(insn, before)
+								method.instructions.insert(insn, after)
+								i = 3
+							}
+						} else if (insn is MethodInsnNode && insn.owner == "net/minecraft/server/v1_12_R1/IBlockData" && insn.name == "getMaterial" && insn.desc == "()Lnet/minecraft/server/v1_12_R1/Material;") {
+							if (i == 3) {
+								val after = LabelNode()
+								val before = insnBuilder {
+									+DUP.insn()
+									+JumpInsnNode(IFNULL, after)
+								}
+								method.instructions.insertBefore(insn, before)
+								method.instructions.insert(insn, after)
+								i = 4
+							}
+						}
+					}
+					if (i == 4) {
+						return@register
+					} else {
+						error("Could not find target $i")
+					}
+				}
+			}
+			error("Couldn't find target")
+		}
 		
 		register("net.minecraft.server.v1_12_R1.World") { classNode ->
 			for (method in classNode.methods) {
@@ -202,7 +306,13 @@ object AsyncMobAi: PaperFeature {
 						+VarInsnNode(ALOAD, 0)
 						+VarInsnNode(ALOAD, 1)
 						+VarInsnNode(ALOAD, 2)
-						+MethodInsnNode(INVOKESTATIC, AsyncMobAi::class.internalName, "betterIsMaterialInBB", "(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Z", false)
+						+MethodInsnNode(
+							INVOKESTATIC,
+							"dev/binclub/paperbin/transformers/asyncai/AsyncMobAiReplacedFunctions",
+							"Worlda",
+							"(Lnet/minecraft/server/v1_12_R1/World;Lnet/minecraft/server/v1_12_R1/AxisAlignedBB;Lnet/minecraft/server/v1_12_R1/Material;)Z",
+							false
+						)
 						+IRETURN.insn()
 					})
 					return@register
@@ -212,16 +322,65 @@ object AsyncMobAi: PaperFeature {
 		}
 		
 		register("net.minecraft.server.v1_12_R1.NavigationAbstract") { classNode ->
+			var i = 0
 			for (method in classNode.methods) {
+				if (method.name == "q_" && method.desc == "()V") {
+					for (insn in method.instructions) {
+						if (insn is MethodInsnNode && insn.owner == "net/minecraft/server/v1_12_R1/World" && insn.name == "getType" && insn.desc == "(Lnet/minecraft/server/v1_12_R1/BlockPosition;)Lnet/minecraft/server/v1_12_R1/IBlockData;") {
+							insn.name = "getTypeIfLoaded"
+							i += 1
+						} else if (insn is MethodInsnNode && insn.owner == "net/minecraft/server/v1_12_R1/IBlockData" && insn.name == "getBlock" && insn.desc == "()Lnet/minecraft/server/v1_12_R1/Block;") {
+							val after = LabelNode()
+							val before = insnBuilder {
+								+DUP.insn()
+								+JumpInsnNode(IFNULL, after)
+							}
+							method.instructions.insertBefore(insn, before)
+							method.instructions.insert(insn, after)
+							i += 1
+						}
+					}
+				}
 				if (method.name == "a" && method.desc == "(Lnet/minecraft/server/v1_12_R1/BlockPosition;)Z") {
-					method.instructions.insert(insnBuilder {
-						+VarInsnNode(ALOAD, 0)
-						+FieldInsnNode(GETFIELD, "net/minecraft/server/v1_12_R1/NavigationAbstract", "b", "Lnet/minecraft/server/v1_12_R1/World;")
-						+VarInsnNode(ALOAD, 1)
-						+MethodInsnNode(INVOKESTATIC, AsyncMobAi::class.internalName, "betterCanEntityStandOn", "(Ljava/lang/Object;Ljava/lang/Object;)Z", false)
-						+IRETURN.insn()
-					})
-					return@register
+					for (insn in method.instructions) {
+						if (insn is MethodInsnNode && insn.owner == "net/minecraft/server/v1_12_R1/World" && insn.name == "getType" && insn.desc == "(Lnet/minecraft/server/v1_12_R1/BlockPosition;)Lnet/minecraft/server/v1_12_R1/IBlockData;") {
+							insn.name = "getTypeIfLoaded"
+							val after = insnBuilder {
+								val lbl = LabelNode()
+								+DUP.insn()
+								+JumpInsnNode(IFNONNULL, lbl)
+								+ICONST_0.insn()
+								+IRETURN.insn()
+								+lbl
+							}
+							method.instructions.insert(insn, after)
+							i += 1
+						}
+					}
+				}
+			}
+			if (i != 3) {
+				error("Couldnt find target $i")
+			}
+		}
+		
+		register("net.minecraft.server.v1_12_R1.PathfinderGoalEatTile") { classNode ->
+			for (method in classNode.methods) {
+				if (method.name == "e" && method.desc == "()V") {
+					for (insn in method.instructions) {
+						if (insn is MethodInsnNode && insn.owner == "net/minecraft/server/v1_12_R1/World" && insn.name == "getType" && insn.desc == "(Lnet/minecraft/server/v1_12_R1/BlockPosition;)Lnet/minecraft/server/v1_12_R1/IBlockData;") {
+							insn.name = "getTypeIfLoaded"
+							val after = insnBuilder {
+								val jmp = LabelNode()
+								+DUP.insn()
+								+JumpInsnNode(IFNONNULL, jmp)
+								+RETURN.insn()
+								+jmp
+							}
+							method.instructions.insert(insn, after)
+							return@register
+						}
+					}
 				}
 			}
 			error("Couldnt find target")
