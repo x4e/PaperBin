@@ -47,6 +47,7 @@ object PaperBinConfig {
 	var antiUnicodeChat: Boolean by BooleanProperty(properties, "antiUnicodeChat", false)
 	var blockRateLimit: Boolean by BooleanProperty(properties, "blockRateLimit")
 	var chunkLoadOptimisations: Boolean by BooleanProperty(properties, "chunkLoadOptimisations", false)
+	var elytraLowerRenderDistance: Boolean by BooleanProperty(properties, "elytraLowerRenderDistance")
 	var fastGameRule: Boolean by BooleanProperty(properties, "fastGameRule")
 	var tpsCompensation: Boolean by BooleanProperty(properties, "tpsCompensation")
 	var mobAiRateLimit: Boolean by BooleanProperty(properties, "mobAiRateLimit")
