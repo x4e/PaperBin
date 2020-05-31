@@ -19,6 +19,7 @@ import org.bukkit.event.entity.EntityToggleGlideEvent
  */
 object AntiElytraFly: PaperFeature {
 	override fun postStartup() {
+		if (!PaperBinConfig.antiElytraFly) return
 		
 		Bukkit.getServer().pluginManager.registerEvent(
 			EntityToggleGlideEvent::class.java,
@@ -30,7 +31,7 @@ object AntiElytraFly: PaperFeature {
 	}
 	
 	private fun elytraDeployListener(listener: Listener, event: Event) {
-		if (!PaperBinConfig.antiNetherRoof) return
+		if (!PaperBinConfig.antiElytraFly) return
 		event as EntityToggleGlideEvent
 		
 		if (event.isGliding) {

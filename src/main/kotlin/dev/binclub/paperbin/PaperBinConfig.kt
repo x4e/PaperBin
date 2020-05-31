@@ -42,6 +42,7 @@ object PaperBinConfig {
 	var antiChunkBan: Boolean by BooleanProperty(properties, "antiChunkBan", false)
 	var antiCrasher: Boolean by BooleanProperty(properties, "antiCrasher")
 	var antiDupe: Boolean by BooleanProperty(properties, "antiDupe")
+	var antiElytraFly: Boolean by BooleanProperty(properties, "antiElytraFly")
 	var antiGrief: Boolean by BooleanProperty(properties, "antiGrief")
 	var antiNetherRoof: Boolean by BooleanProperty(properties, "antiNetherRoof")
 	var antiNewChunks: Boolean by BooleanProperty(properties, "antiNewChunks", false)
