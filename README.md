@@ -8,8 +8,6 @@ An experiment at improving the performance of PaperMC.
 This project uses ASM and the attach api to modify Paper classes as they are defined.
 Because of this paperbin can even **be run on top of other paperforks**!
 
-For discussion join [my discord server](https://www.discord.gg/MaqN7gA).
-
 ## Usage
 Make sure you have read the License.
 Then download paperbin and run the following command **using a version 8 JVM**, ideally either hotspot, openjdk or graal:

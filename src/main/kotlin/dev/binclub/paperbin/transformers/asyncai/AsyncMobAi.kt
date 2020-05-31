@@ -418,6 +418,39 @@ object AsyncMobAi: PaperFeature {
 			error("Couldn't find target")
 		}
 		
+		register("net.minecraft.server.v1_12_R1.Village") { classNode ->
+			for (method in classNode.methods) {
+				if (method.name == "c" && method.desc == "(Lnet/minecraft/server/v1_12_R1/BlockPosition;)Lnet/minecraft/server/v1_12_R1/VillageDoor;") {
+					var count = 0
+					for (insn in method.instructions) {
+						if (insn is MethodInsnNode && insn.owner == "net/minecraft/server/v1_12_R1/World" && insn.name == "getType" && insn.desc == "(Lnet/minecraft/server/v1_12_R1/BlockPosition;)Lnet/minecraft/server/v1_12_R1/IBlockData;") {
+							insn.name = "getTypeIfLoaded"
+							val after = insnBuilder {
+								val jmp = LabelNode()
+								+DUP.insn()
+								+JumpInsnNode(IFNONNULL, jmp)
+								+ACONST_NULL.insn()
+								+ARETURN.insn()
+								+jmp
+							}
+							method.instructions.insert(insn, after)
+							count += 1
+						}
+					}
+					if (count >= 4) {
+						return@register
+					} else {
+						error("Couldn't find target $count")
+					}
+				}
+			}
+			error("Couldn't find target")
+		}
+		
+		
+		
+		
+		
 		register("net.minecraft.server.v1_12_R1.EntityInsentient") { classNode ->
 			for (method in classNode.methods) {
 				if (method.name == "doTick" && method.desc == "()V") {
