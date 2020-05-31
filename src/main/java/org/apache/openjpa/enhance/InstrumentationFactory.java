@@ -99,16 +99,19 @@ public class InstrumentationFactory {
 					// If we can't find the tools.jar and we're not on IBM we can't load the agent.
 					toolsJar = findToolsJar();
 					if (toolsJar == null) {
+						System.out.println("Couldn't find non IBM tools.jar");
 						return null;
 					}
 				}
 				
 				Class<?> vmClass = loadVMClass(toolsJar, vendor);
 				if (vmClass == null) {
+					System.out.println("Couldn't find VM class");
 					return null;
 				}
 				String agentPath = getAgentJar();
 				if (agentPath == null) {
+					System.out.println("Couldn't create Agent Jar");
 					return null;
 				}
 				loadAgent(agentPath, vmClass);

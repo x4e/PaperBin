@@ -27,7 +27,14 @@ fun main(args: Array<String>) {
 		val file = File(args[0])
 		val newArgs = args.drop(1).toTypedArray()
 		
-		InstrumentationFactory.getInstrumentation().addTransformer(PaperBinTransformer)
+		if (InstrumentationFactory.getInstrumentation()?.addTransformer(PaperBinTransformer) == null) {
+			error("""
+				Could not fetch an instrumentation instance.
+				Please make sure you have a valid JAVA_HOME specified.
+				If the error persists try using Open JDK 1.8.0_252.
+				If the error still persists open an issue at https://github.com/cookiedragon234/PaperBin/issues
+			""".trimIndent())
+		}
 		
 		val sysCl = ClassLoader.getSystemClassLoader() as URLClassLoader
 		
