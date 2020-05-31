@@ -266,9 +266,7 @@ object AsyncMobAi: PaperFeature {
 								method.instructions.insertBefore(insn, before)
 								method.instructions.insert(insn, after)
 								i = 2
-							}
-						} else if (insn is MethodInsnNode && insn.owner == "net/minecraft/server/v1_12_R1/IBlockData" && insn.name == "getMaterial" && insn.desc == "()Lnet/minecraft/server/v1_12_R1/Material;") {
-							if (i == 3) {
+							} else if (i == 3) {
 								val after = LabelNode()
 								val before = insnBuilder {
 									+DUP.insn()
@@ -278,9 +276,20 @@ object AsyncMobAi: PaperFeature {
 								method.instructions.insert(insn, after)
 								i = 4
 							}
+						} else if (insn is MethodInsnNode && insn.owner == "net/minecraft/server/v1_12_R1/IBlockData" && insn.name == "getMaterial" && insn.desc == "()Lnet/minecraft/server/v1_12_R1/Material;") {
+							if (i == 4) {
+								val after = LabelNode()
+								val before = insnBuilder {
+									+DUP.insn()
+									+JumpInsnNode(IFNULL, after)
+								}
+								method.instructions.insertBefore(insn, before)
+								method.instructions.insert(insn, after)
+								i = 5
+							}
 						}
 					}
-					if (i == 4) {
+					if (i == 5) {
 						return@register
 					} else {
 						error("Could not find target $i")
