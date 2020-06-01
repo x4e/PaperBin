@@ -386,7 +386,7 @@ object AsyncMobAi: PaperFeature {
 			error("Couldnt find target")
 		}
 		
-		register("net/minecraft/server/v1_12_R1/EntityRabbit\$PathfinderGoalEatCarrots") { classNode ->
+		register("net.minecraft.server.v1_12_R1.EntityRabbit\$PathfinderGoalEatCarrots") { classNode ->
 			for (method in classNode.methods) {
 				if (method.name == "a" && method.desc == "(Lnet/minecraft/server/v1_12_R1/World;Lnet/minecraft/server/v1_12_R1/BlockPosition;)Z"){
 					for (insn in method.instructions) {
