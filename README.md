@@ -58,5 +58,4 @@ antiDupe=true
 mobAiMultithreading=true
 mobAiRateLimit=false
 antiNewChunks=false
-foodTpsCompensate=true
 ```

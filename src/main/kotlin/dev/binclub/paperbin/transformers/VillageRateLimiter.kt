@@ -27,6 +27,7 @@ object VillageRateLimiter: PaperFeature {
 	
 	@JvmStatic
 	fun golemSpawnRate(original: Int): Int {
+		if (!PaperBinConfig.villageRateLimit) return original
 		// Compensate both for our nerfed village tick rate, but also for global tps
 		val tpsRate = Bukkit.getTPS()[0] / 20
 		return (original / rateLimit * tpsRate).toInt()

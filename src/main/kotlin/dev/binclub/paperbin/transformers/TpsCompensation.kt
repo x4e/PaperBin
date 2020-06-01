@@ -8,6 +8,7 @@ import dev.binclub.paperbin.utils.insnBuilder
 import dev.binclub.paperbin.utils.internalName
 import dev.binclub.paperbin.utils.ldcInt
 import net.minecraft.server.v1_12_R1.*
+import org.bukkit.Bukkit
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
 
@@ -22,6 +23,14 @@ object TpsCompensation: PaperFeature {
 		// MinecraftServer.currentTick is affected by TPS (obviously)
 		// This function returns what the current tick would be if the server was running at a constant 20tps
 		return ((System.nanoTime() - PaperBinInfo.serverStartTime) / 50000000).toInt()
+	}
+	
+	@JvmStatic
+	fun compensateSpawnRate(original: Int): Int {
+		if (!PaperBinConfig.tpsCompensation) return original
+		
+		val tpsRate = Bukkit.getTPS()[0] / 20
+		return (original * tpsRate).toInt()
 	}
 	
 	@JvmStatic
@@ -212,8 +221,31 @@ object TpsCompensation: PaperFeature {
 				}
 			}
 			if (done != 4) {
-				error("Couldnt find target $done")
+				error("Couldn't find target $done")
 			}
+		}
+		
+		register("net.minecraft.server.v1_12_R1.BlockCrops") { classNode ->
+			for (method in classNode.methods) {
+				if (method.name == "b" && method.desc == "(Lnet/minecraft/server/v1_12_R1/World;Lnet/minecraft/server/v1_12_R1/BlockPosition;Lnet/minecraft/server/v1_12_R1/IBlockData;Ljava/util/Random;)V") {
+					for (insn in method.instructions) {
+						if (insn is MethodInsnNode && insn.owner == "java/util/Random" && insn.name == "nextInt" && insn.desc == "(I)I") {
+							val before = insnBuilder {
+								+MethodInsnNode(
+									INVOKESTATIC,
+									"dev/binclub/paperbin/transformers/TpsCompensation",
+									"compensateSpawnRate",
+									"(I)I",
+									false
+								)
+							}
+							method.instructions.insertBefore(insn, before)
+							return@register
+						}
+					}
+				}
+			}
+			error("Couldn't find target")
 		}
 	}
 }
