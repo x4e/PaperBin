@@ -574,6 +574,27 @@ object AsyncMobAi: PaperFeature {
 			}
 		}
 		
+		register("net.minecraft.server.v1_12_R1.PathfinderNormal") { classNode ->
+			for (method in classNode.methods) {
+				if (method.name == "a" && method.desc == "(IIIIDLnet/minecraft/server/v1_12_R1/EnumDirection;)Lnet/minecraft/server/v1_12_R1/PathPoint;") {
+					for (insn in method.instructions) {
+						if (insn is FieldInsnNode && insn.owner == "net/minecraft/server/v1_12_R1/PathfinderNormal" && insn.name == "b" && insn.desc == "Lnet/minecraft/server/v1_12_R1/EntityInsentient;") {
+							val after = insnBuilder {
+								val jmp = LabelNode()
+								+DUP.insn()
+								+JumpInsnNode(IFNONNULL, jmp)
+								+ACONST_NULL.insn()
+								+ARETURN.insn()
+								+jmp
+							}
+							method.instructions.insert(insn, after)
+							return@register
+						}
+					}
+				}
+			}
+			error("Couldn't find target")
+		}
 		
 		
 		
@@ -589,7 +610,7 @@ object AsyncMobAi: PaperFeature {
 					}
 				}
 			}
-			error("Couldnt find target")
+			error("Couldn't find target")
 		}
 	}
 }
