@@ -270,5 +270,28 @@ object TpsCompensation: PaperFeature {
 			}
 			error("Couldn't find target")
 		}
+		
+		register("net.minecraft.server.v1_12_R1.BlockMushroom") { classNode ->
+			for (method in classNode.methods) {
+				if (method.name == "b" && method.desc == "(Lnet/minecraft/server/v1_12_R1/World;Lnet/minecraft/server/v1_12_R1/BlockPosition;Lnet/minecraft/server/v1_12_R1/IBlockData;Ljava/util/Random;)V") {
+					for (insn in method.instructions) {
+						if (insn is MethodInsnNode && insn.owner == "java/util/Random" && insn.name == "nextInt" && insn.desc == "(I)I") {
+							val before = insnBuilder {
+								+MethodInsnNode(
+									INVOKESTATIC,
+									"dev/binclub/paperbin/transformers/TpsCompensation",
+									"compensateSpawnRate",
+									"(I)I",
+									false
+								)
+							}
+							method.instructions.insertBefore(insn, before)
+							return@register
+						}
+					}
+				}
+			}
+			error("Couldn't find target")
+		}
 	}
 }
