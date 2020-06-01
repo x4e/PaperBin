@@ -11,6 +11,7 @@ import net.minecraft.server.v1_12_R1.*
 import org.bukkit.Bukkit
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
+import kotlin.math.max
 
 /**
  * Compensates food eating time based on TPS
@@ -30,7 +31,7 @@ object TpsCompensation: PaperFeature {
 		if (!PaperBinConfig.tpsCompensation) return original
 		
 		val tpsRate = Bukkit.getTPS()[0] / 20
-		return (original * tpsRate).toInt()
+		return max((original * tpsRate).toInt(), 1)
 	}
 	
 	@JvmStatic
@@ -295,6 +296,75 @@ object TpsCompensation: PaperFeature {
 		}
 		
 		register("net.minecraft.server.v1_12_R1.BlockSapling") { classNode ->
+			for (method in classNode.methods) {
+				if (method.name == "b" && method.desc == "(Lnet/minecraft/server/v1_12_R1/World;Lnet/minecraft/server/v1_12_R1/BlockPosition;Lnet/minecraft/server/v1_12_R1/IBlockData;Ljava/util/Random;)V") {
+					for (insn in method.instructions) {
+						if (insn is MethodInsnNode && insn.owner == "java/util/Random" && insn.name == "nextInt" && insn.desc == "(I)I") {
+							val before = insnBuilder {
+								+MethodInsnNode(
+									INVOKESTATIC,
+									"dev/binclub/paperbin/transformers/TpsCompensation",
+									"compensateSpawnRate",
+									"(I)I",
+									false
+								)
+							}
+							method.instructions.insertBefore(insn, before)
+							return@register
+						}
+					}
+				}
+			}
+			error("Couldn't find target")
+		}
+		
+		register("net.minecraft.server.v1_12_R1.BlockNetherWart") { classNode ->
+			for (method in classNode.methods) {
+				if (method.name == "b" && method.desc == "(Lnet/minecraft/server/v1_12_R1/World;Lnet/minecraft/server/v1_12_R1/BlockPosition;Lnet/minecraft/server/v1_12_R1/IBlockData;Ljava/util/Random;)V") {
+					for (insn in method.instructions) {
+						if (insn is MethodInsnNode && insn.owner == "java/util/Random" && insn.name == "nextInt" && insn.desc == "(I)I") {
+							val before = insnBuilder {
+								+MethodInsnNode(
+									INVOKESTATIC,
+									"dev/binclub/paperbin/transformers/TpsCompensation",
+									"compensateSpawnRate",
+									"(I)I",
+									false
+								)
+							}
+							method.instructions.insertBefore(insn, before)
+							return@register
+						}
+					}
+				}
+			}
+			error("Couldn't find target")
+		}
+		
+		register("net.minecraft.server.v1_12_R1.BlockVine") { classNode ->
+			for (method in classNode.methods) {
+				if (method.name == "b" && method.desc == "(Lnet/minecraft/server/v1_12_R1/World;Lnet/minecraft/server/v1_12_R1/BlockPosition;Lnet/minecraft/server/v1_12_R1/IBlockData;Ljava/util/Random;)V") {
+					for (insn in method.instructions) {
+						if (insn is MethodInsnNode && insn.owner == "java/util/Random" && insn.name == "nextInt" && insn.desc == "(I)I") {
+							val before = insnBuilder {
+								+MethodInsnNode(
+									INVOKESTATIC,
+									"dev/binclub/paperbin/transformers/TpsCompensation",
+									"compensateSpawnRate",
+									"(I)I",
+									false
+								)
+							}
+							method.instructions.insertBefore(insn, before)
+							return@register
+						}
+					}
+				}
+			}
+			error("Couldn't find target")
+		}
+		
+		register("net.minecraft.server.v1_12_R1.BlockCocoa") { classNode ->
 			for (method in classNode.methods) {
 				if (method.name == "b" && method.desc == "(Lnet/minecraft/server/v1_12_R1/World;Lnet/minecraft/server/v1_12_R1/BlockPosition;Lnet/minecraft/server/v1_12_R1/IBlockData;Ljava/util/Random;)V") {
 					for (insn in method.instructions) {
