@@ -657,6 +657,47 @@ object AsyncMobAi: PaperFeature {
 			error("Couldn't find target")
 		}
 		
+		register("net.minecraft.server.v1_12_R1.PathfinderNormal") { classNode ->
+			for (method in classNode.methods) {
+				if (method.name == "b" && method.desc == "()Lnet/minecraft/server/v1_12_R1/PathPoint;") {
+					val varI = method.maxLocals
+					method.maxLocals += 1
+					val insert = insnBuilder {
+						+VarInsnNode(ALOAD, 0)
+						+FieldInsnNode(GETFIELD, "net/minecraft/server/v1_12_R1/PathfinderAbstract", "b", "Lnet/minecraft/server/v1_12_R1/EntityInsentient;")
+						+DUP.insn()
+						+VarInsnNode(ASTORE, varI)
+						val jmp = LabelNode()
+						+JumpInsnNode(IFNONNULL, jmp)
+						+ACONST_NULL.insn()
+						+ARETURN.insn()
+						+jmp
+					}
+					method.instructions.insert(insert)
+					
+					var count = 0
+					
+					for (insn in method.instructions) {
+						if (insn is FieldInsnNode && insn.owner == "net/minecraft/server/v1_12_R1/PathfinderAbstract" && insn.name == "b" && insn.desc == "Lnet/minecraft/server/v1_12_R1/EntityInsentient;") {
+							val replacement = insnBuilder {
+								+POP.insn()
+								+VarInsnNode(ALOAD, varI)
+							}
+							method.instructions.insert(insn, replacement)
+							method.instructions.remove(insn)
+							count += 1
+						}
+					}
+					if (count < 15) { // there are more than 15 but whatever, if it found 15 its probably found them all
+						return@register
+					} else {
+						error("Couldn't find target $count")
+					}
+				}
+			}
+			error("Couldn't find target")
+		}
+		
 		
 		
 		
