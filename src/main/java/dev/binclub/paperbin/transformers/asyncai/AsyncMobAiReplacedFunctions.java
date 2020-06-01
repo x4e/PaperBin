@@ -4,12 +4,35 @@ import net.minecraft.server.v1_12_R1.*;
 import net.minecraft.server.v1_12_R1.BlockPosition.MutableBlockPosition;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author cookiedragon234 26/May/2020
  */
 public class AsyncMobAiReplacedFunctions {
+	public static Village PersistentVillagegetClosestVillage(List villages, BlockPosition blockposition, int i) {
+		Village village = null;
+		double d0 = 3.4028234663852886E38D;
+		
+		if (villages == null) return null; // PAPERBIN START - Concurrent access of villages
+		
+		for (Object oVillage : villages.toArray()) {  // PAPERBIN START - Concurrent access of villages
+			Village village1 = (Village)oVillage;  // PAPERBIN START - Concurrent access of villages
+			double d1 = village1.a().n(blockposition);
+			if (d1 < d0) {
+				float f = (float)(i + village1.b());
+				if (d1 <= (double)(f * f)) {
+					village = village1;
+					d0 = d1;
+				}
+			}
+		}
+		
+		return village;
+	}
+	
 	/**
 	 * {@link net.minecraft.server.v1_12_R1.World}
 	 */

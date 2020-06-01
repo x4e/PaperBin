@@ -2,15 +2,13 @@ package dev.binclub.paperbin.transformers.asyncai
 
 import dev.binclub.paperbin.PaperBinConfig
 import dev.binclub.paperbin.PaperFeature
-import dev.binclub.paperbin.utils.insnBuilder
-import dev.binclub.paperbin.utils.internalName
-import dev.binclub.paperbin.utils.notify
-import dev.binclub.paperbin.utils.wait
+import dev.binclub.paperbin.utils.*
 import net.minecraft.server.v1_12_R1.*
 import net.minecraft.server.v1_12_R1.BlockPosition.PooledBlockPosition
 import org.objectweb.asm.Label
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
+import java.lang.reflect.InvocationTargetException
 import kotlin.concurrent.thread
 
 /**
@@ -64,7 +62,11 @@ object AsyncMobAi: PaperFeature {
 								}
 							}
 						} catch (t: Throwable) {
-							IllegalStateException("Exception while updating mob AI for $entity", t).printStackTrace()
+							var t2 = t
+							if (t2 is InvocationTargetException) {
+								t2 = t2.cause ?: t2
+							}
+							IllegalStateException("Exception while updating mob AI for $entity", t2).printStackTrace()
 						}
 					}
 				}
@@ -477,6 +479,102 @@ object AsyncMobAi: PaperFeature {
 			}
 			error("Couldnt find target")
 		}
+		
+		register("net.minecraft.server.v1_12_R1.PersistentVillage") { classNode ->
+			for (method in classNode.methods) {
+				if (method.name == "getClosestVillage" && method.desc == "(Lnet/minecraft/server/v1_12_R1/BlockPosition;I)Lnet/minecraft/server/v1_12_R1/Village;") {
+					val insert = insnBuilder {
+						+VarInsnNode(ALOAD, 0)
+						+FieldInsnNode(GETFIELD, "net/minecraft/server/v1_12_R1/PersistentVillage", "villages", "Ljava/util/List;")
+						+VarInsnNode(ALOAD, 1)
+						+VarInsnNode(ILOAD, 2)
+						+MethodInsnNode(
+							INVOKESTATIC,
+							"dev/binclub/paperbin/transformers/asyncai/AsyncMobAiReplacedFunctions",
+							"PersistentVillagegetClosestVillage",
+							"(Ljava/util/List;Lnet/minecraft/server/v1_12_R1/BlockPosition;I)Lnet/minecraft/server/v1_12_R1/Village;",
+							false
+						)
+						+ARETURN.insn()
+					}
+					method.instructions.insert(insert)
+					return@register
+				}
+			}
+			error("Couldn't find target")
+		}
+		
+		register("net.minecraft.server.v1_12_R1.PathfinderGoalOpenDoor") { classNode ->
+			val field = FieldNode(
+				ACC_PUBLIC,
+				"desiredDoorState",
+				"Ljava/lang/Boolean;",
+				null,
+				null
+			)
+			classNode.fields.add(field)
+			
+			var count = 0
+			for (method in classNode.methods) {
+				if (method.name == "c" && method.desc == "()V") {
+					val newList = insnBuilder {
+						+VarInsnNode(ALOAD, 0)
+						+ldcInt(20)
+						+FieldInsnNode(PUTFIELD, "net/minecraft/server/v1_12_R1/PathfinderGoalOpenDoor", "h", "I")
+						+VarInsnNode(ALOAD, 0)
+						+FieldInsnNode(GETSTATIC, "java/lang/Boolean", "FALSE", "Ljava/lang/Boolean;")
+						+FieldInsnNode(PUTFIELD, "net/minecraft/server/v1_12_R1/PathfinderGoalOpenDoor", field.name, field.desc)
+						+RETURN.insn()
+					}
+					method.instructions.insert(newList)
+					count += 1
+				} else if (method.name == "d" && method.desc == "()V") {
+					val newList = insnBuilder {
+						val l1 = LabelNode()
+						+VarInsnNode(ALOAD, 0)
+						+FieldInsnNode(GETFIELD, "net/minecraft/server/v1_12_R1/PathfinderGoalOpenDoor", "g", "Z")
+						+JumpInsnNode(IFEQ, l1)
+						+VarInsnNode(ALOAD, 0)
+						+FieldInsnNode(GETSTATIC, "java/lang/Boolean", "TRUE", "Ljava/lang/Boolean;")
+						+FieldInsnNode(PUTFIELD, "net/minecraft/server/v1_12_R1/PathfinderGoalOpenDoor", field.name, field.desc)
+						+l1
+						+RETURN.insn()
+					}
+					method.instructions.insert(newList)
+					count += 1
+				} else if (method.name == "e" && method.desc == "()V") {
+					val newList = insnBuilder {
+						val l1 = LabelNode()
+						+VarInsnNode(ALOAD, 0)
+						+FieldInsnNode(GETFIELD, "net/minecraft/server/v1_12_R1/PathfinderGoalOpenDoor", field.name, field.desc)
+						+DUP.insn()
+						+VarInsnNode(ASTORE, 1)
+						+JumpInsnNode(IFNULL, l1)
+						+VarInsnNode(ALOAD, 0)
+						+FieldInsnNode(GETFIELD, "net/minecraft/server/v1_12_R1/PathfinderGoalOpenDoor", "c", "Lnet/minecraft/server/v1_12_R1/BlockDoor;")
+						+VarInsnNode(ALOAD, 0)
+						+FieldInsnNode(GETFIELD, "net/minecraft/server/v1_12_R1/PathfinderGoalOpenDoor", "a", "Lnet/minecraft/server/v1_12_R1/EntityInsentient;")
+						+FieldInsnNode(GETFIELD, "net/minecraft/server/v1_12_R1/EntityInsentient", "world", "Lnet/minecraft/server/v1_12_R1/World;")
+						+VarInsnNode(ALOAD, 0)
+						+FieldInsnNode(GETFIELD, "net/minecraft/server/v1_12_R1/PathfinderGoalOpenDoor", "b", "Lnet/minecraft/server/v1_12_R1/BlockPosition;")
+						+VarInsnNode(ALOAD, 1)
+						+MethodInsnNode(INVOKEVIRTUAL, "java/lang/Boolean", "booleanValue", "()Z", false)
+						+MethodInsnNode(INVOKEVIRTUAL, "net/minecraft/server/v1_12_R1/BlockDoor", "setDoor", "(Lnet/minecraft/server/v1_12_R1/World;Lnet/minecraft/server/v1_12_R1/BlockPosition;Z)V", false)
+						+VarInsnNode(ALOAD, 0)
+						+ACONST_NULL.insn()
+						+FieldInsnNode(PUTFIELD, "net/minecraft/server/v1_12_R1/PathfinderGoalOpenDoor", field.name, field.desc)
+						+l1
+					}
+					method.instructions.insert(newList)
+					count += 1
+				}
+			}
+			if (count < 3) {
+				error("Couldn't find target $count")
+			}
+		}
+		
+		
 		
 		
 		
