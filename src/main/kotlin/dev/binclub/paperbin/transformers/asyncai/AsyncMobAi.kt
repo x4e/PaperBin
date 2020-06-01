@@ -676,9 +676,13 @@ object AsyncMobAi: PaperFeature {
 					method.instructions.insert(insert)
 					
 					var count = 0
-					
+					var dontDoFirst = true
 					for (insn in method.instructions) {
 						if (insn is FieldInsnNode && insn.owner == "net/minecraft/server/v1_12_R1/PathfinderAbstract" && insn.name == "b" && insn.desc == "Lnet/minecraft/server/v1_12_R1/EntityInsentient;") {
+							if (dontDoFirst) { // First instance is from the code we just added above, dont remove that!
+								dontDoFirst = false
+								continue
+							}
 							val replacement = insnBuilder {
 								+POP.insn()
 								+VarInsnNode(ALOAD, varI)
