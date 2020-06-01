@@ -2,6 +2,7 @@ package dev.binclub.paperbin.transformers.asyncai;
 
 import net.minecraft.server.v1_12_R1.*;
 import net.minecraft.server.v1_12_R1.BlockPosition.MutableBlockPosition;
+import org.bukkit.craftbukkit.v1_12_R1.util.CraftMagicNumbers;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -12,6 +13,92 @@ import java.util.List;
  * @author cookiedragon234 26/May/2020
  */
 public class AsyncMobAiReplacedFunctions {
+	/**
+	 * {@link net.minecraft.server.v1_12_R1.World}
+	 */
+	public static boolean Worlda(@Nullable Entity entity, AxisAlignedBB axisalignedbb, boolean flag, @Nullable List list, World world) {
+		int i = MathHelper.floor(axisalignedbb.a) - 1;
+		int j = MathHelper.f(axisalignedbb.d) + 1;
+		int k = MathHelper.floor(axisalignedbb.b) - 1;
+		int l = MathHelper.f(axisalignedbb.e) + 1;
+		int i1 = MathHelper.floor(axisalignedbb.c) - 1;
+		int j1 = MathHelper.f(axisalignedbb.f) + 1;
+		WorldBorder worldborder = world.getWorldBorder();
+		boolean flag1 = entity != null && entity.bz();
+		boolean flag2 = entity != null && world.g(entity);
+		IBlockData iblockdata = Blocks.STONE.getBlockData();
+		BlockPosition.PooledBlockPosition blockposition_pooledblockposition = BlockPosition.PooledBlockPosition.s();
+		
+		try {
+			for(int k1 = i; k1 < j; ++k1) {
+				for(int l1 = i1; l1 < j1; ++l1) {
+					boolean flag3 = k1 == i || k1 == j - 1;
+					boolean flag4 = l1 == i1 || l1 == j1 - 1;
+					if ((!flag3 || !flag4) && world.isLoaded(blockposition_pooledblockposition.f(k1, 64, l1))) {
+						for(int i2 = k; i2 < l; ++i2) {
+							if (!flag3 && !flag4 || i2 != l - 1) {
+								boolean flag6;
+								if (flag) {
+									if (k1 < -30000000 || k1 >= 30000000 || l1 < -30000000 || l1 >= 30000000) {
+										boolean flag5 = true;
+										flag6 = flag5;
+										return flag6;
+									}
+								} else if (entity != null && flag1 == flag2) {
+									entity.k(!flag2);
+								}
+								
+								blockposition_pooledblockposition.f(k1, i2, l1);
+								IBlockData iblockdata1;
+								if (!flag && !worldborder.a((BlockPosition)blockposition_pooledblockposition) && flag2) {
+									iblockdata1 = iblockdata;
+								} else {
+									iblockdata1 = world.getTypeIfLoaded(blockposition_pooledblockposition); // PAPERBIN - use getTypeIfLoaded
+								}
+								
+								if (iblockdata1 != null) { // PAPERBIN - use getTypeIfLoaded
+									iblockdata1.a(world, blockposition_pooledblockposition, axisalignedbb, list, entity, false);
+								}
+								if (flag && !list.isEmpty()) {
+									flag6 = true;
+									boolean var23 = flag6;
+									return var23;
+								}
+							}
+						}
+					}
+				}
+			}
+			
+			boolean var27 = !list.isEmpty();
+			return var27;
+		} finally {
+			blockposition_pooledblockposition.t();
+		}
+	}
+	
+	/**
+	 * {@link net.minecraft.server.v1_12_R1.World}
+	 */
+	public static IBlockData WorldgetCapturedBlockType(int x, int y, int z, ArrayList capturedBlockStates) {
+		org.bukkit.block.BlockState previous = null;
+		for (Object ostate : capturedBlockStates.toArray()) {
+			previous = (org.bukkit.block.BlockState)ostate;
+			if (previous.getX() != x || previous.getY() != y || previous.getZ() != z) {
+				break;
+			}
+		}
+		
+		if (previous == null) {
+			return null;
+		}
+		
+		return CraftMagicNumbers.getBlock(previous.getTypeId()).fromLegacyData(previous.getRawData());
+	}
+	
+	/**
+	 * {@link net.minecraft.server.v1_12_R1.PersistentVillage}
+	 */
 	public static Village PersistentVillagegetClosestVillage(List villages, BlockPosition blockposition, int i) {
 		Village village = null;
 		double d0 = 3.4028234663852886E38D;

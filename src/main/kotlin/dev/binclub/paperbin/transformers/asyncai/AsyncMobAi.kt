@@ -577,6 +577,16 @@ object AsyncMobAi: PaperFeature {
 		register("net.minecraft.server.v1_12_R1.PathfinderNormal") { classNode ->
 			for (method in classNode.methods) {
 				if (method.name == "a" && method.desc == "(IIIIDLnet/minecraft/server/v1_12_R1/EnumDirection;)Lnet/minecraft/server/v1_12_R1/PathPoint;") {
+					val insert = insnBuilder {
+						val l1 = LabelNode()
+						+VarInsnNode(ALOAD, 0)
+						+FieldInsnNode(GETFIELD, "net/minecraft/server/v1_12_R1/PathfinderNormal", "a", "Lnet/minecraft/server/v1_12_R1/IBlockAccess;")
+						+JumpInsnNode(IFNONNULL, l1)
+						+ACONST_NULL.insn()
+						+ARETURN.insn()
+						+l1
+					}
+					method.instructions.insert(insert)
 					for (insn in method.instructions) {
 						if (insn is FieldInsnNode && insn.owner == "net/minecraft/server/v1_12_R1/PathfinderNormal" && insn.name == "b" && insn.desc == "Lnet/minecraft/server/v1_12_R1/EntityInsentient;") {
 							val after = insnBuilder {
@@ -591,6 +601,57 @@ object AsyncMobAi: PaperFeature {
 							return@register
 						}
 					}
+				}
+			}
+			error("Couldn't find target")
+		}
+		
+		register("net.minecraft.server.v1_12_R1.World") { classNode ->
+			for (method in classNode.methods) {
+				if (method.name == "getTypeIfLoaded" && method.desc == "(Lnet/minecraft/server/v1_12_R1/BlockPosition;)Lnet/minecraft/server/v1_12_R1/IBlockData;") {
+					for (insn in method.instructions) {
+						if (insn is MethodInsnNode && insn.owner == "net/minecraft/server/v1_12_R1/World" && insn.name == "getCapturedBlockType" && insn.desc == "(III)Lnet/minecraft/server/v1_12_R1/IBlockData;") {
+							val replacement = insnBuilder {
+								+VarInsnNode(ALOAD, 0)
+								+FieldInsnNode(GETFIELD, "net/minecraft/server/v1_12_R1/World", "capturedBlockStates", "Ljava/util/ArrayList;")
+								+MethodInsnNode(
+									INVOKESTATIC,
+									"dev/binclub/paperbin/transformers/asyncai/AsyncMobAiReplacedFunctions",
+									"WorldgetCapturedBlockType",
+									"(IIILjava/util/ArrayList;)Lnet/minecraft/server/v1_12_R1/IBlockData;",
+									false
+								)
+							}
+							method.instructions.insert(insn, replacement)
+							method.instructions.remove(insn)
+							return@register
+						}
+					}
+				}
+			}
+			error("Couldn't find target")
+		}
+		
+		register("net.minecraft.server.v1_12_R1.World") { classNode ->
+			for (method in classNode.methods) {
+				if (method.name == "a" && method.desc == "(Lnet/minecraft/server/v1_12_R1/Entity;Lnet/minecraft/server/v1_12_R1/AxisAlignedBB;ZLjava/util/List;)Z") {
+					val list = insnBuilder {
+						+VarInsnNode(ALOAD, 1)
+						+VarInsnNode(ALOAD, 2)
+						+VarInsnNode(ILOAD, 3)
+						+VarInsnNode(ALOAD, 4)
+						+VarInsnNode(ALOAD, 0)
+						+MethodInsnNode(
+							INVOKESTATIC,
+							"dev/binclub/paperbin/transformers/asyncai/AsyncMobAiReplacedFunctions",
+							"Worlda",
+							"(Lnet/minecraft/server/v1_12_R1/Entity;Lnet/minecraft/server/v1_12_R1/AxisAlignedBB;ZLjava/util/List;Lnet/minecraft/server/v1_12_R1/World;)Z",
+							false
+						)
+						+IRETURN.insn()
+					}
+					method.instructions.insert(list)
+					return@register
 				}
 			}
 			error("Couldn't find target")
