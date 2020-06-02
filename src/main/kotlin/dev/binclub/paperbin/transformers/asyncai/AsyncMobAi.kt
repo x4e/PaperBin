@@ -702,6 +702,29 @@ object AsyncMobAi: PaperFeature {
 			error("Couldn't find target")
 		}
 		
+		register("net.minecraft.server.v1_12_R1.BlockFence") { classNode ->
+			for (method in classNode.methods) {
+				if (method.name == "a" && method.desc == "(Lnet/minecraft/server/v1_12_R1/IBlockAccess;Lnet/minecraft/server/v1_12_R1/BlockPosition;Lnet/minecraft/server/v1_12_R1/EnumDirection;)Z") {
+					for (insn in method.instructions) {
+						if (insn is MethodInsnNode && insn.owner == "net/minecraft/server/v1_12_R1/World" && insn.name == "getType" && insn.desc == "(Lnet/minecraft/server/v1_12_R1/BlockPosition;)Lnet/minecraft/server/v1_12_R1/IBlockData;") {
+							insn.name = "getTypeIfLoaded"
+							val after = insnBuilder {
+								val jmp = LabelNode()
+								+DUP.insn()
+								+JumpInsnNode(IFNONNULL, jmp)
+								+ICONST_0.insn()
+								+IRETURN.insn()
+								+jmp
+							}
+							method.instructions.insert(insn, after)
+							return@register
+						}
+					}
+				}
+			}
+			error("Couldn't find target")
+		}
+		
 		
 		
 		
