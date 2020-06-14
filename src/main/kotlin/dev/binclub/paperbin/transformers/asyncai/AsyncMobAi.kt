@@ -459,6 +459,7 @@ object AsyncMobAi: PaperFeature {
 		}
 		
 		register("net.minecraft.server.v1_12_R1.PathfinderGoalLookAtPlayer") { classNode ->
+			var count = 0
 			for (method in classNode.methods) {
 				if (method.name == "b" && method.desc == "()Z") {
 					for (insn in method.instructions) {
@@ -472,12 +473,39 @@ object AsyncMobAi: PaperFeature {
 								+jmp
 							}
 							method.instructions.insert(insn, after)
-							return@register
+							count += 1
 						}
 					}
+				} else if (method.name == "e" && method.desc == "()V") {
+					val insert = insnBuilder {
+						val out = LabelNode()
+						val `in` = LabelNode()
+						+VarInsnNode(ALOAD, 0)
+						+FieldInsnNode(GETFIELD, "net/minecraft/server/v1_12_R1/PathfinderGoalLookAtPlayer", "a", "Lnet/minecraft/server/v1_12_R1/EntityInsentient;")
+						+JumpInsnNode(IFNULL, `in`)
+						+VarInsnNode(ALOAD, 0)
+						+FieldInsnNode(GETFIELD, "net/minecraft/server/v1_12_R1/PathfinderGoalLookAtPlayer", "b", "Lnet/minecraft/server/v1_12_R1/Entity;")
+						+JumpInsnNode(IFNULL, `in`)
+						+JumpInsnNode(GOTO, out)
+						+`in`
+						+VarInsnNode(ALOAD, 0)
+						+DUP.insn()
+						+FieldInsnNode(GETFIELD, "net/minecraft/server/v1_12_R1/PathfinderGoalLookAtPlayer", "e", "I")
+						+ICONST_1.insn()
+						+ISUB.insn()
+						+FieldInsnNode(PUTFIELD, "net/minecraft/server/v1_12_R1/PathfinderGoalLookAtPlayer", "e", "I")
+						+RETURN.insn()
+						+out
+					}
+					method.instructions.insert(insert)
+					count += 1
+				}
+				
+				if (count >= 2) {
+					return@register
 				}
 			}
-			error("Couldnt find target")
+			error("Couldnt find target $count")
 		}
 		
 		register("net.minecraft.server.v1_12_R1.PersistentVillage") { classNode ->
