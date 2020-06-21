@@ -67,7 +67,7 @@ object TickCounter: PaperFeature {
 		if (ticks != PaperBinInfo.ticks) {
 			PaperBinInfo.ticks = ticks
 			if (PaperBinConfig.debug) {
-				Thread.sleep(250) // simulate low tps enviroment
+				Thread.sleep(250) // simulate low tps environment
 			}
 			
 			AsyncMobAi.onTick()
