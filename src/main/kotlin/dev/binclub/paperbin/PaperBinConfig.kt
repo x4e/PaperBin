@@ -13,6 +13,26 @@ object PaperBinConfig {
 	val saveFile = File("paperbin.properties")
 	val properties = Properties()
 	
+	var antiChunkBan: Boolean by BooleanProperty(properties, "antiChunkBan", false)
+	var antiCrasher: Boolean by BooleanProperty(properties, "antiCrasher")
+	var antiDupe: Boolean by BooleanProperty(properties, "antiDupe")
+	var antiElytraFly: Boolean by BooleanProperty(properties, "antiElytraFly")
+	var antiGrief: Boolean by BooleanProperty(properties, "antiGrief")
+	var antiNetherRoof: Boolean by BooleanProperty(properties, "antiNetherRoof")
+	var antiNewChunks: Boolean by BooleanProperty(properties, "antiNewChunks", false)
+	var antiPortalGodmode: Boolean by BooleanProperty(properties, "antiPortalGodmode")
+	var antiUnicodeChat: Boolean by BooleanProperty(properties, "antiUnicodeChat", false)
+	var blockRateLimit: Boolean by BooleanProperty(properties, "blockRateLimit")
+	var chunkLoadOptimisations: Boolean by BooleanProperty(properties, "chunkLoadOptimisations", false)
+	var fastGameRule: Boolean by BooleanProperty(properties, "fastGameRule")
+	var tpsCompensation: Boolean by BooleanProperty(properties, "tpsCompensation")
+	var mobAiRateLimit: Boolean by BooleanProperty(properties, "mobAiRateLimit")
+	var mobAiMultithreading: Boolean by BooleanProperty(properties, "mobAiMultithreading")
+	var optimisedEveryoneSleeping: Boolean by BooleanProperty(properties, "optimisedEveryoneSleeping")
+	var packetOptimisations: Boolean by BooleanProperty(properties, "packetOptimisations")
+	var villageRateLimit: Boolean by BooleanProperty(properties, "villageRateLimit")
+	var debug: Boolean by BooleanProperty(properties, "debug", false)
+	
 	init {
 		load()
 		save()
@@ -38,26 +58,6 @@ object PaperBinConfig {
 		}
 		return false
 	}
-	
-	var antiChunkBan: Boolean by BooleanProperty(properties, "antiChunkBan", false)
-	var antiCrasher: Boolean by BooleanProperty(properties, "antiCrasher")
-	var antiDupe: Boolean by BooleanProperty(properties, "antiDupe")
-	var antiElytraFly: Boolean by BooleanProperty(properties, "antiElytraFly")
-	var antiGrief: Boolean by BooleanProperty(properties, "antiGrief")
-	var antiNetherRoof: Boolean by BooleanProperty(properties, "antiNetherRoof")
-	var antiNewChunks: Boolean by BooleanProperty(properties, "antiNewChunks", false)
-	var antiPortalGodmode: Boolean by BooleanProperty(properties, "antiPortalGodmode")
-	var antiUnicodeChat: Boolean by BooleanProperty(properties, "antiUnicodeChat", false)
-	var blockRateLimit: Boolean by BooleanProperty(properties, "blockRateLimit")
-	var chunkLoadOptimisations: Boolean by BooleanProperty(properties, "chunkLoadOptimisations", false)
-	var fastGameRule: Boolean by BooleanProperty(properties, "fastGameRule")
-	var tpsCompensation: Boolean by BooleanProperty(properties, "tpsCompensation")
-	var mobAiRateLimit: Boolean by BooleanProperty(properties, "mobAiRateLimit")
-	var mobAiMultithreading: Boolean by BooleanProperty(properties, "mobAiMultithreading")
-	var optimisedEveryoneSleeping: Boolean by BooleanProperty(properties, "optimisedEveryoneSleeping")
-	var packetOptimisations: Boolean by BooleanProperty(properties, "packetOptimisations")
-	var villageRateLimit: Boolean by BooleanProperty(properties, "villageRateLimit")
-	var debug: Boolean by BooleanProperty(properties, "debug", false)
 }
 
 class BooleanProperty(val properties: Properties, val key: String, default: Boolean = true) {

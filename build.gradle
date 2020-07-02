@@ -1,7 +1,15 @@
-plugins {
-    id 'java'
-    id 'org.jetbrains.kotlin.jvm' version '1.3.61'
+buildscript {
+	dependencies {
+		classpath(files("D:\\Computing\\GradlePreprocessor\\build\\libs\\GradlePreprocessor-1.0-SNAPSHOT.jar"))
+	}
 }
+
+plugins {
+	id 'java'
+	id "org.jetbrains.kotlin.jvm" version "1.3.72"
+}
+
+apply plugin: "GradlePreprocessor"
 
 group 'dev.binclub'
 version ''
@@ -9,28 +17,28 @@ version ''
 sourceCompatibility = 1.8
 
 repositories {
-    mavenCentral()
+	mavenCentral()
 }
 
 jar {
-    manifest {
-        attributes (
-                "Main-Class": "dev.binclub.paperbin.MainKt",
-        )
-    }
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+	manifest {
+		attributes(
+				"Main-Class": "dev.binclub.paperbin.MainKt",
+		)
+	}
+	from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
 }
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    runtime 'org.ow2.asm:asm:7.1'
-    runtime 'org.ow2.asm:asm-tree:7.1'
-    runtime 'org.ow2.asm:asm-commons:7.1'
-    runtime 'org.ow2.asm:asm-util:7.1'
-    implementation files("build/libs/cache/patched_1.12.2.jar")
-    //compile files("${System.properties['java.home']}/../lib/sa-jdi.jar", "${System.properties['java.home']}/../lib/tools.jar")
+	compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+	runtime 'org.ow2.asm:asm:7.1'
+	runtime 'org.ow2.asm:asm-tree:7.1'
+	runtime 'org.ow2.asm:asm-commons:7.1'
+	runtime 'org.ow2.asm:asm-util:7.1'
+	implementation files("paperbin/cache/patched_1.12.2.jar")
+	//compile files("${System.properties['java.home']}/../lib/sa-jdi.jar", "${System.properties['java.home']}/../lib/tools.jar")
 }
 
 compileKotlin {
-    kotlinOptions.jvmTarget = "1.8"
+	kotlinOptions.jvmTarget = "1.8"
 }

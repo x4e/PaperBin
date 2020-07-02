@@ -1,6 +1,7 @@
 package dev.binclub.paperbin.transformers.asyncai
 
 import dev.binclub.paperbin.PaperBinConfig
+import dev.binclub.paperbin.PaperBinInfo.logger
 import dev.binclub.paperbin.PaperFeature
 import dev.binclub.paperbin.utils.*
 import net.minecraft.server.v1_12_R1.*
@@ -734,8 +735,10 @@ object AsyncMobAi: PaperFeature {
 			for (method in classNode.methods) {
 				if (method.name == "a" && method.desc == "(Lnet/minecraft/server/v1_12_R1/IBlockAccess;Lnet/minecraft/server/v1_12_R1/BlockPosition;Lnet/minecraft/server/v1_12_R1/EnumDirection;)Z") {
 					for (insn in method.instructions) {
-						if (insn is MethodInsnNode && insn.owner == "net/minecraft/server/v1_12_R1/World" && insn.name == "getType" && insn.desc == "(Lnet/minecraft/server/v1_12_R1/BlockPosition;)Lnet/minecraft/server/v1_12_R1/IBlockData;") {
-							insn.name = "getTypeIfLoaded"
+						if (insn is MethodInsnNode && insn.owner == "net/minecraft/server/v1_12_R1/IBlockAccess" && insn.name == "getType" && insn.desc == "(Lnet/minecraft/server/v1_12_R1/BlockPosition;)Lnet/minecraft/server/v1_12_R1/IBlockData;") {
+							insn.owner = "dev/binclub/paperbin/transformers/asyncai/AsyncMobAi"
+							insn.name = "blockAccessGetTypeIfLoaded"
+							insn.desc = "(Lnet/minecraft/server/v1_12_R1/IBlockAccess;Lnet/minecraft/server/v1_12_R1/BlockPosition;)Lnet/minecraft/server/v1_12_R1/IBlockData;"
 							val after = insnBuilder {
 								val jmp = LabelNode()
 								+DUP.insn()
@@ -768,6 +771,15 @@ object AsyncMobAi: PaperFeature {
 				}
 			}
 			error("Couldn't find target")
+		}
+	}
+	
+	@JvmStatic
+	fun blockAccessGetTypeIfLoaded(iBlockAcesss: IBlockAccess, position: BlockPosition): IBlockData? {
+		return when (iBlockAcesss) {
+			is World -> iBlockAcesss.getTypeIfLoaded(position)
+			is ChunkCache -> iBlockAcesss.getType(position) // chunk cache doesnt trigger chunk loads
+			else -> iBlockAcesss.getType(position)
 		}
 	}
 }

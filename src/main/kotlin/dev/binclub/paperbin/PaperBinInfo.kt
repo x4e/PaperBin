@@ -22,6 +22,7 @@ import java.util.logging.Logger
  */
 object PaperBinInfo {
 	val version = 1.6f
+	@JvmStatic
 	val logger by lazy {
 		Logger.getLogger("PaperBin").also {
 			for (handler in it.handlers) {
@@ -57,6 +58,7 @@ object PaperBinInfo {
 		AntiCrasher,
 		AntiDupe,
 		AntiElytraFly,
+		AntiEntityDesync,
 		AntiGrief,
 		AntiNetherRoof,
 		AntiNewChunks,

@@ -5,6 +5,7 @@ import org.objectweb.asm.Type
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
 import java.io.PrintStream
+import java.util.logging.Logger
 import kotlin.reflect.KClass
 
 /**
@@ -49,9 +50,9 @@ fun printlnAsm(): InsnList {
 
 fun printlnAsm(text: String): InsnList {
 	return InsnList().also {
-		it.add(FieldInsnNode(GETSTATIC, System::class.internalName, "out", "Ljava/io/PrintStream;"))
+		it.add(MethodInsnNode(INVOKESTATIC, PaperBinInfo::class.internalName, "getLogger", "()Ljava/util/logging/Logger;", false))
 		it.add(LdcInsnNode(text))
-		it.add(MethodInsnNode(INVOKEVIRTUAL, PrintStream::class.internalName, "println", "(Ljava/lang/String;)V", false))
+		it.add(MethodInsnNode(INVOKEVIRTUAL, Logger::class.internalName, "info", "(Ljava/lang/String;)V", false))
 	}
 }
 

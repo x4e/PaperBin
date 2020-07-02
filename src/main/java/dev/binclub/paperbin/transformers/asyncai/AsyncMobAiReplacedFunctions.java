@@ -1,5 +1,6 @@
 package dev.binclub.paperbin.transformers.asyncai;
 
+import dev.binclub.paperbin.PaperBinInfo;
 import net.minecraft.server.v1_12_R1.*;
 import net.minecraft.server.v1_12_R1.BlockPosition.MutableBlockPosition;
 import org.bukkit.craftbukkit.v1_12_R1.util.CraftMagicNumbers;

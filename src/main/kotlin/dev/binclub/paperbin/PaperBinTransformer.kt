@@ -56,7 +56,7 @@ object PaperBinTransformer: ClassFileTransformer {
 				}
 			}
 		} catch (t: Throwable) {
-			t.printStackTrace(System.err)
+			t.printStackTrace()
 			exitProcess(-1)
 		}
 		return classfileBuffer
