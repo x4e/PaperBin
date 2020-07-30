@@ -1,15 +1,7 @@
-buildscript {
-	dependencies {
-		classpath(files("D:\\Computing\\GradlePreprocessor\\build\\libs\\GradlePreprocessor-1.0-SNAPSHOT.jar"))
-	}
-}
-
 plugins {
 	id 'java'
 	id "org.jetbrains.kotlin.jvm" version "1.3.72"
 }
-
-apply plugin: "GradlePreprocessor"
 
 group 'dev.binclub'
 version ''
