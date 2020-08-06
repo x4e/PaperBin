@@ -2,6 +2,7 @@ package dev.binclub.paperbin
 
 import dev.binclub.paperbin.transformers.*
 import dev.binclub.paperbin.transformers.asyncai.AsyncMobAi
+import dev.binclub.paperbin.utils.NopSet
 import dev.binclub.paperbin.utils.checkForUpdate
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
@@ -15,6 +16,7 @@ import java.util.logging.ConsoleHandler
 import java.util.logging.Formatter
 import java.util.logging.LogRecord
 import java.util.logging.Logger
+import kotlin.concurrent.thread
 
 
 /**
@@ -53,6 +55,18 @@ object PaperBinInfo {
 	
 	var started = false
 	val transformers: MutableMap<String, MutableList<(ClassNode) -> Unit>> = hashMapOf()
+	val usedTransformers: MutableSet<String> =
+		(if (PaperBinConfig.debug) hashSetOf<String>() else NopSet<String>()).also { usedTransformers ->
+			Runtime.getRuntime().addShutdownHook(thread(start = false, isDaemon = false) {
+				if (!PaperBinConfig.debug) {
+					for (transformer in transformers.keys) {
+						if (transformer !in usedTransformers) {
+							logger.warning("Transformer [$transformer] was never used")
+						}
+					}
+				}
+			})
+		}
 	val features = arrayOf(
 		AntiChunkBan,
 		AntiCrasher,
@@ -60,6 +74,7 @@ object PaperBinInfo {
 		AntiElytraFly,
 		AntiEntityDesync,
 		AntiGrief,
+		AntiIllegalItem,
 		AntiNetherRoof,
 		AntiNewChunks,
 		AntiPortalGodmode,
@@ -97,7 +112,7 @@ object PaperBinInfo {
 	}
 	
 	fun registerTransformer(className: String, transformer: (ClassNode) -> Unit) {
-		transformers.getOrPut(className, { ArrayList(1) }).add(transformer)
+		transformers.getOrPut(className.replace('.', '/'), { ArrayList(1) }).add(transformer)
 	}
 	
 	fun onStartup() {
@@ -156,6 +171,9 @@ object PaperBinInfo {
 }
 
 interface PaperFeature {
+	val logger: Logger
+		get() = PaperBinInfo.logger
+	
 	@Throws(IllegalStateException::class)
 	fun registerTransformers()
 	fun register(className: String, transformer: (ClassNode) -> Unit) = PaperBinInfo.registerTransformer(className, transformer)

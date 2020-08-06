@@ -34,7 +34,7 @@ object AntiCrasher: PaperFeature {
 								
 								add(VarInsnNode(ALOAD, 0))
 								add(SWAP)
-								add(MethodInsnNode(INVOKEVIRTUAL, "net/minecraft/server/v1_12_R1/PlayerConnection", "validateBook", "(Lnet/minecraft/server/v1_12_R1/ItemStack;)Z", false))
+								add(MethodInsnNode(INVOKEVIRTUAL, "net/minecraft/server/v1_12_R1/PlayerConnection", "PaperBinInfo.logger.infook", "(Lnet/minecraft/server/v1_12_R1/ItemStack;)Z", false))
 								add(JumpInsnNode(IFNE, endJump2))
 								
 								add(RETURN) // Dont process, player will be disconnected next tick

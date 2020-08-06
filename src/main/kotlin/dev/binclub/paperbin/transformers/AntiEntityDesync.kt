@@ -14,6 +14,7 @@ import org.objectweb.asm.tree.VarInsnNode
  */
 object AntiEntityDesync: PaperFeature {
 	override fun registerTransformers() {
+		return
 		register("net.minecraft.server.v1_12_R1.Entity") { classNode ->
 			var done = 0
 			for (method in classNode.methods) {

@@ -35,8 +35,10 @@ object PaperBinTransformer: ClassFileTransformer {
 				return classfileBuffer
 			}
 			
-			PaperBinInfo.transformers[className.replace('/', '.')]?.let { transformers ->
+			val className = className.replace('.', '/')
+			PaperBinInfo.transformers[className]?.let { transformers ->
 				PaperBinInfo.logger.log(Level.INFO, "Transforming [$className]...")
+				PaperBinInfo.usedTransformers += className
 				val classNode = ClassNode()
 				ClassReader(classfileBuffer).accept(classNode, 0)
 				

@@ -40,26 +40,36 @@ fun ldcInt(int: Int): AbstractInsnNode {
 	}
 }
 
-fun printlnAsm(): InsnList {
-	return InsnList().apply {
-		add(FieldInsnNode(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;"))
-		add(SWAP)
-		add(MethodInsnNode(INVOKEVIRTUAL, PrintStream::class.internalName, "println", "(Ljava/lang/Object;)V", false))
-	}
+fun InsnList.printlnAsm() {
+	add(FieldInsnNode(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;"))
+	add(SWAP)
+	add(MethodInsnNode(INVOKEVIRTUAL, PrintStream::class.internalName, "println", "(Ljava/lang/Object;)V", false))
 }
 
-fun printlnAsm(text: String): InsnList {
-	return InsnList().also {
-		it.add(MethodInsnNode(INVOKESTATIC, PaperBinInfo::class.internalName, "getLogger", "()Ljava/util/logging/Logger;", false))
-		it.add(LdcInsnNode(text))
-		it.add(MethodInsnNode(INVOKEVIRTUAL, Logger::class.internalName, "info", "(Ljava/lang/String;)V", false))
-	}
+fun InsnBuilder.printlnAsm() {
+	+FieldInsnNode(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;")
+	+SWAP.insn()
+	+MethodInsnNode(INVOKEVIRTUAL, PrintStream::class.internalName, "println", "(Ljava/lang/Object;)V", false)
 }
 
-fun printlnIntAsm(): InsnList {
-	return InsnList().also {
-		it.add(FieldInsnNode(GETSTATIC, System::class.internalName, "out", "Ljava/io/PrintStream;"))
-		it.add(InsnNode(SWAP))
-		it.add(MethodInsnNode(INVOKEVIRTUAL, PrintStream::class.internalName, "println", "(I)V", false))
-	}
+fun InsnList.printlnAsm(text: String) {
+	add(MethodInsnNode(INVOKESTATIC, PaperBinInfo::class.internalName, "getLogger", "()Ljava/util/logging/Logger;", false))
+	add(LdcInsnNode(text))
+	add(MethodInsnNode(INVOKEVIRTUAL, Logger::class.internalName, "info", "(Ljava/lang/String;)V", false))
+}
+fun InsnBuilder.printlnAsm(text: String) {
+	+MethodInsnNode(INVOKESTATIC, PaperBinInfo::class.internalName, "getLogger", "()Ljava/util/logging/Logger;", false)
+	+LdcInsnNode(text)
+	+MethodInsnNode(INVOKEVIRTUAL, Logger::class.internalName, "info", "(Ljava/lang/String;)V", false)
+}
+
+fun InsnList.printlnIntAsm() {
+	add(FieldInsnNode(GETSTATIC, System::class.internalName, "out", "Ljava/io/PrintStream;"))
+	add(InsnNode(SWAP))
+	add(MethodInsnNode(INVOKEVIRTUAL, PrintStream::class.internalName, "println", "(I)V", false))
+}
+fun InsnBuilder.printlnIntAsm() {
+	+FieldInsnNode(GETSTATIC, System::class.internalName, "out", "Ljava/io/PrintStream;")
+	+SWAP.insn()
+	+MethodInsnNode(INVOKEVIRTUAL, PrintStream::class.internalName, "println", "(I)V", false)
 }
