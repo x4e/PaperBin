@@ -21,6 +21,7 @@ class InsnBuilder {
 	inline fun Int.insn() = InsnNode(this)
 	
 	inline fun insn(opcode: Int) = +InsnNode(opcode)
+	inline fun aconst_null() = insn(ACONST_NULL)
 	inline fun pop() = insn(POP)
 	inline fun ineg() = insn(INEG)
 	inline fun isub() = insn(ISUB)
@@ -36,7 +37,11 @@ class InsnBuilder {
 	inline fun dup2() = insn(DUP2)
 	inline fun iconst_1() = insn(ICONST_1)
 	inline fun iconst_m1() = insn(ICONST_M1)
+	inline fun ifeq(labelNode: LabelNode) = +JumpInsnNode(IFEQ, labelNode)
+	inline fun ifnull(labelNode: LabelNode) = +JumpInsnNode(IFNULL, labelNode)
 	inline fun aload(`var`: Int) = +VarInsnNode(ALOAD, `var`)
 	inline fun invokestatic(owner: String, name: String, desc: String, `interface`: Boolean = false)
 		= +MethodInsnNode(INVOKESTATIC, owner, name, desc, `interface`)
+	inline fun invokevirtual(owner: String, name: String, desc: String, `interface`: Boolean = false)
+		= +MethodInsnNode(INVOKEVIRTUAL, owner, name, desc, `interface`)
 }

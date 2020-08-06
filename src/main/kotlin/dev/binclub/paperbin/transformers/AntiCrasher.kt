@@ -3,6 +3,11 @@ package dev.binclub.paperbin.transformers
 import dev.binclub.paperbin.PaperBinConfig
 import dev.binclub.paperbin.PaperFeature
 import dev.binclub.paperbin.utils.add
+import dev.binclub.paperbin.utils.insnBuilder
+import net.minecraft.server.v1_12_R1.ItemStack
+import net.minecraft.server.v1_12_R1.Items
+import net.minecraft.server.v1_12_R1.PacketPlayInWindowClick
+import net.minecraft.server.v1_12_R1.PlayerConnection
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
 
@@ -12,6 +17,15 @@ import org.objectweb.asm.tree.*
  * @author cookiedragon234 12/May/2020
  */
 object AntiCrasher: PaperFeature {
+	@JvmStatic
+	fun checkPacket(connection: PlayerConnection, packet: PacketPlayInWindowClick): ItemStack? {
+		val stack = packet.e()
+		if (stack.item == Items.WRITABLE_BOOK && stack.tag?.hasKey("pages") == true) {
+			return stack
+		}
+		return null
+	}
+	
 	override fun registerTransformers() {
 		if (!PaperBinConfig.antiCrasher) return
 		
@@ -20,30 +34,29 @@ object AntiCrasher: PaperFeature {
 				if (method.name == "a" && method.desc == "(Lnet/minecraft/server/v1_12_R1/PacketPlayInWindowClick;)V") {
 					for (insn in method.instructions) {
 						if (insn is MethodInsnNode && insn.name == "isSpectator" && insn.desc == "()Z") {
-							
-							val endJump1 = LabelNode()
-							val endJump2 = LabelNode()
-							val list = InsnList().apply {
-								add(VarInsnNode(ALOAD, 1))// PacketPlayInWindowClick
-								add(MethodInsnNode(INVOKEVIRTUAL, "net/minecraft/server/v1_12_R1/PacketPlayInWindowClick", "e", "()Lnet/minecraft/server/v1_12_R1/ItemStack;", false))
-								add(DUP)
-								
-								add(MethodInsnNode(INVOKEVIRTUAL, "net/minecraft/server/v1_12_R1/ItemStack", "getItem", "()Lnet/minecraft/server/v1_12_R1/Item;", false))
-								add(FieldInsnNode(GETSTATIC, "net/minecraft/server/v1_12_R1/Items", "WRITABLE_BOOK", "Lnet/minecraft/server/v1_12_R1/Item;"))
-								add(JumpInsnNode(IF_ACMPNE, endJump1)) // If item is book
-								
-								add(VarInsnNode(ALOAD, 0))
-								add(SWAP)
-								add(MethodInsnNode(INVOKEVIRTUAL, "net/minecraft/server/v1_12_R1/PlayerConnection", "PaperBinInfo.logger.infook", "(Lnet/minecraft/server/v1_12_R1/ItemStack;)Z", false))
-								add(JumpInsnNode(IFNE, endJump2))
-								
-								add(RETURN) // Dont process, player will be disconnected next tick
-								
-								add(endJump1)
-								add(POP)
-								add(endJump2)
+							val list = insnBuilder {
+								aload(0) // this
+								aload(1) // packet
+								invokestatic(
+									"dev/binclub/paperbin/transformers/AntiCrasher",
+									"checkPacket",
+									"(Lnet/minecraft/server/v1_12_R1/PlayerConnection;Lnet/minecraft/server/v1_12_R1/PacketPlayInWindowClick;)Lnet/minecraft/server/v1_12_R1/ItemStack;"
+								)
+								val out = LabelNode()
+								dup()
+								ifnull(out)
+								aload(0) // this
+								swap()
+								invokevirtual(
+									"net/minecraft/server/v1_12_R1/PlayerConnection",
+									"validateBook",
+									"(Lnet/minecraft/server/v1_12_R1/ItemStack;)Z"
+								)
+								pop()
+								aconst_null()
+								+out
+								pop()
 							}
-							
 							method.instructions.insert(insn, list)
 							return@register
 						}
