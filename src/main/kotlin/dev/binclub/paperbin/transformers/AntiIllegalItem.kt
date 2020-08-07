@@ -9,7 +9,7 @@ import org.objectweb.asm.Opcodes.RETURN
 /**
  * Anti illegal item
  *
- * Prevents obtaining survival only items, unnatural stack counts, and unnatural enchantment levels
+ * Prevents obtaining creative only items, unnatural stack counts, and unnatural enchantment levels
  *
  * For peformance, this will only run on itemstack deserialization
  *
