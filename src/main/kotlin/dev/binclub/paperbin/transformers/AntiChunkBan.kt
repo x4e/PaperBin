@@ -1,7 +1,7 @@
 package dev.binclub.paperbin.transformers
 
 import dev.binclub.paperbin.PaperBinConfig
-import dev.binclub.paperbin.PaperFeature
+import dev.binclub.paperbin.PaperBinFeature
 import dev.binclub.paperbin.utils.add
 import net.minecraft.server.v1_12_R1.*
 import org.objectweb.asm.Opcodes.*
@@ -10,7 +10,7 @@ import org.objectweb.asm.tree.*
 /**
  * @author cookiedragon234 13/May/2020
  */
-object AntiChunkBan: PaperFeature {
+object AntiChunkBan: PaperBinFeature {
 	val dispatchPackets by lazy {
 		NetworkManager::class.java.declaredMethods.first { it.name == "dispatchPacket" }.also {
 			it.isAccessible = true

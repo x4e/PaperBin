@@ -1,7 +1,7 @@
 package dev.binclub.paperbin.transformers
 
 import dev.binclub.paperbin.PaperBinConfig
-import dev.binclub.paperbin.PaperFeature
+import dev.binclub.paperbin.PaperBinFeature
 import dev.binclub.paperbin.utils.insnBuilder
 import net.minecraft.server.v1_12_R1.EntityPlayer
 import net.minecraft.server.v1_12_R1.PacketPlayInFlying
@@ -18,7 +18,7 @@ import org.objectweb.asm.tree.VarInsnNode
  *
  * @author cookiedragon234 19/May/2020
  */
-object AntiPortalGodmode: PaperFeature {
+object AntiPortalGodmode: PaperBinFeature {
 	@JvmStatic
 	fun checkPositionPacket(teleportPos: Any, player: Any, packet: Any) {
 		if (!PaperBinConfig.antiPortalGodmode) return

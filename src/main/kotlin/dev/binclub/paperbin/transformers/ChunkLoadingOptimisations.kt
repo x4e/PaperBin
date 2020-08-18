@@ -1,18 +1,13 @@
 package dev.binclub.paperbin.transformers
 
 import dev.binclub.paperbin.PaperBinConfig
-import dev.binclub.paperbin.PaperBinInfo
-import dev.binclub.paperbin.PaperFeature
-import dev.binclub.paperbin.utils.add
-import org.bukkit.Bukkit
-import org.bukkit.entity.Player
+import dev.binclub.paperbin.PaperBinFeature
 import org.objectweb.asm.Opcodes.*
-import org.objectweb.asm.tree.*
 
 /**
  * @author cookiedragon234 12/May/2020
  */
-object ChunkLoadingOptimisations: PaperFeature {
+object ChunkLoadingOptimisations: PaperBinFeature {
 	override fun postStartup() {
 	}
 	

@@ -2,7 +2,7 @@ package dev.binclub.paperbin.transformers
 
 import dev.binclub.paperbin.PaperBinConfig
 import dev.binclub.paperbin.PaperBinInfo
-import dev.binclub.paperbin.PaperFeature
+import dev.binclub.paperbin.PaperBinFeature
 import dev.binclub.paperbin.utils.insnBuilder
 import net.minecraft.server.v1_12_R1.*
 import org.bukkit.Bukkit
@@ -23,7 +23,7 @@ import org.objectweb.asm.tree.TypeInsnNode
 /**
  * @author cookiedragon234 12/May/2020
  */
-object AntiNetherRoof: PaperFeature {
+object AntiNetherRoof: PaperBinFeature {
 	/**
 	 * Returns true if crystal can be placed here
 	 */

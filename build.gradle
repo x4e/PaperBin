@@ -21,14 +21,18 @@ jar {
 	from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
 }
 
+configurations {
+	fatJar.extendsFrom(compile, runtime)
+}
+
 dependencies {
 	compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-	runtime 'org.ow2.asm:asm:7.1'
-	runtime 'org.ow2.asm:asm-tree:7.1'
-	runtime 'org.ow2.asm:asm-commons:7.1'
-	runtime 'org.ow2.asm:asm-util:7.1'
+	compile "org.jetbrains.kotlin:kotlin-reflect"
+	implementation 'org.ow2.asm:asm:7.1'
+	implementation 'org.ow2.asm:asm-tree:7.1'
+	implementation 'org.ow2.asm:asm-commons:7.1'
+	compile 'org.ow2.asm:asm-util:7.1'
 	implementation files("paperbin/cache/patched_1.12.2.jar")
-	//compile files("${System.properties['java.home']}/../lib/sa-jdi.jar", "${System.properties['java.home']}/../lib/tools.jar")
 }
 
 compileKotlin {

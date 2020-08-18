@@ -1,12 +1,9 @@
 package dev.binclub.paperbin.transformers.asyncai
 
 import dev.binclub.paperbin.PaperBinConfig
-import dev.binclub.paperbin.PaperBinInfo.logger
-import dev.binclub.paperbin.PaperFeature
+import dev.binclub.paperbin.PaperBinFeature
 import dev.binclub.paperbin.utils.*
 import net.minecraft.server.v1_12_R1.*
-import net.minecraft.server.v1_12_R1.BlockPosition.PooledBlockPosition
-import org.objectweb.asm.Label
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
 import java.lang.reflect.InvocationTargetException
@@ -15,7 +12,7 @@ import kotlin.concurrent.thread
 /**
  * @author cookiedragon234 25/May/2020
  */
-object AsyncMobAi: PaperFeature {
+object AsyncMobAi: PaperBinFeature {
 	private val frozen by lazy {
 		EntityLiving::class.java.getDeclaredMethod("isFrozen").also {
 			it.isAccessible = true
@@ -650,6 +647,8 @@ object AsyncMobAi: PaperFeature {
 									"(IIILjava/util/ArrayList;)Lnet/minecraft/server/v1_12_R1/IBlockData;",
 									false
 								)
+								+InsnNode(SWAP)
+								+InsnNode(POP)
 							}
 							method.instructions.insert(insn, replacement)
 							method.instructions.remove(insn)
@@ -736,6 +735,7 @@ object AsyncMobAi: PaperFeature {
 				if (method.name == "a" && method.desc == "(Lnet/minecraft/server/v1_12_R1/IBlockAccess;Lnet/minecraft/server/v1_12_R1/BlockPosition;Lnet/minecraft/server/v1_12_R1/EnumDirection;)Z") {
 					for (insn in method.instructions) {
 						if (insn is MethodInsnNode && insn.owner == "net/minecraft/server/v1_12_R1/IBlockAccess" && insn.name == "getType" && insn.desc == "(Lnet/minecraft/server/v1_12_R1/BlockPosition;)Lnet/minecraft/server/v1_12_R1/IBlockData;") {
+							insn.opcode = INVOKESTATIC
 							insn.owner = "dev/binclub/paperbin/transformers/asyncai/AsyncMobAi"
 							insn.name = "blockAccessGetTypeIfLoaded"
 							insn.desc = "(Lnet/minecraft/server/v1_12_R1/IBlockAccess;Lnet/minecraft/server/v1_12_R1/BlockPosition;)Lnet/minecraft/server/v1_12_R1/IBlockData;"

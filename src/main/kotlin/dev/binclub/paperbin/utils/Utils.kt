@@ -7,12 +7,23 @@ import org.objectweb.asm.tree.*
 import java.io.PrintStream
 import java.util.logging.Logger
 import kotlin.reflect.KClass
+import kotlin.reflect.KFunction
 
 /**
  * @author cookiedragon234 23/Apr/2020
  */
+inline fun <reified T: Any> Any?.cast(type: KClass<T>): T = this as T
+inline fun <reified T: Any> Any?.cast(type: Class<T>): T = this as T
+
 val <T: Any> KClass<T>.internalName: String
 	get() = Type.getInternalName(this.java)
+
+inline val KFunction<*>.descriptor: String
+	inline get() {
+		val params = parameters.map { Type.getType(it.type.classifier.cast(KClass::class).java) }
+		val returnType = Type.getType(returnType.classifier.cast(KClass::class).java)
+		return Type.getMethodDescriptor(returnType, *params.toTypedArray())
+	}
 
 fun InsnList.add(opcode: Int) = add(InsnNode(opcode))
 
@@ -38,6 +49,65 @@ fun ldcInt(int: Int): AbstractInsnNode {
 	} else {
 		LdcInsnNode(int)
 	}
+}
+
+fun ldcLong(long: Long): AbstractInsnNode {
+	return when (long) {
+		0L -> InsnNode(LCONST_0)
+		1L -> InsnNode(LCONST_1)
+		else -> LdcInsnNode(long)
+	}
+}
+
+fun ldcDouble(double: Double): AbstractInsnNode {
+	return when (double) {
+		0.0 -> InsnNode(DCONST_0)
+		1.0 -> InsnNode(DCONST_1)
+		else -> LdcInsnNode(double)
+	}
+}
+
+fun ldcFloat(float: Float): AbstractInsnNode {
+	return when (float) {
+		0f -> InsnNode(FCONST_0)
+		1f -> InsnNode(FCONST_1)
+		2f -> InsnNode(FCONST_2)
+		else -> LdcInsnNode(float)
+	}
+}
+
+inline fun constructTableSwitch(
+	baseNumber: Int,
+	defaultLabel: LabelNode,
+	vararg targetLabels: LabelNode
+): TableSwitchInsnNode {
+	return TableSwitchInsnNode(
+		baseNumber,
+		baseNumber + targetLabels.size - 1,
+		defaultLabel,
+		*targetLabels
+	)
+}
+
+inline fun constructLookupSwitch(
+	defaultLabel: LabelNode,
+	lookup: Array<Pair<Int, LabelNode>>
+): LookupSwitchInsnNode {
+	lookup.sortWith(Comparator { a, b -> a.first.compareTo(b.first) })
+	
+	val keys = lookup.map {
+		it.first
+	}.toIntArray()
+	
+	val values = lookup.map {
+		it.second
+	}.toTypedArray()
+	
+	return LookupSwitchInsnNode(
+		defaultLabel,
+		keys,
+		values
+	)
 }
 
 fun InsnList.printlnAsm() {

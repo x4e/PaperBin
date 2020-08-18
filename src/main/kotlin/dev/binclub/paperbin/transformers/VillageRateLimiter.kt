@@ -2,7 +2,7 @@ package dev.binclub.paperbin.transformers
 
 import dev.binclub.paperbin.PaperBinConfig
 import dev.binclub.paperbin.PaperBinInfo
-import dev.binclub.paperbin.PaperFeature
+import dev.binclub.paperbin.PaperBinFeature
 import dev.binclub.paperbin.utils.insnBuilder
 import dev.binclub.paperbin.utils.internalName
 import net.minecraft.server.v1_12_R1.*
@@ -13,7 +13,7 @@ import org.objectweb.asm.tree.*
 /**
  * @author cookiedragon234 11/May/2020
  */
-object VillageRateLimiter: PaperFeature {
+object VillageRateLimiter: PaperBinFeature {
 	const val rateLimit = 40 // run every 40 ticks
 	
 	@JvmStatic

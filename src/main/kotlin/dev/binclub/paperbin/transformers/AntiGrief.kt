@@ -2,21 +2,17 @@ package dev.binclub.paperbin.transformers
 
 import dev.binclub.paperbin.PaperBinConfig
 import dev.binclub.paperbin.PaperBinInfo
-import dev.binclub.paperbin.PaperFeature
-import dev.binclub.paperbin.utils.add
-import dev.binclub.paperbin.utils.internalName
+import dev.binclub.paperbin.PaperBinFeature
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerBucketEmptyEvent
-import org.objectweb.asm.Opcodes.*
-import org.objectweb.asm.tree.*
 
 /**
  * @author cookiedragon234 15/May/2020
  */
-object AntiGrief: PaperFeature {
+object AntiGrief: PaperBinFeature {
 	val protectedBlocks by lazy {
 		arrayOf(
 			Material.END_GATEWAY,

@@ -2,15 +2,20 @@ package dev.binclub.paperbin.transformers
 
 import dev.binclub.paperbin.PaperBinConfig
 import dev.binclub.paperbin.PaperBinInfo
-import dev.binclub.paperbin.PaperFeature
+import dev.binclub.paperbin.PaperBinFeature
 import dev.binclub.paperbin.utils.add
 import dev.binclub.paperbin.utils.insnBuilder
 import dev.binclub.paperbin.utils.internalName
 import dev.binclub.paperbin.utils.ldcInt
 import net.minecraft.server.v1_12_R1.*
 import org.bukkit.Bukkit
+import org.objectweb.asm.MethodVisitor
+import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
+import org.objectweb.asm.tree.analysis.BasicVerifier
+import org.objectweb.asm.util.CheckMethodAdapter
+import java.util.*
 import kotlin.math.max
 
 /**
@@ -18,7 +23,7 @@ import kotlin.math.max
  *
  * @author cookiedragon234 11/May/2020
  */
-object TpsCompensation: PaperFeature {
+object TpsCompensation: PaperBinFeature {
 	@JvmStatic
 	fun getPerfectCurrentTick(): Int {
 		// MinecraftServer.currentTick is affected by TPS (obviously)
@@ -172,8 +177,36 @@ object TpsCompensation: PaperFeature {
 							val afterJump = LabelNode()
 							method.instructions.insert(jump, afterJump)
 							val falseJump = LabelNode()
-							val endJump = LabelNode()
-							val list = InsnList().apply {
+							val list = insnBuilder {
+								aload(0)
+								getfield("net/minecraft/server/v1_12_R1/EntityLiving", "activeItem", "Lnet/minecraft/server/v1_12_R1/ItemStack;")
+								invokevirtual("net/minecraft/server/v1_12_R1/ItemStack", "getItem", "()Lnet/minecraft/server/v1_12_R1/Item;")
+								invokestatic(TpsCompensation::class, TpsCompensation::shouldCompensate)
+								ifeq(falseJump) // Only run for food items
+								aload(0)
+								getfield("net/minecraft/server/v1_12_R1/EntityLiving", "eatStartTime", "J")
+								iconst_m1()
+								i2l()
+								lcmp()
+								ifeq(falseJump) // If we have started eating
+								invokestatic("java/lang/System", "nanoTime", "()J")
+								aload(0)
+								getfield("net/minecraft/server/v1_12_R1/EntityLiving", "eatStartTime", "J")
+								lsub()
+								aload(0)
+								getfield("net/minecraft/server/v1_12_R1/EntityLiving", "totalEatTimeTicks", "I")
+								iconst_1()
+								iadd()
+								ldc(1000 * 1000 * 50)
+								imul()
+								i2l()
+								lcmp()
+								ifle(falseJump)
+								pop()
+								goto(afterJump)
+								+falseJump
+							}
+							/*val list = InsnList().apply {
 								add(VarInsnNode(ALOAD, 0))
 								add(FieldInsnNode(GETFIELD, "net/minecraft/server/v1_12_R1/EntityLiving", "activeItem", "Lnet/minecraft/server/v1_12_R1/ItemStack;"))
 								add(MethodInsnNode(INVOKEVIRTUAL, "net/minecraft/server/v1_12_R1/ItemStack", "getItem", "()Lnet/minecraft/server/v1_12_R1/Item;", false))
@@ -204,7 +237,7 @@ object TpsCompensation: PaperFeature {
 								add(endJump)
 								//add(ICONST_1)
 								//add(IXOR)
-							}
+							}*/
 							method.instructions.insert(insn, list)
 							
 							done += 1

@@ -2,7 +2,7 @@ package dev.binclub.paperbin.transformers
 
 import dev.binclub.paperbin.PaperBinConfig
 import dev.binclub.paperbin.PaperBinInfo
-import dev.binclub.paperbin.PaperFeature
+import dev.binclub.paperbin.PaperBinFeature
 import net.minecraft.server.v1_12_R1.EntityPlayer
 import net.minecraft.server.v1_12_R1.EnumItemSlot
 import net.minecraft.server.v1_12_R1.ItemElytra
@@ -17,7 +17,7 @@ import org.bukkit.event.entity.EntityToggleGlideEvent
 /**
  * @author cookiedragon234 25/May/2020
  */
-object AntiElytraFly: PaperFeature {
+object AntiElytraFly: PaperBinFeature {
 	override fun postStartup() {
 		if (!PaperBinConfig.antiElytraFly) return
 		

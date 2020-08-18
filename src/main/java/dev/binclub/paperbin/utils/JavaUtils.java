@@ -1,7 +1,7 @@
 package dev.binclub.paperbin.utils;
 
 /**
- * Somethings just arent possible in kotlin 🙄
+ * Somethings just arent possible in kotlin
  *
  * This fixes that
  *

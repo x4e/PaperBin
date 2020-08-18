@@ -3,6 +3,7 @@ package dev.binclub.paperbin
 import dev.binclub.paperbin.transformers.*
 import dev.binclub.paperbin.transformers.asyncai.AsyncMobAi
 import dev.binclub.paperbin.utils.NopSet
+import dev.binclub.paperbin.utils.StdOutHandler
 import dev.binclub.paperbin.utils.checkForUpdate
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
@@ -31,8 +32,8 @@ object PaperBinInfo {
 				it.removeHandler(handler)
 			}
 			it.useParentHandlers = false
-			it.addHandler(ConsoleHandler().also {
-				it.formatter = object: Formatter() {
+			it.addHandler(StdOutHandler().apply {
+				formatter = object: Formatter() {
 					override fun format(record: LogRecord): String {
 						val builder = StringBuilder()
 						val ex = record.thrown
@@ -54,11 +55,12 @@ object PaperBinInfo {
 	}
 	
 	var started = false
+	var crashed = false
 	val transformers: MutableMap<String, MutableList<(ClassNode) -> Unit>> = hashMapOf()
 	val usedTransformers: MutableSet<String> =
 		(if (PaperBinConfig.debug) hashSetOf<String>() else NopSet<String>()).also { usedTransformers ->
 			Runtime.getRuntime().addShutdownHook(thread(start = false, isDaemon = false) {
-				if (!PaperBinConfig.debug) {
+				if (!PaperBinConfig.debug && !crashed) {
 					for (transformer in transformers.keys) {
 						if (transformer !in usedTransformers) {
 							logger.warning("Transformer [$transformer] was never used")
@@ -170,7 +172,7 @@ object PaperBinInfo {
 	var ticks: Int = 0
 }
 
-interface PaperFeature {
+interface PaperBinFeature {
 	val logger: Logger
 		get() = PaperBinInfo.logger
 	

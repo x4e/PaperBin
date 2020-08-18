@@ -21,13 +21,13 @@ fun main(args: Array<String>) {
 		if (!ManagementFactory.getRuntimeMXBean().inputArguments.any {
 				it.contains("noverify", true) || it.contains("Xverify", true)
 			}) {
-			error("Disable the verifier")
+			//error("Disable the verifier")
 		}
 		
 		val file = File(args[0])
 		val newArgs = args.drop(1).toTypedArray()
 		
-		if (InstrumentationFactory.getInstrumentation()?.addTransformer(PaperBinTransformer) == null) {
+		if (InstrumentationFactory.getInstrumentation(PaperBinInfo.logger)?.addTransformer(PaperBinTransformer) == null) {
 			error("""
 				Could not fetch an instrumentation instance.
 				Please make sure you have a valid JAVA_HOME specified.

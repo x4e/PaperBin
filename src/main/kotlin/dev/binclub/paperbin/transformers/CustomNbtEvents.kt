@@ -1,6 +1,6 @@
 package dev.binclub.paperbin.transformers
 
-import dev.binclub.paperbin.PaperFeature
+import dev.binclub.paperbin.PaperBinFeature
 import dev.binclub.paperbin.utils.add
 import net.minecraft.server.v1_12_R1.Entity
 import net.minecraft.server.v1_12_R1.NBTTagCompound
@@ -14,7 +14,7 @@ import org.objectweb.asm.tree.VarInsnNode
 /**
  * @author cookiedragon234 16/May/2020
  */
-object CustomNbtEvents: PaperFeature {
+object CustomNbtEvents: PaperBinFeature {
 	@JvmStatic
 	fun event(entity: Any, nbt: Any, read: Boolean) {
 		entity as Entity

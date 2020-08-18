@@ -18,25 +18,27 @@
  */
 package org.apache.openjpa.enhance;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
+import java.io.*;
 import java.lang.instrument.Instrumentation;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.security.AccessController;
 import java.security.CodeSource;
 import java.security.PrivilegedAction;
+import java.util.Objects;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.openjpa.lib.util.JavaVendors;
 
 
@@ -70,53 +72,79 @@ public class InstrumentationFactory {
 		_dynamicallyInstall = val;
 	}
 	
+	private static Method defineClass;
+	
+	static {
+		try {
+			defineClass = ClassLoader.class.getDeclaredMethod("defineClass", byte[].class, int.class, int.class);
+			defineClass.setAccessible(true);
+		}
+		catch (NoSuchMethodException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	private static <T> Class<T> addClassToCl(ClassLoader cl, String className) throws Exception {
+		InputStream classStream =
+		InstrumentationFactory.class.getResourceAsStream("/" + className + ".class");
+		Objects.requireNonNull(classStream);
+		byte[] clazz = IOUtils.toByteArray(classStream);
+		
+		return (Class<T>) defineClass.invoke(cl, clazz, 0, clazz.length);
+	}
+	
 	/**
 	 * @return null if Instrumentation can not be obtained, or if any
 	 * Exceptions are encountered.
 	 */
-	public static synchronized Instrumentation getInstrumentation() {
+	public static synchronized Instrumentation getInstrumentation(Logger LOGGER) {
 		if ( _inst != null || !_dynamicallyInstall)
 			return _inst;
 		
-		AccessController.doPrivileged(new PrivilegedAction<Object>() {
-			public Object run() {
-				// Dynamic agent enhancement should only occur when the OpenJPA library is
-				// loaded using the system class loader.  Otherwise, the OpenJPA
-				// library may get loaded by separate, disjunct loaders, leading to linkage issues.
-				try {
-					if (!InstrumentationFactory.class.getClassLoader().equals(
-					ClassLoader.getSystemClassLoader())) {
-						return null;
-					}
-				} catch (Throwable t) {
+		// end run()
+		AccessController.doPrivileged((PrivilegedAction<Object>) () -> {
+			// Dynamic agent enhancement should only occur when the OpenJPA library is
+			// loaded using the system class loader.  Otherwise, the OpenJPA
+			// library may get loaded by separate, disjunct loaders, leading to linkage issues.
+			try {
+				ClassLoader sysCl = ClassLoader.getSystemClassLoader();
+				if (!InstrumentationFactory.class.getClassLoader().equals(sysCl)) {
+					LOGGER.warning("Attempting to load instrumentation on non system classloader");
+					
+					Class<InstrumentationFactory> remoteInst = addClassToCl(sysCl, "org/apache/openjpa/enhance/InstrumentationFactory");
+					addClassToCl(sysCl, "org/apache/openjpa/lib/util/JavaVendors");
+					
+					_inst = (Instrumentation) remoteInst.getDeclaredMethod("getInstrumentation", Logger.class).invoke(null, LOGGER);
 					return null;
 				}
-				JavaVendors vendor = JavaVendors.getCurrentVendor();
-				File toolsJar = null;
-				// When running on IBM, the attach api classes are packaged in vm.jar which is a part
-				// of the default vm classpath.
-				if (vendor.isIBM() == false) {
-					// If we can't find the tools.jar and we're not on IBM we can't load the agent.
-					toolsJar = findToolsJar();
-					if (toolsJar == null) {
-						System.out.println("Couldn't find non IBM tools.jar");
-						return null;
-					}
-				}
-				
-				Class<?> vmClass = loadVMClass(toolsJar, vendor);
-				if (vmClass == null) {
-					System.out.println("Couldn't find VM class");
+			} catch (Throwable t) {
+				LOGGER.log(Level.SEVERE, "Error", t);
+			}
+			JavaVendors vendor = JavaVendors.getCurrentVendor();
+			File toolsJar = null;
+			// When running on IBM, the attach api classes are packaged in vm.jar which is a part
+			// of the default vm classpath.
+			if (vendor.isIBM() == false) {
+				// If we can't find the tools.jar and we're not on IBM we can't load the agent.
+				toolsJar = findToolsJar(LOGGER);
+				if (toolsJar == null) {
+					LOGGER.warning("Couldn't find non IBM tools.jar");
 					return null;
 				}
-				String agentPath = getAgentJar();
-				if (agentPath == null) {
-					System.out.println("Couldn't create Agent Jar");
-					return null;
-				}
-				loadAgent(agentPath, vmClass);
+			}
+			
+			Class<?> vmClass = loadVMClass(toolsJar, vendor);
+			if (vmClass == null) {
+				LOGGER.warning("Couldn't find VM class");
 				return null;
-			}// end run()
+			}
+			String agentPath = getAgentJar();
+			if (agentPath == null) {
+				LOGGER.warning("Couldn't create Agent Jar");
+				return null;
+			}
+			loadAgent(agentPath, vmClass);
+			return null;
 		});
 		// If the load(...) agent call was successful, this variable will no
 		// longer be null.
@@ -165,7 +193,7 @@ public class InstrumentationFactory {
 	 * @return If tools.jar can be found, a File representing tools.jar. <BR>
 	 *         If tools.jar cannot be found, null.
 	 */
-	private static File findToolsJar() {
+	private static File findToolsJar(Logger LOGGER) {
 		String javaHome = System.getProperty("java.home");
 		File javaHomeFile = new File(javaHome);
 		
@@ -196,7 +224,7 @@ public class InstrumentationFactory {
 		if (toolsJarFile.exists() == false) {
 			return null;
 		} else {
-			//System.out.println(_name + ".findToolsJar() -- found " + toolsJarFile.getAbsolutePath());
+			LOGGER.info(_name + ".findToolsJar() -- found " + toolsJarFile.getAbsolutePath());
 			return toolsJarFile;
 		}
 	}

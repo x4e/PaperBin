@@ -1,14 +1,12 @@
 package dev.binclub.paperbin.transformers
 
 import dev.binclub.paperbin.PaperBinConfig
-import dev.binclub.paperbin.PaperFeature
-import dev.binclub.paperbin.utils.add
+import dev.binclub.paperbin.PaperBinFeature
 import dev.binclub.paperbin.utils.insnBuilder
 import net.minecraft.server.v1_12_R1.ItemStack
 import net.minecraft.server.v1_12_R1.Items
 import net.minecraft.server.v1_12_R1.PacketPlayInWindowClick
 import net.minecraft.server.v1_12_R1.PlayerConnection
-import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
 
 /**
@@ -16,7 +14,7 @@ import org.objectweb.asm.tree.*
  *
  * @author cookiedragon234 12/May/2020
  */
-object AntiCrasher: PaperFeature {
+object AntiCrasher: PaperBinFeature {
 	@JvmStatic
 	fun checkPacket(connection: PlayerConnection, packet: PacketPlayInWindowClick): ItemStack? {
 		val stack = packet.e()

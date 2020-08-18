@@ -1,7 +1,7 @@
 package dev.binclub.paperbin.transformers
 
 import dev.binclub.paperbin.PaperBinConfig
-import dev.binclub.paperbin.PaperFeature
+import dev.binclub.paperbin.PaperBinFeature
 import dev.binclub.paperbin.utils.insnBuilder
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.MethodInsnNode
@@ -14,7 +14,7 @@ import org.objectweb.asm.tree.VarInsnNode
  *
  * @author cookiedragon234 18/May/2020
  */
-object AntiUnicodeChat: PaperFeature {
+object AntiUnicodeChat: PaperBinFeature {
 	@JvmStatic
 	fun isAllowedCharacter(char: Char): Boolean {
 		return (char in ' '..'~')

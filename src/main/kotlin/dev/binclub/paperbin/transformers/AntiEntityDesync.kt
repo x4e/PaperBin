@@ -1,8 +1,6 @@
 package dev.binclub.paperbin.transformers
 
-import dev.binclub.paperbin.PaperBinInfo.logger
-import dev.binclub.paperbin.PaperBinTransformer
-import dev.binclub.paperbin.PaperFeature
+import dev.binclub.paperbin.PaperBinFeature
 import dev.binclub.paperbin.utils.insnBuilder
 import dev.binclub.paperbin.utils.printlnAsm
 import org.objectweb.asm.Opcodes.*
@@ -12,7 +10,7 @@ import org.objectweb.asm.tree.VarInsnNode
 /**
  * @author cookiedragon234 02/Jul/2020
  */
-object AntiEntityDesync: PaperFeature {
+object AntiEntityDesync: PaperBinFeature {
 	override fun registerTransformers() {
 		return
 		register("net.minecraft.server.v1_12_R1.Entity") { classNode ->

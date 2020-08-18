@@ -1,7 +1,7 @@
 package dev.binclub.paperbin.transformers
 
 import dev.binclub.paperbin.PaperBinConfig
-import dev.binclub.paperbin.PaperFeature
+import dev.binclub.paperbin.PaperBinFeature
 import org.objectweb.asm.tree.FieldInsnNode
 import org.objectweb.asm.tree.MethodInsnNode
 import org.objectweb.asm.tree.TypeInsnNode
@@ -9,7 +9,7 @@ import org.objectweb.asm.tree.TypeInsnNode
 /**
  * @author cookiedragon234 11/May/2020
  */
-object FasterGameRuleLookup: PaperFeature {
+object FasterGameRuleLookup: PaperBinFeature {
 	override fun registerTransformers() {
 		if (!PaperBinConfig.fastGameRule) return
 		

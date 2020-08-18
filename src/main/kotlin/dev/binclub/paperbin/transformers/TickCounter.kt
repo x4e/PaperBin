@@ -2,15 +2,9 @@ package dev.binclub.paperbin.transformers
 
 import dev.binclub.paperbin.PaperBinConfig
 import dev.binclub.paperbin.PaperBinInfo
-import dev.binclub.paperbin.PaperFeature
+import dev.binclub.paperbin.PaperBinFeature
 import dev.binclub.paperbin.transformers.asyncai.AsyncMobAi
 import dev.binclub.paperbin.utils.internalName
-import net.minecraft.server.v1_12_R1.EntityHuman
-import net.minecraft.server.v1_12_R1.EntityPlayer
-import net.minecraft.server.v1_12_R1.MinecraftServer
-import net.minecraft.server.v1_12_R1.PortalTravelAgent
-import org.bukkit.PortalType
-import org.bukkit.craftbukkit.v1_12_R1.CraftServer
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
 
@@ -19,7 +13,7 @@ import org.objectweb.asm.tree.*
  *
  * @author cookiedragon234 11/May/2020
  */
-object TickCounter: PaperFeature {
+object TickCounter: PaperBinFeature {
 	override fun registerTransformers() {
 		register("net.minecraft.server.v1_12_R1.MinecraftServer") { classNode ->
 			var count = 0

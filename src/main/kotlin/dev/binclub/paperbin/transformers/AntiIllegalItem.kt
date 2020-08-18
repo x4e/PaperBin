@@ -1,7 +1,7 @@
 package dev.binclub.paperbin.transformers
 
 import dev.binclub.paperbin.PaperBinConfig
-import dev.binclub.paperbin.PaperFeature
+import dev.binclub.paperbin.PaperBinFeature
 import dev.binclub.paperbin.utils.insnBuilder
 import net.minecraft.server.v1_12_R1.*
 import org.objectweb.asm.Opcodes.RETURN
@@ -21,7 +21,7 @@ import org.objectweb.asm.Opcodes.RETURN
  *
  * @author cookiedragon234 06/Aug/2020
  */
-object AntiIllegalItem: PaperFeature {
+object AntiIllegalItem: PaperBinFeature {
 	// Used to prevent class loading
 	private class Lazy {
 		val AIR = Item.getItemOf(Blocks.AIR)
@@ -41,8 +41,6 @@ object AntiIllegalItem: PaperFeature {
 			
 			// TODO: 1.13+ has item "debug_stick"
 		)
-		
-		val enchantmentTypes: List<Enchantment> = Enchantment.enchantments.toList()
 	}
 	
 	private val lazy: Lazy by lazy { Lazy() }
@@ -58,19 +56,29 @@ object AntiIllegalItem: PaperFeature {
 		}
 		
 		var count = itemStack.count
-		count = count.coerceAtMost(itemStack.maxStackSize)
 		count = count.coerceAtLeast(0)
+		count = count.coerceAtMost(itemStack.maxStackSize)
 		itemStack.count = count
 		
-		itemStack.tag?.getList("ench", 10)?.let { enchantments ->
-			for (nbt in enchantments) {
-				val enchantment = Enchantment.c(nbt.getShort("id").toInt()) ?: continue
-				if (nbt.hasKey("lvl")) {
-					var level = nbt.getShort("lvl")
-					level = level.coerceAtLeast(0)
-					level = level.coerceAtMost(enchantment.maxLevel.toShort())
-					nbt.setShort("lvl", level)
+		itemStack.tag?.let { tag ->
+			tag.getList("ench", 10)?.let { enchantments ->
+				for (nbt in enchantments) {
+					val enchantment = Enchantment.c(nbt.getShort("id").toInt()) ?: continue
+					if (nbt.hasKey("lvl")) {
+						var level = nbt.getShort("lvl")
+						level = level.coerceAtLeast(0)
+						level = level.coerceAtMost(enchantment.maxLevel.toShort())
+						nbt.setShort("lvl", level)
+					}
 				}
+			}
+			
+			val unbreakable = if (tag.hasKey("Unbreakable")) tag.getBoolean("Unbreakable") else false
+			
+			if (!unbreakable) {
+				var damage = itemStack.damage
+				damage = damage.coerceAtLeast(0)
+				itemStack.damage = damage
 			}
 		}
 	}
