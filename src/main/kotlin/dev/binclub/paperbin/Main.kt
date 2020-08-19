@@ -29,11 +29,11 @@ fun main(args: Array<String>) {
 		
 		if (InstrumentationFactory.getInstrumentation(PaperBinInfo.logger)?.addTransformer(PaperBinTransformer) == null) {
 			error("""
-				Could not fetch an instrumentation instance.
-				Please make sure you have a valid JAVA_HOME specified.
-				If the error persists try using Open JDK 1.8.0_252.
-				If the error still persists open an issue at https://github.com/cookiedragon234/PaperBin/issues
-			""".trimIndent())
+				|Could not fetch an instrumentation instance.
+				|   Please make sure you have a valid JAVA_HOME specified.
+				|   If the error persists try using Open JDK 1.8.0_252.
+				|   If the error still persists open an issue at https://github.com/cookiedragon234/PaperBin/issues
+			""".trimMargin())
 		}
 		
 		val sysCl = ClassLoader.getSystemClassLoader() as URLClassLoader
@@ -61,6 +61,17 @@ fun main(args: Array<String>) {
 		}
 		
 		println("WARNING: A fatal exception occured while initialising PaperBin $version")
-		t.printStackTrace()
+		println("""
+			|System Info:
+			|   Title: ${System.getProperty("java.vm.name")}
+			|   Vendor: ${System.getProperty("java.vm.vendor")}
+			|   Version: ${System.getProperty("java.version")}
+			|   RT Version: ${System.getProperty("java.runtime.version")}
+			|   OS: ${System.getProperty("os.name")}
+			|   OS_V: ${System.getProperty("os.version")}
+			|   Arch: ${System.getProperty("os.arch")}
+			|   JHome: ${System.getProperty("java.home")}
+		""".trimMargin())
+		throw t
 	}
 }

@@ -79,6 +79,7 @@ object PaperBinInfo {
 		AntiIllegalItem,
 		AntiNetherRoof,
 		AntiNewChunks,
+		AntiPhysicsCrash,
 		AntiPortalGodmode,
 		AntiUnicodeChat,
 		AsyncMobAi,
