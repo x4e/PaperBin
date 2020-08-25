@@ -15,6 +15,20 @@ Then download paperbin and run the following command **using a version 8 JVM**, 
 java [any jvm arguments] -noverify -jar PaperBin.jar ActualPaper.jar [any paper arguments]
 ```
 
+## Testomonials
+> paperbin
+> did lots of impovements to my server
+> i can f\*\*\*ing handle 15k entities
+> in 4 chunks
+> without tps drop
+
+(Kaspian#8508)
+
+> thanks for making such a helpful server tool
+
+(Gav#7669)
+
+
 ## Test Server
 This plugin is currently active on `oldfag.org`, feel free to connect and test it out, there are no rules.
 
