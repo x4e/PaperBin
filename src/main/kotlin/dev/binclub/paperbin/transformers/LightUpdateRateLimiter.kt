@@ -20,6 +20,8 @@ object LightUpdateRateLimiter: PaperBinFeature {
 	override fun registerTransformers() {
 		if (!PaperBinConfig.lightUpdateRateLimit) return
 		
+		logger.info("Make sure to enable queue-light-updates in paper config")
+		
 		register("net/minecraft/server/v1_12_R1/PaperLightingQueue\$LightingQueue") { cn ->
 			// THIS CLASS SHOULD NOT BE USED!!
 			cn.fields?.clear()
@@ -181,10 +183,8 @@ class CustomLightingQueue(val chunk: Chunk): HashMap<BlockPosition, Runnable>() 
 	fun processQueue(startTime: Long, maxTickTime: Long): Boolean {
 		val now = System.currentTimeMillis()
 		if (now - lastUpdated < PaperBinConfig.lightUpdateRateLimitDelay) {
-			PaperBinInfo.logger.info("Skipping light update")
 			return false
 		}
-		PaperBinInfo.logger.info("light update ${now - lastUpdated} ($now, $lastUpdated)")
 		lastUpdated = now
 		
 		when {
