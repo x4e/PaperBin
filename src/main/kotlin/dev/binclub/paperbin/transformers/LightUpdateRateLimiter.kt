@@ -46,6 +46,7 @@ object LightUpdateRateLimiter: PaperBinFeature {
 						ldc(0L)
 						ldc(0L)
 						invokevirtual("dev/binclub/paperbin/transformers/CustomLightingQueue", "processQueue", "(JJ)Z")
+						_return()
 					}
 				}
 			}
@@ -66,7 +67,7 @@ object LightUpdateRateLimiter: PaperBinFeature {
 					mn.instructions.forEach { insn ->
 						if (insn is MethodInsnNode && insn.opcode == INVOKEVIRTUAL) {
 							if (insn.name == "add" && insn.desc == "(Ljava/lang/Object;)Z") {
-								insn.desc = "(Lnet/minecraft/server/v1_12_R1/BlockPosition;Ljava/lang/Runnable;)V"
+								insn.desc = "(Lnet/minecraft/server/v1_12_R1/BlockPosition;Ljava/lang/Runnable;)Z"
 								mn.instructions.insertBefore(insn, insnBuilder {
 									aload(2)
 									swap()
@@ -137,10 +138,17 @@ object LightUpdateRateLimiter: PaperBinFeature {
 					)
 				}
 				if (insn is MethodInsnNode) {
-					insn.owner = insn.owner.replace(
-						"net/minecraft/server/v1_12_R1/PaperLightingQueue\$LightingQueue",
-						"dev/binclub/paperbin/transformers/CustomLightingQueue"
-					)
+					if (insn.opcode == INVOKESTATIC && insn.owner == "net/minecraft/server/v1_12_R1/PaperLightingQueue\$LightingQueue" && insn.name == "access\$000") {
+						insn.opcode = INVOKEVIRTUAL
+						insn.owner = "dev/binclub/paperbin/transformers/CustomLightingQueue"
+						insn.name = "processQueue"
+						insn.desc = "(JJ)Z"
+					} else {
+						insn.owner = insn.owner.replace(
+							"net/minecraft/server/v1_12_R1/PaperLightingQueue\$LightingQueue",
+							"dev/binclub/paperbin/transformers/CustomLightingQueue"
+						)
+					}
 				}
 				if (insn is FieldInsnNode) {
 					insn.owner = insn.owner.replace(
