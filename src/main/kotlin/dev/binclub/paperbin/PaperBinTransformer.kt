@@ -57,8 +57,7 @@ object PaperBinTransformer: ClassFileTransformer {
 						it.invoke(classNode)
 					} catch (t: Throwable) {
 						logger.log(Level.SEVERE, "Error transforming [$className] with transformer [$it]", t)
-						PaperBinInfo.crashed = true
-						exitProcess(-1)
+						handleShutdown(t)
 					}
 				}
 				
@@ -75,7 +74,6 @@ object PaperBinTransformer: ClassFileTransformer {
 					}
 				} catch (t: Throwable) {
 					logger.log(Level.SEVERE, "Error transforming [$className]", t)
-					PaperBinInfo.crashed = true
 					
 					try {
 						classNode.methods?.forEach {
@@ -104,7 +102,7 @@ object PaperBinTransformer: ClassFileTransformer {
 						}
 					} catch (t: Throwable) {}
 					
-					exitProcess(-1)
+					handleShutdown(t)
 				}
 			}
 			

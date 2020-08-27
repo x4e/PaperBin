@@ -216,35 +216,37 @@ public class InstrumentationFactory {
 			}
 		}
 		
+		LOGGER.info("Couldn't find tools.jar in boot classpath or JAVA_HOME");
+		LOGGER.info("Bootclasspath: " + bootClassPath);
 		return null;
 	}
 	
 	private static File findToolsJar(Logger LOGGER, File javaHomeFile) {
 		File toolsJarFile = new File(javaHomeFile, "lib" + File.separator + "tools.jar");
-		if (toolsJarFile.exists() == false) {
-			//new IllegalStateException(_name + ".findToolsJar() -- couldn't find default " + toolsJarFile.getAbsolutePath()).printStackTrace();
+		if (!toolsJarFile.exists()) {
+			LOGGER.info(_name + ".findToolsJar() -- failed to find " + toolsJarFile.getAbsolutePath());
 			// If we're on an IBM SDK, then remove /jre off of java.home and try again.
-			if (javaHomeFile.getAbsolutePath().endsWith(File.separator + "jre") == true) {
+			if (javaHomeFile.getAbsolutePath().endsWith(File.separator + "jre")) {
 				javaHomeFile = javaHomeFile.getParentFile();
 				toolsJarFile = new File(javaHomeFile, "lib" + File.separator + "tools.jar");
-				if (toolsJarFile.exists() == false) {
-					new IllegalStateException(_name + ".findToolsJar() -- for IBM SDK couldn't find " +
-					toolsJarFile.getAbsolutePath()).printStackTrace();
+				if (!toolsJarFile.exists()) {
+					LOGGER.info(_name + ".findToolsJar() -- failed find " + toolsJarFile.getAbsolutePath());
+					return null;
 				}
-			} else if (System.getProperty("os.name").toLowerCase().indexOf("mac") >= 0) {
+			} else if (System.getProperty("os.name").toLowerCase().contains("mac")) {
 				// If we're on a Mac, then change the search path to use ../Classes/classes.jar.
 				if (javaHomeFile.getAbsolutePath().endsWith(File.separator + "Home") == true) {
 					javaHomeFile = javaHomeFile.getParentFile();
 					toolsJarFile = new File(javaHomeFile, "Classes" + File.separator + "classes.jar");
-					if (toolsJarFile.exists() == false) {
-						new IllegalStateException(_name + ".findToolsJar() -- for Mac OS couldn't find " +
-						toolsJarFile.getAbsolutePath()).printStackTrace();
+					if (!toolsJarFile.exists()) {
+						LOGGER.info(_name + ".findToolsJar() -- for Mac OS couldn't find " + toolsJarFile.getAbsolutePath());
+						return null;
 					}
 				}
 			}
 		}
 		
-		if (toolsJarFile.exists() == false) {
+		if (!toolsJarFile.exists()) {
 			LOGGER.info(_name + ".findToolsJar() -- failed to find " + toolsJarFile.getAbsolutePath());
 			return null;
 		} else {
