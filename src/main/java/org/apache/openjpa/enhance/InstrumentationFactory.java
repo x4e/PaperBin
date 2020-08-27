@@ -29,12 +29,14 @@ import java.net.URLClassLoader;
 import java.security.AccessController;
 import java.security.CodeSource;
 import java.security.PrivilegedAction;
+import java.security.ProtectionDomain;
 import java.util.Objects;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -194,9 +196,30 @@ public class InstrumentationFactory {
 	 *         If tools.jar cannot be found, null.
 	 */
 	private static File findToolsJar(Logger LOGGER) {
-		String javaHome = System.getProperty("java.home");
-		File javaHomeFile = new File(javaHome);
+		{
+			File out = findToolsJar(LOGGER, new File(System.getProperty("java.home")));
+			if (out != null) {
+				return out;
+			}
+		}
 		
+		String bootClassPath = System.getProperty("sun.boot.class.path");
+		String[] paths = bootClassPath.split(Pattern.quote(":"));
+		for (String path : paths) {
+			File jre = new File(path);
+			if (jre.isFile()) {
+				jre = jre.getParentFile();
+			}
+			File out = findToolsJar(LOGGER, jre);
+			if (out != null) {
+				return out;
+			}
+		}
+		
+		return null;
+	}
+	
+	private static File findToolsJar(Logger LOGGER, File javaHomeFile) {
 		File toolsJarFile = new File(javaHomeFile, "lib" + File.separator + "tools.jar");
 		if (toolsJarFile.exists() == false) {
 			//new IllegalStateException(_name + ".findToolsJar() -- couldn't find default " + toolsJarFile.getAbsolutePath()).printStackTrace();
@@ -222,6 +245,7 @@ public class InstrumentationFactory {
 		}
 		
 		if (toolsJarFile.exists() == false) {
+			LOGGER.info(_name + ".findToolsJar() -- failed to find " + toolsJarFile.getAbsolutePath());
 			return null;
 		} else {
 			LOGGER.info(_name + ".findToolsJar() -- found " + toolsJarFile.getAbsolutePath());
