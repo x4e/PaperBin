@@ -2,7 +2,9 @@
 
 package dev.binclub.paperbin.transformers
 
+import dev.binclub.paperbin.PaperBinConfig
 import dev.binclub.paperbin.PaperBinFeature
+import dev.binclub.paperbin.PaperBinInfo
 import dev.binclub.paperbin.utils.forEach
 import dev.binclub.paperbin.utils.insnBuilder
 import net.minecraft.server.v1_12_R1.BlockPosition
@@ -16,6 +18,8 @@ import org.objectweb.asm.tree.*
  */
 object LightUpdateRateLimiter: PaperBinFeature {
 	override fun registerTransformers() {
+		if (!PaperBinConfig.lightUpdateRateLimit) return
+		
 		register("net/minecraft/server/v1_12_R1/PaperLightingQueue\$LightingQueue") { cn ->
 			// THIS CLASS SHOULD NOT BE USED!!
 			cn.fields?.clear()
@@ -123,7 +127,6 @@ object LightUpdateRateLimiter: PaperBinFeature {
 	}
 	
 	fun map(cn: ClassNode) {
-		logger.info("Mapping ${cn.name}")
 		cn.fields.forEach { fn ->
 			if (fn.desc == "Lnet/minecraft/server/v1_12_R1/PaperLightingQueue\$LightingQueue;") {
 				fn.desc = "Ldev/binclub/paperbin/transformers/CustomLightingQueue;"
@@ -174,7 +177,16 @@ class CustomLightingQueue(val chunk: Chunk): HashMap<BlockPosition, Runnable>() 
 		return true
 	}
 	
+	private var lastUpdated = 0L
 	fun processQueue(startTime: Long, maxTickTime: Long): Boolean {
+		val now = System.currentTimeMillis()
+		if (now - lastUpdated < PaperBinConfig.lightUpdateRateLimitDelay) {
+			PaperBinInfo.logger.info("Skipping light update")
+			return false
+		}
+		PaperBinInfo.logger.info("light update ${now - lastUpdated} ($now, $lastUpdated)")
+		lastUpdated = now
+		
 		when {
 			this.isEmpty() -> {
 				return false

@@ -32,6 +32,8 @@ object PaperBinConfig {
 	var optimisedEveryoneSleeping: Boolean by BooleanProperty(properties, "optimisedEveryoneSleeping")
 	var packetOptimisations: Boolean by BooleanProperty(properties, "packetOptimisations")
 	var villageRateLimit: Boolean by BooleanProperty(properties, "villageRateLimit")
+	var lightUpdateRateLimit: Boolean by BooleanProperty(properties, "lightUpdateRateLimit", true)
+	var lightUpdateRateLimitDelay: Double by DoubleProperty(properties, "lightUpdateRateLimit.delay", 1000.0) // update light every 1 second
 	var debug: Boolean by BooleanProperty(properties, "debug", false)
 	
 	init {
@@ -68,4 +70,13 @@ class BooleanProperty(val properties: Properties, val key: String, default: Bool
 	
 	operator fun getValue(thisRef: Any?, prop: KProperty<*>): Boolean = java.lang.Boolean.parseBoolean(properties.getProperty(key))
 	operator fun setValue(thisRef: Any?, prop: KProperty<*>, value: Boolean) = properties.setProperty(key, value.toString())
+}
+
+class DoubleProperty(val properties: Properties, val key: String, default: Double = 0.0) {
+	init {
+		properties.getProperty(key) ?: properties.setProperty(key, default.toString())
+	}
+	
+	operator fun getValue(thisRef: Any?, prop: KProperty<*>): Double = properties.getProperty(key).toDouble()
+	operator fun setValue(thisRef: Any?, prop: KProperty<*>, value: Double) = properties.setProperty(key, value.toString())
 }
