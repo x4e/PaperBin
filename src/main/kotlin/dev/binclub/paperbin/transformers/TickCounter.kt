@@ -38,7 +38,7 @@ object TickCounter: PaperBinFeature {
 				}
 			}
 			if (count != 2) {
-				error("Couldnt find target")
+				error("Couldnt find target ($count)")
 			}
 		}
 		register("org.bukkit.craftbukkit.v1_12_R1.CraftServer") { classNode ->

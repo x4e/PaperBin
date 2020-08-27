@@ -143,3 +143,5 @@ fun InsnBuilder.printlnIntAsm() {
 	+SWAP.insn()
 	+MethodInsnNode(INVOKEVIRTUAL, PrintStream::class.internalName, "println", "(I)V", false)
 }
+
+inline fun InsnList.forEach(op: (insn: AbstractInsnNode) -> Unit) = this.iterator().forEach(op)

@@ -99,6 +99,10 @@ class InsnBuilder {
 	= +MethodInsnNode(INVOKEVIRTUAL, kClass.internalName, kFunction.name, kFunction.descriptor)
 	inline fun invokespecial(owner: String, name: String, desc: String, `interface`: Boolean = false)
 		= +MethodInsnNode(INVOKESPECIAL, owner, name, desc, `interface`)
+	inline fun invokespecial(kClass: KClass<*>, kFunction: KFunction<*>)
+		= +MethodInsnNode(INVOKESPECIAL, kClass.internalName, kFunction.name, kFunction.descriptor)
+	inline fun invokespecial(kClass: KClass<*>, name: String, desc: String, `interface`: Boolean = false)
+	= +MethodInsnNode(INVOKESPECIAL, kClass.internalName, name, desc, `interface`)
 	
 	
 	inline fun getstatic(owner: String, name: String, desc: String)
@@ -107,6 +111,7 @@ class InsnBuilder {
 	= +FieldInsnNode(GETFIELD, owner, name, desc)
 	
 	inline fun new(type: String) = +TypeInsnNode(NEW, type)
+	inline fun new(type: KClass<*>) = +TypeInsnNode(NEW, type.internalName)
 	inline fun newboolarray() = newarray(T_BOOLEAN)
 	inline fun newchararray() = newarray(T_CHAR)
 	inline fun newbytearray() = newarray(T_BYTE)

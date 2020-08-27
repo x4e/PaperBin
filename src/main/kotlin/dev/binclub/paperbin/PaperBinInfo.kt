@@ -60,7 +60,10 @@ object PaperBinInfo {
 	val usedTransformers: MutableSet<String> =
 		(if (PaperBinConfig.debug) hashSetOf<String>() else NopSet<String>()).also { usedTransformers ->
 			Runtime.getRuntime().addShutdownHook(thread(start = false, isDaemon = false) {
-				if (!PaperBinConfig.debug && !crashed) {
+				if (PaperBinConfig.debug && !crashed) {
+					if (transformers.isEmpty()) {
+						logger.info("All paperbin transformers consumed")
+					}
 					for (transformer in transformers.keys) {
 						if (transformer !in usedTransformers) {
 							logger.warning("Transformer [$transformer] was never used")
@@ -88,6 +91,7 @@ object PaperBinInfo {
 		CustomNbtEvents,
 		FasterGameRuleLookup,
 		TpsCompensation,
+		LightUpdateRateLimiter,
 		MobAiRateLimiter,
 		OptimisedEveryoneSleeping,
 		PacketOptimisations,

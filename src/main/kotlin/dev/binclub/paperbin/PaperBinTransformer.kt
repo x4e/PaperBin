@@ -47,7 +47,7 @@ object PaperBinTransformer: ClassFileTransformer {
 		try {
 			transforming += className
 			PaperBinInfo.transformers[className]?.let { transformers ->
-				logger.log(Level.INFO, "Transforming [$className]...")
+				logger.log(Level.INFO, "Transforming [$className] (${transformers.size})...")
 				PaperBinInfo.usedTransformers += className
 				val classNode = ClassNode()
 				ClassReader(classfileBuffer).accept(classNode, 0)

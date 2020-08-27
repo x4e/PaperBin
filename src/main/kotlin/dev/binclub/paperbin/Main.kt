@@ -78,16 +78,19 @@ fun handleShutdown(t: Throwable): Nothing {
 	val bukkitVersion = try {
 		Versioning.getBukkitVersion()
 	} catch (t: Throwable) {
+		null
 	}
 	
 	val bukkitServerVersion = try {
 		CraftServer::class.java.getPackage().implementationVersion
 	} catch (t: Throwable) {
+		null
 	}
 	
 	val mcVersion = try {
 		MinecraftServer.getServer().version
 	} catch (t: Throwable) {
+		null
 	}
 	
 	PaperBinInfo.logger.warning(
