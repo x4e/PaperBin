@@ -21,6 +21,7 @@ object PaperBinConfig {
 	var antiIllegalItem: Boolean by BooleanProperty(properties, "antiIllegalItem", false)
 	var antiNetherRoof: Boolean by BooleanProperty(properties, "antiNetherRoof")
 	var antiNewChunks: Boolean by BooleanProperty(properties, "antiNewChunks", false)
+	var antiPhysicsCrash: Boolean by BooleanProperty(properties, "antiPhysicsCrash", false)
 	var antiPortalGodmode: Boolean by BooleanProperty(properties, "antiPortalGodmode")
 	var antiUnicodeChat: Boolean by BooleanProperty(properties, "antiUnicodeChat", false)
 	var blockRateLimit: Boolean by BooleanProperty(properties, "blockRateLimit")

@@ -204,7 +204,7 @@ public class InstrumentationFactory {
 		}
 		
 		String bootClassPath = System.getProperty("sun.boot.class.path");
-		String[] paths = bootClassPath.split(Pattern.quote(":"));
+		String[] paths = bootClassPath.split(Pattern.quote(File.pathSeparator));
 		for (String path : paths) {
 			File jre = new File(path);
 			if (jre.isFile()) {

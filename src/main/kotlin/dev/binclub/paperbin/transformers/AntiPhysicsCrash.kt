@@ -1,5 +1,6 @@
 package dev.binclub.paperbin.transformers
 
+import dev.binclub.paperbin.PaperBinConfig
 import dev.binclub.paperbin.PaperBinFeature
 import dev.binclub.paperbin.utils.insnBuilder
 import net.minecraft.server.v1_12_R1.BlockPosition
@@ -12,6 +13,8 @@ import org.objectweb.asm.tree.MethodNode
  */
 object AntiPhysicsCrash: PaperBinFeature {
 	override fun registerTransformers() {
+		if (!PaperBinConfig.antiPhysicsCrash) return
+		
 		register("net/minecraft/server/v1_12_R1/World") { cn ->
 			var overload: MethodNode? = null
 			cn.methods.forEach { mn ->
