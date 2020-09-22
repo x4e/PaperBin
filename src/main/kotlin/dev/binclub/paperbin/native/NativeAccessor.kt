@@ -38,7 +38,7 @@ object NativeAccessor {
 		
 		val libraryFile = File(
 			System.getenv("java.library.path"),
-			"JvmClassHook$suffix"
+			"JvmClassHook.$suffix"
 		)
 		libraryFile.delete()
 		libraryFile.deleteOnExit()
