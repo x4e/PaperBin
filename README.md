@@ -5,8 +5,8 @@
 
 An experiment at improving the performance of PaperMC. 
 
-This project uses ASM and the attach api to modify Paper classes as they are defined.
-Because of this paperbin can even **be run on top of other paperforks**!
+This project jvmti to modify Minecraft classes at runtime.
+Because of this paperbin can even be run on top of modified versions of paper.
 
 ## Usage
 Make sure you have read the License.
