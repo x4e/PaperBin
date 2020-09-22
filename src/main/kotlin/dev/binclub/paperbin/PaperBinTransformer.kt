@@ -1,6 +1,7 @@
 package dev.binclub.paperbin
 
 import dev.binclub.paperbin.PaperBinInfo.logger
+import dev.binclub.paperbin.native.PaperBinClassTransformer
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassWriter
 import org.objectweb.asm.tree.ClassNode
@@ -17,7 +18,7 @@ import kotlin.concurrent.thread
 /**
  * @author cookiedragon234 12/Apr/2020
  */
-object PaperBinTransformer: ClassFileTransformer {
+object PaperBinTransformer: PaperBinClassTransformer {
 	private val jar: JarOutputStream? =
 		if (PaperBinConfig.debug) {
 			val file = File("paperbin_patched.jar")
@@ -31,83 +32,88 @@ object PaperBinTransformer: ClassFileTransformer {
 	
 	val transforming = HashMap<String, ClassNode>()
 	
-	override fun transform(
+	private val ignores = arrayOf(
+		"java/"
+	)
+	
+	override fun onClassLoad(
+		clazz: Class<*>?,
 		loader: ClassLoader?,
 		className: String?,
-		classBeingRedefined: Class<*>?,
-		protectionDomain: ProtectionDomain?,
 		classfileBuffer: ByteArray
 	): ByteArray? {
-		if (className == null) {
-			return classfileBuffer
+		if (className == null || ignores.any { className.startsWith(it, true) }) {
+			return null
 		}
 		
 		val internalName = className.replace('.', '/')
 		try {
 			PaperBinInfo.transformers[internalName]?.let { transformers ->
-				PaperBinInfo.usedTransformers += internalName
-				logger.log(Level.INFO, "Transforming [$internalName] (${transformers.size})...")
-				
-				val classNode = ClassNode()
-				ClassReader(classfileBuffer).accept(classNode, 0)
-				transforming[className.replace('/', '.')] = classNode
-				
-				transformers.forEach {
-					try {
-						it.invoke(classNode)
-					} catch (t: Throwable) {
-						logger.log(Level.SEVERE, "Error transforming [$internalName] with transformer [$it]", t)
-						handleShutdown(t)
-					}
-				}
-				
-				val writer = NoLoadClassWriter(ClassWriter.COMPUTE_FRAMES)
-				try {
-					classNode.accept(writer)
+				if (transformers.isNotEmpty()) {
+					PaperBinInfo.usedTransformers += internalName
+					logger.log(Level.INFO, "Transforming [$internalName] (${transformers.size})...")
 					
-					return writer.toByteArray().also {
-						if (jar != null) {
-							jar.putNextEntry(JarEntry("$internalName.class"))
-							jar.write(it)
-							jar.closeEntry()
+					val classNode = ClassNode()
+					ClassReader(classfileBuffer).accept(classNode, 0)
+					transforming[className.replace('/', '.')] = classNode
+					
+					transformers.forEach {
+						try {
+							it.invoke(classNode)
+						} catch (t: Throwable) {
+							logger.log(Level.SEVERE, "Error transforming [$internalName] with transformer [$it]", t)
+							handleShutdown(t)
 						}
 					}
-				} catch (t: Throwable) {
-					logger.log(Level.SEVERE, "Error transforming [$internalName]", t)
 					
+					val writer = NoLoadClassWriter(ClassWriter.COMPUTE_FRAMES)
 					try {
-						classNode.methods?.forEach {
-							// hacky
-							it.maxStack += 10
-							it.maxLocals += 5
-						}
-						val writer = NoLoadClassWriter(ClassWriter.COMPUTE_MAXS)
 						classNode.accept(writer)
-						classNode.accept(CheckClassAdapter(null, true))
-					} catch (t: Throwable) {
-						logger.log(Level.SEVERE, "", t)
-					}
-					
-					try {
-						if (jar != null) {
-							val writer = NoLoadClassWriter(0)
-							
-							classNode.accept(writer)
-							
-							writer.toByteArray().also {
+						
+						return writer.toByteArray().also {
+							if (jar != null) {
 								jar.putNextEntry(JarEntry("$internalName.class"))
 								jar.write(it)
 								jar.closeEntry()
 							}
 						}
 					} catch (t: Throwable) {
+						logger.log(Level.SEVERE, "Error transforming [$internalName]", t)
+						
+						try {
+							classNode.methods?.forEach {
+								// hacky
+								it.maxStack += 10
+								it.maxLocals += 5
+							}
+							val writer = NoLoadClassWriter(ClassWriter.COMPUTE_MAXS)
+							classNode.accept(writer)
+							classNode.accept(CheckClassAdapter(null, true))
+						} catch (t: Throwable) {
+							logger.log(Level.SEVERE, "", t)
+						}
+						
+						try {
+							if (jar != null) {
+								val writer = NoLoadClassWriter(0)
+								
+								classNode.accept(writer)
+								
+								writer.toByteArray().also {
+									jar.putNextEntry(JarEntry("$internalName.class"))
+									jar.write(it)
+									jar.closeEntry()
+								}
+							}
+						} catch (t: Throwable) {
+						}
+						
+						handleShutdown(t)
 					}
-					
-					handleShutdown(t)
 				}
 			}
 			
-			return classfileBuffer
+			return null
 		} finally {
 			transforming -= internalName
 		}

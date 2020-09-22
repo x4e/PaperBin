@@ -1,11 +1,11 @@
 package dev.binclub.paperbin
 
+import dev.binclub.paperbin.PaperBinInfo.logger
+import dev.binclub.paperbin.native.NativeAccessor
 import net.minecraft.server.v1_12_R1.MinecraftServer
-import org.apache.openjpa.enhance.InstrumentationFactory
 import org.bukkit.craftbukkit.v1_12_R1.CraftServer
 import org.bukkit.craftbukkit.v1_12_R1.util.Versioning
 import java.io.File
-import java.lang.management.ManagementFactory
 import java.net.URL
 import java.net.URLClassLoader
 import java.util.jar.Attributes.Name.MAIN_CLASS
@@ -22,29 +22,13 @@ fun main(args: Array<String>) {
 			error("Usage java -jar paperbin.jar paperclip.jar")
 		}
 		
-		if (!ManagementFactory.getRuntimeMXBean().inputArguments.any {
-				it.contains("noverify", true) || it.contains("Xverify", true)
-			}) {
-			//error("Disable the verifier")
-		}
-		
 		val file = File(args[0])
 		val newArgs = args.drop(1).toTypedArray()
 		
-		if (InstrumentationFactory.getInstrumentation(PaperBinInfo.logger)?.addTransformer(PaperBinTransformer) == null) {
-			error(
-				"""
-				|Could not fetch an instrumentation instance.
-				|   Please make sure you have a valid JAVA_HOME specified.
-				|   Try adding `-XX:+StartAttachListener` to the jvm launch options
-				|   If the error persists try using Open JDK 1.8.0_252.
-				|   If the error still persists open an issue at https://github.com/cookiedragon234/PaperBin/issues
-			""".trimMargin()
-			)
-		}
+		PaperBinInfo // MUST BE INITIALIZED BEFORE CLASS HOOK
+		NativeAccessor.registerClassLoadHook(PaperBinTransformer)
 		
 		val sysCl = ClassLoader.getSystemClassLoader() as URLClassLoader
-		
 		URLClassLoader::class.java.getDeclaredMethod("addURL", URL::class.java).let {
 			it.isAccessible = true
 			it.invoke(sysCl, file.toURI().toURL())
@@ -54,10 +38,11 @@ fun main(args: Array<String>) {
 			JarFile(file).manifest.mainAttributes.getValue(MAIN_CLASS)
 		}
 		
-		PaperBinInfo.logger.info("Starting [$mainClass]...")
 		try {
-			Class.forName(mainClass, true, sysCl)!!.getDeclaredMethod("main", Array<String>::class.java)!!
-				.invoke(null, newArgs)
+			val clazz = Class.forName(mainClass, true, sysCl)!!
+			val meth = clazz.getDeclaredMethod("main", Array<String>::class.java)!!
+			logger.info("Starting [$meth]...")
+			meth.invoke(null, newArgs)
 		} catch (t: Throwable) {
 			throw IllegalStateException("Please provide a valid paperclip jar", t)
 		}
@@ -93,7 +78,7 @@ fun handleShutdown(t: Throwable): Nothing {
 		null
 	}
 	
-	PaperBinInfo.logger.warning(
+	logger.warning(
 		"""
 			|WARNING: A fatal exception occured while initialising PaperBin $version
 			|
@@ -112,6 +97,6 @@ fun handleShutdown(t: Throwable): Nothing {
 		""".trimMargin()
 	)
 	
-	PaperBinInfo.logger.log(Level.SEVERE, "", t)
+	logger.log(Level.SEVERE, "", t)
 	exitProcess(0)
 }
