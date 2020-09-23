@@ -1,6 +1,6 @@
 #[macro_use]
 extern crate rs_jvm_bindings;
-use rs_jvm_bindings::jni::{JavaVM, JNIEnv, jclass, jobject, jint, JNI_VERSION_1_8, jmethodID, jbyteArray, jstring, JNI_OK, jlong};
+use rs_jvm_bindings::jni::{JavaVM, JNIEnv, jclass, jobject, jint, JNI_VERSION_1_8, jmethodID, jbyteArray, jstring, JNI_OK, jlong, jboolean};
 use rs_jvm_bindings::jvmti::{jvmtiEnv, jvmtiCapabilities, jvmtiError_JVMTI_ERROR_NONE, JVMTI_VERSION_1_2, jvmtiEventCallbacks, jvmtiEventMode_JVMTI_ENABLE, jvmtiEvent_JVMTI_EVENT_CLASS_FILE_LOAD_HOOK};
 use rs_jvm_bindings::utils::*;
 
@@ -12,6 +12,44 @@ use std::mem::{zeroed, size_of};
 #[no_mangle]
 pub unsafe extern "system" fn JNI_OnLoad(_vm: *mut JavaVM, _reserved: &mut c_void) -> c_int {
 	JNI_VERSION_1_8 as i32
+}
+
+/// (Static)
+#[no_mangle]
+pub unsafe extern "system" fn Java_dev_binclub_paperbin_native_NativeAccessor_appendToClassloader(
+	env: *mut JNIEnv, _this: jobject,
+	url: jstring, bootloader: jboolean
+) {
+	let mut vm: *mut JavaVM = null_mut();
+	{
+		let result = (**env).GetJavaVM.unwrap()(env, vm.borrow_mut());
+		if result != JNI_OK as i32 {
+			panic!("Couldn't fetch vm instance ({})", result);
+		}
+	}
+	
+	let mut jvmti_ptr: *mut c_void = null_mut();
+	{
+		let result = (**vm).GetEnv.unwrap()(vm, jvmti_ptr.borrow_mut(), JVMTI_VERSION_1_2 as i32);
+		if result != JNI_OK as i32 {
+			panic!("Couldn't fetch jvmti instance ({})", result);
+		}
+	}
+	let jvmti: *mut jvmtiEnv = jvmti_ptr as *mut jvmtiEnv;
+	
+	let mut is_copy: jboolean = 0;
+	let utf8chars = (**env).GetStringUTFChars.unwrap()(env, url, is_copy.borrow_mut());
+	if !utf8chars.is_null() {
+		let result = if bootloader == 1 {
+			(**jvmti).AddToBootstrapClassLoaderSearch.unwrap()(jvmti, utf8chars)
+		} else {
+			(**jvmti).AddToSystemClassLoaderSearch.unwrap()(jvmti, utf8chars)
+		};
+		
+		if result != jvmtiError_JVMTI_ERROR_NONE {
+			panic!("Couldn't add to classloader ({})", result);
+		}
+	}
 }
 
 /// (Static)
@@ -51,8 +89,8 @@ pub unsafe extern "system" fn Java_dev_binclub_paperbin_native_NativeAccessor_re
 			panic!("Couldn't fetch jvmti instance ({})", result);
 		}
 	}
-	
 	let jvmti: *mut jvmtiEnv = jvmti_ptr as *mut jvmtiEnv;
+	
 	{
 		let mut capabilities: jvmtiCapabilities = zeroed();
 		capabilities.set_can_retransform_classes(1);

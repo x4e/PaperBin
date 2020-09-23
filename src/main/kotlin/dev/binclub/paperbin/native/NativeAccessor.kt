@@ -53,6 +53,10 @@ object NativeAccessor {
 	
 	
 	external fun registerClassLoadHook(hook: PaperBinClassTransformer)
+	external fun appendToClassloader(
+		url: String,
+		bootloader: Boolean = false // System/Bootloader
+	)
 }
 
 interface PaperBinClassTransformer {

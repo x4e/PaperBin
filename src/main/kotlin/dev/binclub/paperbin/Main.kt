@@ -6,8 +6,6 @@ import net.minecraft.server.v1_12_R1.MinecraftServer
 import org.bukkit.craftbukkit.v1_12_R1.CraftServer
 import org.bukkit.craftbukkit.v1_12_R1.util.Versioning
 import java.io.File
-import java.net.URL
-import java.net.URLClassLoader
 import java.util.jar.Attributes.Name.MAIN_CLASS
 import java.util.jar.JarFile
 import java.util.logging.Level
@@ -28,18 +26,15 @@ fun main(args: Array<String>) {
 		PaperBinInfo // MUST BE INITIALIZED BEFORE CLASS HOOK
 		NativeAccessor.registerClassLoadHook(PaperBinTransformer)
 		
-		val sysCl = ClassLoader.getSystemClassLoader() as URLClassLoader
-		URLClassLoader::class.java.getDeclaredMethod("addURL", URL::class.java).let {
-			it.isAccessible = true
-			it.invoke(sysCl, file.toURI().toURL())
-		}
+		val cl = ClassLoader.getSystemClassLoader()
+		NativeAccessor.appendToClassloader(file.absolutePath, false)
 		
 		val mainClass = run {
 			JarFile(file).manifest.mainAttributes.getValue(MAIN_CLASS)
 		}
 		
 		try {
-			val clazz = Class.forName(mainClass, true, sysCl)!!
+			val clazz = Class.forName(mainClass, true, cl)!!
 			val meth = clazz.getDeclaredMethod("main", Array<String>::class.java)!!
 			logger.info("Starting [$meth]...")
 			meth.invoke(null, newArgs)

@@ -10,10 +10,20 @@ Because of this paperbin can even be run on top of modified versions of paper.
 
 ## Usage
 Make sure you have read the License.
-Then download paperbin and run the following command **using a version 8 JVM**, ideally either hotspot, openjdk or graal:
+Then download paperbin and run the following command:
 ```
 java [any jvm arguments] -noverify -jar PaperBin.jar ActualPaper.jar [any paper arguments]
 ```
+
+### Post Java 8
+PaperBin is fully compatible with > Java 8 JVMs, however 1.12.2 paperclip is not.
+If you want to run PaperBin+PaperClip on a recent JVM follow these steps:
+```
+java -jar paperclip.jar
+java -jar paperbin.jar cache/patched_1.12.2.jar
+```
+First time you run PaperClip it will create a patched 1.12.2 jar, then crash.
+You can then use PaperBin to directly run the patched jar.
 
 ## Testomonials
 > paperbin
