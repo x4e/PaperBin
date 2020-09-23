@@ -14,7 +14,6 @@ pub unsafe extern "system" fn JNI_OnLoad(_vm: *mut JavaVM, _reserved: &mut c_voi
 	JNI_VERSION_1_8 as i32
 }
 
-/// (Static)
 #[no_mangle]
 pub unsafe extern "system" fn Java_dev_binclub_paperbin_native_NativeAccessor_appendToClassloader(
 	env: *mut JNIEnv, _this: jobject,
@@ -52,7 +51,6 @@ pub unsafe extern "system" fn Java_dev_binclub_paperbin_native_NativeAccessor_ap
 	}
 }
 
-/// (Static)
 #[no_mangle]
 pub unsafe extern "system" fn Java_dev_binclub_paperbin_native_NativeAccessor_registerClassLoadHook(
 	env: *mut JNIEnv, _this: jobject,
