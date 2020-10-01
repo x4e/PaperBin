@@ -5,7 +5,7 @@
 
 An experiment at improving the performance of PaperMC. 
 
-This project jvmti to modify Minecraft classes at runtime.
+This project uses jvmti to modify Minecraft classes at runtime.
 Because of this paperbin can even be run on top of modified versions of paper.
 
 ## Usage
