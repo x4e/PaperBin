@@ -58,7 +58,7 @@ object NativeAccessor {
 		url: String,
 		bootloader: Boolean = false // System/Bootloader
 	)
-	external fun registerAntiPhysicsCrash(method: Method)
+	external fun registerAntiPhysicsCrash(method: Method, maxStackSize: Int)
 }
 
 interface PaperBinClassTransformer {

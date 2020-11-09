@@ -15,18 +15,14 @@ import org.objectweb.asm.tree.MethodNode
  * @author cookiedragon234 17/Aug/2020
  */
 object AntiPhysicsCrash: PaperBinFeature {
-	//@JvmStatic
-	//fun enabled(): Boolean = PaperBinConfig.antiPhysicsCrash
-	
 	override fun registerTransformers() {
-		logger.info("Anti Physics ${PaperBinConfig.antiPhysicsCrash}")
 		if (!PaperBinConfig.antiPhysicsCrash) return
 		
 		PaperBinInfo.registerTransformer("net/minecraft/server/v1_12_R1/World", {}) { cl ->
 			val method = cl.getDeclaredMethod("applyPhysics", BlockPosition::class.java, Block::class.java, java.lang.Boolean.TYPE)
 				?: error("Couldn't find physics method")
 			logger.info("Adding breakpoint to method $method of class $cl")
-			NativeAccessor.registerAntiPhysicsCrash(method)
+			NativeAccessor.registerAntiPhysicsCrash(method, PaperBinConfig.physicsMaxStackSize)
 		}
 	}
 }

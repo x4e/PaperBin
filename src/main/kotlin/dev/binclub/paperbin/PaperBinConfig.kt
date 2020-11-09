@@ -22,6 +22,7 @@ object PaperBinConfig {
 	var antiNetherRoof: Boolean by BooleanProperty(properties, "antiNetherRoof")
 	var antiNewChunks: Boolean by BooleanProperty(properties, "antiNewChunks", false)
 	var antiPhysicsCrash: Boolean by BooleanProperty(properties, "antiPhysicsCrash", false)
+	var physicsMaxStackSize: Int by IntProperty(properties, "antiPhysicsCrash.maxStackSize", 1000)
 	var antiPortalGodmode: Boolean by BooleanProperty(properties, "antiPortalGodmode")
 	var antiUnicodeChat: Boolean by BooleanProperty(properties, "antiUnicodeChat", false)
 	var blockRateLimit: Boolean by BooleanProperty(properties, "blockRateLimit")
@@ -80,4 +81,13 @@ class DoubleProperty(val properties: Properties, val key: String, default: Doubl
 	
 	operator fun getValue(thisRef: Any?, prop: KProperty<*>): Double = properties.getProperty(key).toDouble()
 	operator fun setValue(thisRef: Any?, prop: KProperty<*>, value: Double) = properties.setProperty(key, value.toString())
+}
+
+class IntProperty(val properties: Properties, val key: String, default: Int = 0) {
+	init {
+		properties.getProperty(key) ?: properties.setProperty(key, default.toString())
+	}
+	
+	operator fun getValue(thisRef: Any?, prop: KProperty<*>): Int = properties.getProperty(key).toInt()
+	operator fun setValue(thisRef: Any?, prop: KProperty<*>, value: Int) = properties.setProperty(key, value.toString())
 }

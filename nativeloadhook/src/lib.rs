@@ -3,7 +3,7 @@ mod utils;
 
 #[macro_use]
 extern crate rs_jvm_bindings;
-use rs_jvm_bindings::jni::{JavaVM, JNIEnv, jclass, jobject, jint, JNI_VERSION_1_8, jmethodID, jbyteArray, jstring, JNI_OK, jlong, jboolean, JNINativeMethod};
+use rs_jvm_bindings::jni::{JavaVM, JNIEnv, jclass, jobject, jint, JNI_VERSION_1_8, jmethodID, jbyteArray, jstring, JNI_OK, jlong, jboolean, JNINativeMethod, jthrowable};
 use rs_jvm_bindings::jvmti::{jvmtiEnv, jvmtiCapabilities, jvmtiError_JVMTI_ERROR_NONE, jvmtiEventCallbacks, jvmtiEventMode_JVMTI_ENABLE, jvmtiEvent_JVMTI_EVENT_CLASS_FILE_LOAD_HOOK, jthread, jvmtiEvent_JVMTI_EVENT_CLASS_PREPARE, jvmtiEvent_JVMTI_EVENT_VM_INIT};
 
 use std::os::raw::{c_void, c_int, c_char, c_uchar};
@@ -65,7 +65,7 @@ pub unsafe extern "C" fn vm_init(
 		},
 		JNINativeMethod {
 			name: cstr!("registerAntiPhysicsCrash"),
-			signature: cstr!("(Ljava/lang/reflect/Method;)V"),
+			signature: cstr!("(Ljava/lang/reflect/Method;I)V"),
 			fnPtr: Java_dev_binclub_paperbin_native_NativeAccessor_registerAntiPhysicsCrash as *mut c_void
 		},
 	];
