@@ -6,6 +6,7 @@ import net.minecraft.server.v1_12_R1.MinecraftServer
 import org.bukkit.craftbukkit.v1_12_R1.CraftServer
 import org.bukkit.craftbukkit.v1_12_R1.util.Versioning
 import java.io.File
+import java.lang.management.ManagementFactory
 import java.util.jar.Attributes.Name.MAIN_CLASS
 import java.util.jar.JarFile
 import java.util.logging.Level
@@ -16,6 +17,9 @@ import kotlin.system.exitProcess
  */
 fun main(args: Array<String>) {
 	try {
+		println(ManagementFactory.getRuntimeMXBean().name)
+		Thread.sleep(7500)
+		
 		if (args.isEmpty()) {
 			error("Usage java -jar paperbin.jar paperclip.jar")
 		}
@@ -24,7 +28,7 @@ fun main(args: Array<String>) {
 		val newArgs = args.drop(1).toTypedArray()
 		
 		PaperBinInfo // MUST BE INITIALIZED BEFORE CLASS HOOK
-		NativeAccessor.registerClassLoadHook(PaperBinTransformer)
+		//NativeAccessor.registerClassLoadHook(PaperBinTransformer)
 		
 		val cl = ClassLoader.getSystemClassLoader()
 		NativeAccessor.appendToClassloader(file.absolutePath, false)

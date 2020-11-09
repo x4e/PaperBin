@@ -56,7 +56,7 @@ object PaperBinInfo {
 	
 	var started = false
 	var crashed = false
-	val transformers: MutableMap<String, MutableList<(ClassNode) -> Unit>> = hashMapOf()
+	val transformers: MutableMap<String, MutableList<Pair<(ClassNode) -> Unit, ((Class<*>) -> Unit)?>>> = hashMapOf()
 	val usedTransformers: MutableSet<String> =
 		(if (PaperBinConfig.debug) hashSetOf<String>() else NopSet<String>()).also { usedTransformers ->
 			Runtime.getRuntime().addShutdownHook(thread(start = false, isDaemon = false) {
@@ -118,8 +118,8 @@ object PaperBinInfo {
 		}
 	}
 	
-	fun registerTransformer(className: String, transformer: (ClassNode) -> Unit) {
-		transformers.getOrPut(className.replace('.', '/'), { ArrayList(1) }).add(transformer)
+	fun registerTransformer(className: String, transformer: (ClassNode) -> Unit, postTransformer: ((Class<*>) -> Unit)? = null) {
+		transformers.getOrPut(className.replace('.', '/'), { ArrayList(1) }).add(transformer to postTransformer)
 	}
 	
 	fun onStartup() {

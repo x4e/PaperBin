@@ -2,6 +2,7 @@ package dev.binclub.paperbin
 
 import dev.binclub.paperbin.PaperBinInfo.logger
 import dev.binclub.paperbin.native.PaperBinClassTransformer
+import jdk.nashorn.internal.codegen.types.Type
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassWriter
 import org.objectweb.asm.tree.ClassNode
@@ -59,7 +60,7 @@ object PaperBinTransformer: PaperBinClassTransformer {
 					
 					transformers.forEach {
 						try {
-							it.invoke(classNode)
+							it.first.invoke(classNode)
 						} catch (t: Throwable) {
 							logger.log(Level.SEVERE, "Error transforming [$internalName] with transformer [$it]", t)
 							handleShutdown(t)
@@ -116,6 +117,22 @@ object PaperBinTransformer: PaperBinClassTransformer {
 			return null
 		} finally {
 			transforming -= internalName
+		}
+	}
+	
+	override fun onClassPrepare(clazz: Class<*>) {
+		val internalName = Type.getInternalName(clazz)
+		PaperBinInfo.transformers[internalName]?.let { transformers ->
+			if (transformers.isNotEmpty()) {
+				transformers.forEach {
+					try {
+						it.second?.invoke(clazz)
+					} catch (t: Throwable) {
+						logger.log(Level.SEVERE, "Error running class prepare event for [$internalName] with listener [$it]", t)
+						handleShutdown(t)
+					}
+				}
+			}
 		}
 	}
 	

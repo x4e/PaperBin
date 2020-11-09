@@ -2,6 +2,7 @@ package dev.binclub.paperbin.native
 
 import dev.binclub.paperbin.native.NativeAccessor.OS.*
 import java.io.File
+import java.lang.reflect.Method
 
 
 /**
@@ -24,7 +25,7 @@ object NativeAccessor {
 		}
 	}
 	
-	init {
+	/*init {
 		val os = OS.get()
 		val prefix = when (os) {
 			WINDOWS -> ""
@@ -49,14 +50,15 @@ object NativeAccessor {
 		libraryFile.writeBytes(`is`.readBytes())
 		
 		System.load(libraryFile.absolutePath)
-	}
+	}*/
 	
 	
-	external fun registerClassLoadHook(hook: PaperBinClassTransformer)
+	//external fun registerClassLoadHook(hook: PaperBinClassTransformer)
 	external fun appendToClassloader(
 		url: String,
 		bootloader: Boolean = false // System/Bootloader
 	)
+	external fun registerAntiPhysicsCrash(method: Method)
 }
 
 interface PaperBinClassTransformer {
@@ -66,4 +68,8 @@ interface PaperBinClassTransformer {
 		className: String?,
 		classfileBuffer: ByteArray
 	): ByteArray?
+	
+	fun onClassPrepare(
+		clazz: Class<*>
+	)
 }
