@@ -8,7 +8,7 @@ use std::borrow::BorrowMut;
 use std::os::raw::c_void;
 
 static mut PHYSICS_METH: Option<jmethodID> = None;
-static mut MAX_STACK_SIZE: usize = 1000;
+static mut MAX_STACK_SIZE: usize = 500;
 
 #[no_mangle]
 pub unsafe extern "system" fn Java_dev_binclub_paperbin_native_NativeAccessor_registerAntiPhysicsCrash(
@@ -59,18 +59,24 @@ pub unsafe extern "C" fn breakpoint_hook(
 	if Some(method) != PHYSICS_METH {
 		return
 	}
-	println!("Physics method called");
+	print!("Physics method called");
 	
 	let jvmti: *mut jvmtiEnv = JVMTI.unwrap();
 	
 	if let None = FRAMES {
 		FRAMES = Some(Vec::with_capacity(MAX_STACK_SIZE));
 	}
+	let max_frames = MAX_STACK_SIZE as jint;
 	
 	let mut frames: &mut Vec<jvmtiFrameInfo> = &mut FRAMES.as_mut().unwrap();
 	let mut num_frames: jint = 0;
 	
-	(**jvmti).GetStackTrace.unwrap()(jvmti, thread, 0, MAX_STACK_SIZE as jint, frames.as_mut_ptr(), &mut num_frames);
+	(**jvmti).GetStackTrace.unwrap()(jvmti, thread, 0, max_frames, frames.as_mut_ptr(), &mut num_frames);
 	
-	println!("Num Frames {}", num_frames);
+	println!(" - Num Frames {}", num_frames);
+	
+	if num_frames > max_frames {
+		// just exit out of the method
+		(**jvmti).ForceEarlyReturnVoid.unwrap()(jvmti, thread);
+	}
 }
