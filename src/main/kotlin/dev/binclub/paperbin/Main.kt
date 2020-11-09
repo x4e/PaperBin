@@ -17,9 +17,6 @@ import kotlin.system.exitProcess
  */
 fun main(args: Array<String>) {
 	try {
-		println(ManagementFactory.getRuntimeMXBean().name)
-		Thread.sleep(7500)
-		
 		if (args.isEmpty()) {
 			error("Usage java -jar paperbin.jar paperclip.jar")
 		}

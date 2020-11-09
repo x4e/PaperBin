@@ -69,7 +69,6 @@ pub unsafe extern "C" fn vm_init(
 			fnPtr: Java_dev_binclub_paperbin_native_NativeAccessor_registerAntiPhysicsCrash as *mut c_void
 		},
 	];
-	println!("1");
 	assert_eq!((**env).RegisterNatives.unwrap()(env, native_accessor, methods.as_ptr(), methods.len() as i32), JNI_OK as i32);
 	
 	AGENT_LOADED = true;
