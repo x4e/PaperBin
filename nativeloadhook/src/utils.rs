@@ -1,4 +1,4 @@
-use rs_jvm_bindings::jni::{JavaVM, JNI_OK, JNIEnv, JNI_VERSION_1_8};
+use rs_jvm_bindings::jni::{JavaVM, JNI_OK, JNIEnv};
 use std::ptr::null_mut;
 use std::borrow::BorrowMut;
 use rs_jvm_bindings::jvmti::{jvmtiEnv, JVMTI_VERSION, jvmtiCapabilities};
@@ -16,17 +16,6 @@ pub unsafe fn get_vm(env: *mut JNIEnv) -> *mut JavaVM {
 	vm
 }
 
-pub unsafe fn get_jni(vm: *mut JavaVM) -> *mut JNIEnv {
-	let mut jni_ptr: *mut c_void = null_mut();
-	{
-		let result = (**vm).GetEnv.unwrap()(vm, jni_ptr.borrow_mut(), JNI_VERSION_1_8 as i32);
-		if result != JNI_OK as i32 {
-			panic!("Couldn't fetch jvmti instance ({})", result);
-		}
-	}
-	jni_ptr as *mut JNIEnv
-}
-
 pub unsafe fn get_jvmti(vm: *mut JavaVM) -> *mut jvmtiEnv {
 	let mut jvmti_ptr: *mut c_void = null_mut();
 	{
@@ -38,6 +27,7 @@ pub unsafe fn get_jvmti(vm: *mut JavaVM) -> *mut jvmtiEnv {
 	jvmti_ptr as *mut jvmtiEnv
 }
 
+#[allow(dead_code)]
 pub unsafe fn print_caps(jvmti: *mut jvmtiEnv) {
 	let mut available: jvmtiCapabilities = zeroed();
 	(**jvmti).GetPotentialCapabilities.unwrap()(jvmti, &mut available);

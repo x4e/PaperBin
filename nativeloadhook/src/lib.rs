@@ -14,11 +14,13 @@ use crate::antiphysicscrash::Java_dev_binclub_paperbin_native_NativeAccessor_reg
 
 static mut AGENT_LOADED: bool = false;
 static mut CALLBACKS: Option<jvmtiEventCallbacks> = None;
+static mut JVMTI: Option<*mut jvmtiEnv> = None;
 
 #[no_mangle]
 pub unsafe extern "system" fn Agent_OnLoad(vm: *mut JavaVM, _options: *const c_char, _reserved: &mut c_void) -> c_int {
 	println!("Paperbin Agent Loaded");
 	let jvmti = utils::get_jvmti(vm);
+	JVMTI = Some(jvmti);
 	
 	{
 		let mut capabilities: jvmtiCapabilities = zeroed();
@@ -33,13 +35,10 @@ pub unsafe extern "system" fn Agent_OnLoad(vm: *mut JavaVM, _options: *const c_c
 	{
 		let mut callbacks = match CALLBACKS {
 			Some(x) => x,
-			None => {
-				let new: jvmtiEventCallbacks = zeroed();
-				CALLBACKS = Some(new);
-				new
-			}
+			None => zeroed()
 		};
 		callbacks.VMInit = Some(vm_init);
+		CALLBACKS = Some(callbacks);
 		assert_eq!((**jvmti).SetEventCallbacks.unwrap()(jvmti, &callbacks, size_of::<jvmtiEventCallbacks>() as i32), jvmtiError_JVMTI_ERROR_NONE);
 		assert_eq!((**jvmti).SetEventNotificationMode.unwrap()(jvmti, jvmtiEventMode_JVMTI_ENABLE, jvmtiEvent_JVMTI_EVENT_VM_INIT, null_mut()), jvmtiError_JVMTI_ERROR_NONE);
 	}
@@ -48,17 +47,17 @@ pub unsafe extern "system" fn Agent_OnLoad(vm: *mut JavaVM, _options: *const c_c
 }
 
 pub unsafe extern "C" fn vm_init(
-	jvmti: *mut jvmtiEnv, env: *mut JNIEnv, _thread: jthread
+	_jvmti: *mut jvmtiEnv, env: *mut JNIEnv, _thread: jthread
 ) {
 	println!("VM INIT");
 	let native_accessor = (**env).FindClass.unwrap()(env, cstr!("dev/binclub/paperbin/native/NativeAccessor"));
 	assert!(!native_accessor.is_null());
 	let methods = vec![
-		/*JNINativeMethod {
+		JNINativeMethod {
 			name: cstr!("registerClassLoadHook"),
 			signature: cstr!("(Ldev/binclub/paperbin/native/PaperBinClassTransformer;)V"),
-			fnPtr: Java_dev_binclub_paperbin_native_NativeAccessor_registerClassLoadHook as *mut c_void
-		},*/
+			fnPtr: registerClassLoadHook as *mut c_void
+		},
 		JNINativeMethod {
 			name: cstr!("appendToClassloader"),
 			signature: cstr!("(Ljava/lang/String;Z)V"),
@@ -72,22 +71,6 @@ pub unsafe extern "C" fn vm_init(
 	];
 	println!("1");
 	assert_eq!((**env).RegisterNatives.unwrap()(env, native_accessor, methods.as_ptr(), methods.len() as i32), JNI_OK as i32);
-	
-	println!("2");
-	antiphysicscrash::anti_physics_crash(env, jvmti);
-	
-	println!("3");
-	let transformer_cls = (**env).FindClass.unwrap()(env, cstr!("dev/binclub/paperbin/PaperBinTransformer"));
-	assert!(!transformer_cls.is_null());
-	println!("4");
-	let field = (**env).GetStaticFieldID.unwrap()(env, transformer_cls, cstr!("INSTANCE"), cstr!("Ldev/binclub/paperbin/PaperBinTransformer;"));
-	assert!(!field.is_null());
-	println!("5");
-	let transformer = (**env).GetStaticObjectField.unwrap()(env, transformer_cls, field);
-	assert!(!transformer.is_null());
-	println!("6");
-	registerClassLoadHook(env, transformer);
-	println!("aftr");
 	
 	AGENT_LOADED = true;
 }
@@ -125,15 +108,14 @@ pub unsafe extern "system" fn Java_dev_binclub_paperbin_native_NativeAccessor_ap
 #[no_mangle]
 pub unsafe extern "system" fn registerClassLoadHook(
 	env: *mut JNIEnv,
+	_obj: jobject,
 	hook: jobject
 ) {
 	assert!(!hook.is_null());
-	println!("7");
 	
 	let hook_class: jclass = (**env).GetObjectClass.unwrap()(env, hook);
 	assert!(!hook_class.is_null());
 	
-	println!("8");
 	let hook_method: jmethodID = (**env).GetMethodID.unwrap()(
 		env,
 		hook_class,
@@ -142,7 +124,6 @@ pub unsafe extern "system" fn registerClassLoadHook(
 	);
 	assert!(!hook_method.is_null());
 	
-	println!("9");
 	let prepare_method: jmethodID = (**env).GetMethodID.unwrap()(
 		env,
 		hook_class,
@@ -151,39 +132,26 @@ pub unsafe extern "system" fn registerClassLoadHook(
 	);
 	assert!(!prepare_method.is_null());
 	
-	println!("10");
 	HOOK_OBJECT = Some((**env).NewGlobalRef.unwrap()(env, hook));
 	HOOK_METH_ID = Some(hook_method);
 	HOOK_PREPARE_ID = Some(prepare_method);
 	
-	let jvmti: *mut jvmtiEnv = utils::get_jvmti(utils::get_vm(env));
+	let jvmti: *mut jvmtiEnv = JVMTI.unwrap();
 	
-	let mut available: jvmtiCapabilities = zeroed();
-	(**jvmti).GetPotentialCapabilities.unwrap()(jvmti, &mut available);
-	println!("Ava {}", available.can_generate_breakpoint_events());
-	let mut available: jvmtiCapabilities = zeroed();
-	(**jvmti).GetCapabilities.unwrap()(jvmti, &mut available);
-	println!("Get {}", available.can_generate_breakpoint_events());
-	
-	println!("11");
 	{
 		let mut callbacks = match CALLBACKS {
 			Some(x) => x,
-			None => {
-				let new: jvmtiEventCallbacks = zeroed();
-				CALLBACKS = Some(new);
-				new
-			}
+			None => zeroed()
 		};
 		callbacks.ClassFileLoadHook = Some(load_hook_handler);
 		callbacks.ClassPrepare = Some(prepare_class_handler);
+		CALLBACKS = Some(callbacks);
 		
 		let result = (**jvmti).SetEventCallbacks.unwrap()(jvmti, &callbacks, size_of::<jvmtiEventCallbacks>() as i32);
 		if result != jvmtiError_JVMTI_ERROR_NONE {
 			panic!("Couldn't add jvmti callbacks ({})", result);
 		}
 	}
-	println!("12");
 	
 	// enable load hook
 	{
@@ -192,7 +160,6 @@ pub unsafe extern "system" fn registerClassLoadHook(
 			panic!("Couldn't enable jvmti callbacks ({})", result);
 		}
 	}
-	println!("13");
 	// enable prepare hook
 	{
 		let result = (**jvmti).SetEventNotificationMode.unwrap()(jvmti, jvmtiEventMode_JVMTI_ENABLE, jvmtiEvent_JVMTI_EVENT_CLASS_PREPARE, null_mut());
@@ -200,9 +167,7 @@ pub unsafe extern "system" fn registerClassLoadHook(
 			panic!("Couldn't enable jvmti callbacks ({})", result);
 		}
 	}
-	println!("14");
 	assert_eq!((**env).ExceptionCheck.unwrap()(env), 0);
-	println!("15");
 }
 
 static mut HOOK_OBJECT: Option<jobject> = None;

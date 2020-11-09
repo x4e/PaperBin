@@ -28,7 +28,7 @@ fun main(args: Array<String>) {
 		val newArgs = args.drop(1).toTypedArray()
 		
 		PaperBinInfo // MUST BE INITIALIZED BEFORE CLASS HOOK
-		//NativeAccessor.registerClassLoadHook(PaperBinTransformer)
+		NativeAccessor.registerClassLoadHook(PaperBinTransformer)
 		
 		val cl = ClassLoader.getSystemClassLoader()
 		NativeAccessor.appendToClassloader(file.absolutePath, false)
