@@ -1,23 +1,24 @@
 # PaperBin 🗑️
 [![Donate with Bitcoin](https://en.cryptobadges.io/badge/small/12fApkUEecKA8UP6PAiNrGP1d2mvr1XXk9)](https://en.cryptobadges.io/donate/12fApkUEecKA8UP6PAiNrGP1d2mvr1XXk9)
-[![Downloads](https://img.shields.io/github/downloads/cookiedragon234/paperbin/total?logo=github&logoColor=white)](https://github.com/cookiedragon234/PaperBin/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/bytechef/paperbin/total?logo=github&logoColor=white)](https://github.com/bytechef/PaperBin/releases/latest)
 [![Discord](https://img.shields.io/discord/658373639137132595?logo=discord&logoColor=white)](https://discord.gg/9wA2G8E)
 
 An experiment at improving the performance of PaperMC. 
 
-This project jvmti to modify Minecraft classes at runtime.
+This project uses jvmti to modify Minecraft classes at runtime.
 Because of this paperbin can even be run on top of modified versions of paper.
 
 ## Usage
 Make sure you have read the License.
 Then download paperbin and run the following command:
 ```
-java [any jvm arguments] -noverify -jar PaperBin.jar ActualPaper.jar [any paper arguments]
+java [any jvm arguments] -jar PaperBin.jar ActualPaper.jar [any paper arguments]
 ```
 
 ### Post Java 8
-PaperBin is fully compatible with > Java 8 JVMs, however 1.12.2 paperclip is not.
-If you want to run PaperBin+PaperClip on a recent JVM follow these steps:
+It is highly recommended to run PaperBin on Java 15 using ZGC and large pages for best performance.
+
+PaperBin itself will just work with Java 15, however PaperClip will not. If you use PaperClip normally, follow these steps to get it working on Java 15:
 ```
 java -jar paperclip.jar
 java -jar paperbin.jar cache/patched_1.12.2.jar
@@ -61,28 +62,7 @@ This plugin is currently active on `oldfag.org`, feel free to connect and test i
 - Village rate limiter (rate limit the rate at which villages are updated)
 
 ## Configuration
-Configuration is stored in `paperbin.properties`, here is an example:
-```properties
-antiCrasher=true
-chunkLoadOptimisations=true
-antiPortalGodmode=true
-villageRateLimit=true
-antiNetherRoof=true
-antiChunkBan=true
-antiUnicodeChat=true
-antiElytraFly=true
-tpsCompensation=true
-antiGrief=true
-fastGameRule=true
-packetOptimisations=true
-blockRateLimit=true
-debug=false
-optimisedEveryoneSleeping=true
-antiDupe=true
-mobAiMultithreading=true
-mobAiRateLimit=false
-antiNewChunks=false
-```
+The first time you run PaperBin it will output the default config to `paperbin.properties`, just replace the defaults as necessary.
 
 
 ## YourKit
