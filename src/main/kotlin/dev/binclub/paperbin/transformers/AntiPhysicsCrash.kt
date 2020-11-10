@@ -21,7 +21,6 @@ object AntiPhysicsCrash: PaperBinFeature {
 		PaperBinInfo.registerTransformer("net/minecraft/server/v1_12_R1/World", {}) { cl ->
 			val method = cl.getDeclaredMethod("applyPhysics", BlockPosition::class.java, Block::class.java, java.lang.Boolean.TYPE)
 				?: error("Couldn't find physics method")
-			logger.info("Adding breakpoint to method $method of class $cl")
 			NativeAccessor.registerAntiPhysicsCrash(method, PaperBinConfig.physicsMaxStackSize)
 		}
 	}

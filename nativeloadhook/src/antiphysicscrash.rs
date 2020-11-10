@@ -59,7 +59,6 @@ pub unsafe extern "C" fn breakpoint_hook(
 	if Some(method) != PHYSICS_METH {
 		return
 	}
-	print!("Physics method called");
 	
 	let jvmti: *mut jvmtiEnv = JVMTI.unwrap();
 	
@@ -72,8 +71,6 @@ pub unsafe extern "C" fn breakpoint_hook(
 	let mut num_frames: jint = 0;
 	
 	(**jvmti).GetStackTrace.unwrap()(jvmti, thread, 0, max_frames, frames.as_mut_ptr(), &mut num_frames);
-	
-	println!(" - Num Frames {}", num_frames);
 	
 	if num_frames > max_frames {
 		// just exit out of the method
