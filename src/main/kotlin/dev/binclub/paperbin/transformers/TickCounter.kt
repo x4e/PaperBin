@@ -4,6 +4,7 @@ import dev.binclub.paperbin.PaperBinConfig
 import dev.binclub.paperbin.PaperBinInfo
 import dev.binclub.paperbin.PaperBinFeature
 import dev.binclub.paperbin.transformers.asyncai.AsyncMobAi
+import dev.binclub.paperbin.utils.insnBuilder
 import dev.binclub.paperbin.utils.internalName
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
@@ -28,13 +29,11 @@ object TickCounter: PaperBinFeature {
 					count += 1
 				}
 				if (method.name == "getServerModName" && method.desc == "()Ljava/lang/String;") {
-					for (insn in method.instructions) {
-						if (insn is LdcInsnNode) {
-							insn.cst = "PaperBin"
-							count += 1
-							break
-						}
+					method.instructions = insnBuilder {
+						ldc("PaperBin")
+						areturn()
 					}
+					count += 1
 				}
 			}
 			if (count != 2) {
@@ -44,12 +43,11 @@ object TickCounter: PaperBinFeature {
 		register("org.bukkit.craftbukkit.v1_12_R1.CraftServer") { classNode ->
 			for (method in classNode.methods) {
 				if (method.name == "getName" && method.desc == "()Ljava/lang/String;") {
-					for (insn in method.instructions) {
-						if (insn is LdcInsnNode) {
-							insn.cst = "PaperBin"
-							return@register
-						}
+					method.instructions = insnBuilder {
+						ldc("PaperBin")
+						areturn()
 					}
+					return@register
 				}
 			}
 			error("Couldnt find target")
