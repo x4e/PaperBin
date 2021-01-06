@@ -35,6 +35,10 @@ You can then use PaperBin to directly run the patched jar.
 
 (Kaspian#8508)
 
+> paperbin runs great for a server with 100+ players and wont affect breaking blocks or eating that much when the tps is low would recommend
+
+(cubebuilderunderscore#4344)
+
 > thanks for making such a helpful server tool
 
 (Gav#7669)
