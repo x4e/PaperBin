@@ -1,7 +1,7 @@
-use rs_jvm_bindings::jni::{JavaVM, JNI_OK, JNIEnv};
+use jvm_rs::jni::{JavaVM, JNI_OK, JNIEnv};
 use std::ptr::null_mut;
 use std::borrow::BorrowMut;
-use rs_jvm_bindings::jvmti::{jvmtiEnv, JVMTI_VERSION, jvmtiCapabilities};
+use jvm_rs::jvmti::{jvmtiEnv, JVMTI_VERSION, jvmtiCapabilities};
 use std::os::raw::c_void;
 use std::mem::zeroed;
 
@@ -56,4 +56,22 @@ pub unsafe fn print_caps(jvmti: *mut jvmtiEnv) {
 	println!("can_get_current_thread_cpu_time: {}", available.can_get_current_thread_cpu_time());
 	println!("can_generate_method_entry_events: {}", available.can_generate_method_entry_events());
 	println!("can_generate_all_class_hook_events: {}", available.can_generate_all_class_hook_events());
+}
+
+
+#[macro_export]
+macro_rules! cstr {
+	($s:expr) => {
+		std::ffi::CString::new($s).unwrap().into_raw()
+	};
+}
+
+#[macro_export]
+macro_rules! check_jni {
+	($e:expr) => {{
+		let result = $e;
+		if result != jvm_rs::jni::JNI_OK as u32 {
+			panic!("JNI expression failed (received {} from {})", result, stringify!($e));
+		}
+	}};
 }

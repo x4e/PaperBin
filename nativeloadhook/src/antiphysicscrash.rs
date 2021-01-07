@@ -1,11 +1,8 @@
-use rs_jvm_bindings::jvmti::{jvmtiEnv, jvmtiError_JVMTI_ERROR_NONE, jvmtiEventCallbacks, jlocation, jthread, jvmtiEventMode_JVMTI_ENABLE, jvmtiEvent_JVMTI_EVENT_BREAKPOINT, jvmtiFrameInfo};
-use rs_jvm_bindings::jni::{JNIEnv, jobject, jmethodID, jint};
+use jvm_rs::jvmti::{jvmtiEnv, jvmtiError_JVMTI_ERROR_NONE, jvmtiEventCallbacks, jlocation, jthread, jvmtiEventMode_JVMTI_ENABLE, jvmtiEvent_JVMTI_EVENT_BREAKPOINT, jvmtiFrameInfo};
+use jvm_rs::jni::{JNIEnv, jobject, jmethodID, jint};
 use crate::{JVMTI, CALLBACKS};
 use std::mem::{zeroed, size_of};
-use rs_jvm_bindings::jvm::{JVM_CountStackFrames, JVM_FillInStackTrace, JVM_GetStackTraceDepth};
 use std::ptr::null_mut;
-use std::borrow::BorrowMut;
-use std::os::raw::c_void;
 
 static mut PHYSICS_METH: Option<jmethodID> = None;
 static mut MAX_STACK_SIZE: usize = 500;
@@ -67,7 +64,7 @@ pub unsafe extern "C" fn breakpoint_hook(
 	}
 	let max_frames = MAX_STACK_SIZE as jint;
 	
-	let mut frames: &mut Vec<jvmtiFrameInfo> = &mut FRAMES.as_mut().unwrap();
+	let frames: &mut Vec<jvmtiFrameInfo> = &mut FRAMES.as_mut().unwrap();
 	let mut num_frames: jint = 0;
 	
 	(**jvmti).GetStackTrace.unwrap()(jvmti, thread, 0, max_frames, frames.as_mut_ptr(), &mut num_frames);
