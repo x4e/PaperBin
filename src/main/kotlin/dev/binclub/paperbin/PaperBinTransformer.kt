@@ -2,9 +2,9 @@ package dev.binclub.paperbin
 
 import dev.binclub.paperbin.PaperBinInfo.logger
 import dev.binclub.paperbin.native.PaperBinClassTransformer
-import jdk.nashorn.internal.codegen.types.Type
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassWriter
+import org.objectweb.asm.Type
 import org.objectweb.asm.tree.ClassNode
 import org.objectweb.asm.util.CheckClassAdapter
 import java.io.File
