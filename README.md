@@ -1,4 +1,5 @@
 # PaperBin 🗑️
+![Java CI with Gradle](https://github.com/x4e/PaperBin/workflows/Java%20CI%20with%20Gradle/badge.svg)
 [![Downloads](https://img.shields.io/github/downloads/bytechef/paperbin/total?logo=github&logoColor=white)](https://github.com/bytechef/PaperBin/releases/latest)
 [![Discord](https://img.shields.io/discord/658373639137132595?logo=discord&logoColor=white)](https://discord.gg/9wA2G8E)
 
