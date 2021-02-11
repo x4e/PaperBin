@@ -1,5 +1,9 @@
 .idea/
 .gradle/
+logs/
+cache/
 build/
+out/
 paper/
+/paperbin/
 

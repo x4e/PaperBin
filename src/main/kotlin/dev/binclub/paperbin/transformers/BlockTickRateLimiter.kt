@@ -2,17 +2,16 @@ package dev.binclub.paperbin.transformers
 
 import dev.binclub.paperbin.PaperBinConfig
 import dev.binclub.paperbin.PaperBinInfo
-import dev.binclub.paperbin.PaperFeature
+import dev.binclub.paperbin.PaperBinFeature
 import dev.binclub.paperbin.utils.internalName
 import net.minecraft.server.v1_12_R1.*
-import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.*
 
 /**
  * @author cookiedragon234 11/May/2020
  */
-object BlockTickRateLimiter: PaperFeature {
+object BlockTickRateLimiter: PaperBinFeature {
 	@JvmStatic
 	fun shouldTickBlock(block: Any): Boolean {
 		block as Block

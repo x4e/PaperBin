@@ -1,7 +1,7 @@
 package dev.binclub.paperbin.transformers
 
 import dev.binclub.paperbin.PaperBinConfig
-import dev.binclub.paperbin.PaperFeature
+import dev.binclub.paperbin.PaperBinFeature
 import dev.binclub.paperbin.utils.add
 import org.objectweb.asm.Opcodes.*
 import org.objectweb.asm.tree.InsnList
@@ -14,7 +14,7 @@ import org.objectweb.asm.tree.MethodInsnNode
  *
  * @author cookiedragon234 15/May/2020
  */
-object AntiNewChunks: PaperFeature {
+object AntiNewChunks: PaperBinFeature {
 	override fun registerTransformers() {
 		if (!PaperBinConfig.antiNewChunks) return
 		

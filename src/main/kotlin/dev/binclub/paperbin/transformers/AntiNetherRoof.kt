@@ -2,28 +2,75 @@ package dev.binclub.paperbin.transformers
 
 import dev.binclub.paperbin.PaperBinConfig
 import dev.binclub.paperbin.PaperBinInfo
-import dev.binclub.paperbin.PaperFeature
+import dev.binclub.paperbin.PaperBinFeature
+import dev.binclub.paperbin.utils.insnBuilder
 import net.minecraft.server.v1_12_R1.*
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.World
-import org.bukkit.craftbukkit.v1_12_R1.CraftServer
-import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer
 import org.bukkit.entity.Player
 import org.bukkit.event.Event
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
-import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.vehicle.VehicleEnterEvent
 import org.bukkit.event.vehicle.VehicleExitEvent
+import org.objectweb.asm.Opcodes.NEW
+import org.objectweb.asm.tree.LabelNode
+import org.objectweb.asm.tree.TypeInsnNode
 
 /**
  * @author cookiedragon234 12/May/2020
  */
-object AntiNetherRoof: PaperFeature {
-	override fun registerTransformers() {}
+object AntiNetherRoof: PaperBinFeature {
+	/**
+	 * Returns true if crystal can be placed here
+	 */
+	@JvmStatic
+	fun checkCrystalPlace(world: net.minecraft.server.v1_12_R1.World, pos: BlockPosition): Boolean {
+		return isValid(Location(world.world, pos.x + 0.5, pos.y + 1.0, pos.z + 0.5))
+	}
+	
+	override fun registerTransformers() {
+		register("net.minecraft.server.v1_12_R1.ItemEndCrystal") { cn ->
+			cn.methods.forEach { mn ->
+				if (mn.name == "a" && mn.desc == "(Lnet/minecraft/server/v1_12_R1/EntityHuman;Lnet/minecraft/server/v1_12_R1/World;Lnet/minecraft/server/v1_12_R1/BlockPosition;Lnet/minecraft/server/v1_12_R1/EnumHand;Lnet/minecraft/server/v1_12_R1/EnumDirection;FFF)Lnet/minecraft/server/v1_12_R1/EnumInteractionResult;") {
+					for (insn in mn.instructions) {
+						if (
+							insn is TypeInsnNode
+							&&
+							insn.opcode == NEW
+							&&
+							insn.desc == "net/minecraft/server/v1_12_R1/EntityEnderCrystal"
+						) {
+							val insert = insnBuilder {
+								aload(2) // world
+								aload(3) // pos
+								invokestatic(
+									"dev/binclub/paperbin/transformers/AntiNetherRoof",
+									"checkCrystalPlace",
+									"(Lnet/minecraft/server/v1_12_R1/World;Lnet/minecraft/server/v1_12_R1/BlockPosition;)Z"
+								)
+								val out = LabelNode()
+								ifne(out) // if true
+								getstatic(
+									"net/minecraft/server/v1_12_R1/EnumInteractionResult",
+									"FAIL",
+									"Lnet/minecraft/server/v1_12_R1/EnumInteractionResult;"
+								)
+								areturn()
+								+out
+							}
+							mn.instructions.insertBefore(insn, insert)
+							return@register
+						}
+					}
+				}
+			}
+			error("Couldn't find target")
+		}
+	}
 	
 	override fun postStartup() {
 		if (!PaperBinConfig.antiNetherRoof) return
@@ -139,7 +186,7 @@ object AntiNetherRoof: PaperFeature {
 		
 		when (location.world.environment) {
 			World.Environment.NETHER -> {
-				if (y <= 0 || y >= 125) {
+				if (y <= 0 || y >= 127) {
 					return false
 				}
 			}

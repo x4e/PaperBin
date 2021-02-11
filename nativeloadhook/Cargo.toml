@@ -1,0 +1,12 @@
+[package]
+name = "JvmClassHookLib"
+version = "0.1.0"
+authors = ["mastercooker <c.o.okiedragon234@gmail.com>"]
+edition = "2018"
+
+[lib]
+name = "JvmClassHook"
+crate_type = ["cdylib"]
+
+[dependencies]
+jvm-rs = { git = "https://github.com/x4e/jvm-rs/" }
