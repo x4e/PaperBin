@@ -78,7 +78,7 @@ object TpsCompensation: PaperBinFeature {
 			)
 			classNode.fields.add(startFrickTick)
 			
-			/*for (method in classNode.methods) {
+			for (method in classNode.methods) {
 				if (method.name == "c" && method.desc == "()V") {
 					insnLoop@for (insn in method.instructions) {
 						if (insn is FieldInsnNode && insn.owner == "net/minecraft/server/v1_12_R1/PathfinderGoalMakeLove" && insn.name == "e" && insn.desc == "I") {
@@ -110,7 +110,7 @@ object TpsCompensation: PaperBinFeature {
 					}
 					//PUTFIELD .e : I
 				}
-			}*/
+			}
 		}
 		register("net.minecraft.server.v1_12_R1.EntityLiving") { classNode -> // Food eating delays
 			classNode.fields.add(FieldNode(
