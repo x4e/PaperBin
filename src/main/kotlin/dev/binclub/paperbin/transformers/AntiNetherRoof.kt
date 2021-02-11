@@ -186,7 +186,7 @@ object AntiNetherRoof: PaperBinFeature {
 		
 		when (location.world.environment) {
 			World.Environment.NETHER -> {
-				if (y <= 0 || y >= 125) {
+				if (y <= 0 || y >= 127) {
 					return false
 				}
 			}
