@@ -72,10 +72,14 @@ object AntiNetherRoof: PaperBinFeature {
 			error("Couldn't find target")
 		}
 	}
+
+	private var yLevel = 0;
 	
 	override fun postStartup() {
 		if (!PaperBinConfig.antiNetherRoof) return
-		
+
+		yLevel = PaperBinConfig.antiNetherRoofLevel
+
 		Bukkit.getServer().pluginManager.registerEvent(
 			PlayerMoveEvent::class.java,
 			object: Listener{},
@@ -189,7 +193,7 @@ object AntiNetherRoof: PaperBinFeature {
 		
 		when (location.world.environment!!) {
 			World.Environment.NETHER -> {
-				if (y <= 0 || y >= PaperBinConfig.antiNetherRoofLevel) {
+				if (y <= 0 || y >= yLevel) {
 					return false
 				}
 			}

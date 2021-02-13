@@ -20,7 +20,7 @@ object PaperBinConfig {
 	var antiGrief: Boolean by BooleanProperty(properties, "antiGrief")
 	var antiIllegalItem: Boolean by BooleanProperty(properties, "antiIllegalItem", false)
 	var antiNetherRoof: Boolean by BooleanProperty(properties, "antiNetherRoof")
-	var antiNetherRoofLevel: Int by IntProperty(properties, "antiNetherRoofLevel", 125)
+	var antiNetherRoofLevel: Int by IntProperty(properties, "antiNetherRoof.level", 125)
 	var antiNewChunks: Boolean by BooleanProperty(properties, "antiNewChunks", false)
 	var antiPhysicsCrash: Boolean by BooleanProperty(properties, "antiPhysicsCrash", false)
 	var physicsMaxStackSize: Int by IntProperty(properties, "antiPhysicsCrash.maxStackSize", 500)
