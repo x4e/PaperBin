@@ -7,6 +7,7 @@ import dev.binclub.paperbin.utils.insnBuilder
 import net.minecraft.server.v1_12_R1.*
 import org.bukkit.Bukkit
 import org.bukkit.Location
+import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.entity.Player
 import org.bukkit.event.Event
@@ -71,10 +72,14 @@ object AntiNetherRoof: PaperBinFeature {
 			error("Couldn't find target")
 		}
 	}
+
+	private var yLevel = 0;
 	
 	override fun postStartup() {
 		if (!PaperBinConfig.antiNetherRoof) return
-		
+
+		yLevel = PaperBinConfig.antiNetherRoofLevel
+
 		Bukkit.getServer().pluginManager.registerEvent(
 			PlayerMoveEvent::class.java,
 			object: Listener{},
@@ -167,9 +172,11 @@ object AntiNetherRoof: PaperBinFeature {
 		if (!isValid(to)) {
 			event.isCancelled = true
 			if (!isValid(from)) {
-				// If they are teleporting from another invalid location this likely means they are stuck
-				// Rather than just cancelling the teleport and preventing them from moving the most
-				// humane thing to do is just to kill them :/
+				/*
+					If they are teleporting from another invalid location this likely means they are stuck
+					Rather than just cancelling the teleport and preventing them from moving the most
+				 	humane thing to do is just to kill them :/
+				 */
 				player.damage(20000.0)
 			}
 		}
@@ -179,14 +186,14 @@ object AntiNetherRoof: PaperBinFeature {
 		val x = location.x.toInt()
 		val y = location.y.toInt()
 		val z = location.z.toInt()
-		
+
 		if (x >= worldBorder || z >= worldBorder || x <= negWorldBorder || z <= negWorldBorder) {
 			return false
 		}
 		
 		when (location.world.environment) {
 			World.Environment.NETHER -> {
-				if (y <= 0 || y >= 127) {
+				if (y <= 0 || y >= yLevel) {
 					return false
 				}
 			}
