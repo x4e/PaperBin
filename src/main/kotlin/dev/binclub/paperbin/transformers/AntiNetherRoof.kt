@@ -191,7 +191,7 @@ object AntiNetherRoof: PaperBinFeature {
 			return false
 		}
 		
-		when (location.world.environment!!) {
+		when (location.world.environment) {
 			World.Environment.NETHER -> {
 				if (y <= 0 || y >= yLevel) {
 					return false
