@@ -18,32 +18,36 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     
+    - name: "Init native compiles"
+      run: "cd nativeloadhook"
+    
     - name: "Nativeloadhook linux"
       uses: actions-rs/cargo@v1
-      run: "cd nativeloadhook"
       with:
         use-cross: true
         command: build --release
         args: --target x86_64-unknown-linux-gnu
-      run: "mv target/x86_64-unknown-linux-gnu/release/libJvmClassHook.so ../build/libs"
     
     - name: "Nativeloadhook Windows"
       uses: actions-rs/cargo@v1
-      run: "cd nativeloadhook"
       with:
         use-cross: true
         command: build --release
         args: --target x86_64-pc-windows-gnu
-      run: "mv target/x86_64-pc-windows-gnu/release/JvmClassHook.dll ../build/libs"
     
     - name: "Nativeloadhook Mac"
       uses: actions-rs/cargo@v1
-      run: "cd nativeloadhook"
       with:
         use-cross: true
         command: build --release
         args: --target x86_64-apple-darwin
-      run: "mv target/x86_64-apple-darwin/release/libJvmClassHook.dylib ../build/libs"
+    
+    - name: "Move native libs to build folder"
+      run: |
+        "mv target/x86_64-unknown-linux-gnu/release/libJvmClassHook.so ../build/libs"
+        "mv target/x86_64-pc-windows-gnu/release/JvmClassHook.dll ../build/libs"
+        "mv target/x86_64-apple-darwin/release/libJvmClassHook.dylib ../build/libs"
+        "cd .."
     
     - name: Set up JDK 1.8
       uses: actions/setup-java@v1
