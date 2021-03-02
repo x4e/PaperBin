@@ -18,51 +18,54 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     
-    - name: "Init native compiles"
-      run: "cd nativeloadhook"
-    
     - uses: actions-rs/toolchain@v1
+      working-directory: ./nativeloadhook
       with:
         toolchain: stable
         target: x86_64-unknown-linux-gnu
         override: true
     - name: "Nativeloadhook linux"
       uses: actions-rs/cargo@v1
+      working-directory: ./nativeloadhook
       with:
         use-cross: true
         command: build
         args: --release --target x86_64-unknown-linux-gnu
     
     - uses: actions-rs/toolchain@v1
+      working-directory: ./nativeloadhook
       with:
         toolchain: stable
         target: x86_64-pc-windows-gnu
         override: true
     - name: "Nativeloadhook Windows"
       uses: actions-rs/cargo@v1
+      working-directory: ./nativeloadhook
       with:
         use-cross: true
         command: build
         args: --release --target x86_64-pc-windows-gnu
     
     - uses: actions-rs/toolchain@v1
+      working-directory: ./nativeloadhook
       with:
         toolchain: stable
         target: x86_64-apple-darwin
         override: true
     - name: "Nativeloadhook Mac"
       uses: actions-rs/cargo@v1
+      working-directory: ./nativeloadhook
       with:
         use-cross: true
         command: build
         args: --release --target x86_64-apple-darwin
     
     - name: "Move native libs to build folder"
+      working-directory: ./nativeloadhook
       run: |
         "mv target/x86_64-unknown-linux-gnu/release/libJvmClassHook.so ../build/libs"
         "mv target/x86_64-pc-windows-gnu/release/JvmClassHook.dll ../build/libs"
         "mv target/x86_64-apple-darwin/release/libJvmClassHook.dylib ../build/libs"
-        "cd .."
     
     - name: Set up JDK 1.8
       uses: actions/setup-java@v1
