@@ -1,6 +1,6 @@
 # PaperBin 🗑️
 ![Java CI with Gradle](https://github.com/x4e/PaperBin/workflows/Java%20CI%20with%20Gradle/badge.svg)
-[![Downloads](https://img.shields.io/github/downloads/bytechef/paperbin/total?logo=github&logoColor=white)](https://github.com/bytechef/PaperBin/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/bytechef/paperbin/total?logo=github&logoColor=white)](https://github.com/x4e/PaperBin/releases/latest)
 [![Discord](https://img.shields.io/discord/658373639137132595?logo=discord&logoColor=white)](https://discord.gg/9wA2G8E)
 
 An experiment at improving the performance of PaperMC. 
@@ -12,22 +12,19 @@ Because of this paperbin can even be run on top of modified versions of paper.
 You can donate by sending bitcoin to `bc1q35vyw5rudnttchglj3rch9p2j9xxannumn3muv`.
 
 ## Usage
-Make sure you have read the License.
-Then download paperbin and run the following command:
-```
-java [any jvm arguments] -jar PaperBin.jar ActualPaper.jar [any paper arguments]
-```
 
-### Post Java 8
-It is highly recommended to run PaperBin on Java 15 using ZGC and large pages for best performance.
+Note: It is highly recommended to run PaperBin on Java 15 using ZGC and large pages for best performance.
 
-PaperBin itself will just work with Java 15, however PaperClip will not. If you use PaperClip normally, follow these steps to get it working on Java 15:
+Download the latest 1.12.2 release from [Paper's website](https://papermc.io/legacy).
+
+Go to [the releases](https://github.com/x4e/PaperBin/releases) and download PaperBin.jar as well as the relevant native library for your platform (dll for windows, dylib for mac, so for linux).
+The following commands will be for the linux native library, adapt them for your one.
 ```
-java -jar paperclip.jar
-java -jar paperbin.jar cache/patched_1.12.2.jar
+java -jar paper-1.12.2-1618.jar
+java -agentpath:libJvmClassHook.so -jar PaperBin.jar cache/patched_1.12.2.jar
 ```
-First time you run PaperClip it will create a patched 1.12.2 jar, then crash.
-You can then use PaperBin to directly run the patched jar.
+The first command should exit with an error. 
+If it does not then quit it yourself once it has finished starting up the server.
 
 ## Testomonials
 > paperbin
@@ -82,7 +79,7 @@ wget https://papermc.io/api/v2/projects/paper/versions/1.12.2/builds/1618/downlo
 cd paperbin
 java -jar paper.jar
 cd ../
-./gradlew build
+./build.sh
 ```
 
 
