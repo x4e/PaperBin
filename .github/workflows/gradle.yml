@@ -17,21 +17,34 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Cargo Linux
-      uses: actions-rs/toolchain@v1
+    
+    - name: "Nativeloadhook linux"
+      uses: actions-rs/cargo@v1
+      run: "cd nativeloadhook"
       with:
-        toolchain: stable
-        target: x86_64-unknown-linux-gnu
-    - name: Cargo Windows
-      uses: actions-rs/toolchain@v1
+        use-cross: true
+        command: build --release
+        args: --target x86_64-unknown-linux-gnu
+      run: "mv target/x86_64-unknown-linux-gnu/release/libJvmClassHook.so ../build/libs"
+    
+    - name: "Nativeloadhook Windows"
+      uses: actions-rs/cargo@v1
+      run: "cd nativeloadhook"
       with:
-        toolchain: stable
-        target: x86_64-pc-windows-gnu
-    - name: Cargo Mac
-      uses: actions-rs/toolchain@v1
+        use-cross: true
+        command: build --release
+        args: --target x86_64-pc-windows-gnu
+      run: "mv target/x86_64-pc-windows-gnu/release/JvmClassHook.dll ../build/libs"
+    
+    - name: "Nativeloadhook Mac"
+      uses: actions-rs/cargo@v1
+      run: "cd nativeloadhook"
       with:
-        toolchain: stable
-        target: x86_64-apple-darwin
+        use-cross: true
+        command: build --release
+        args: --target x86_64-apple-darwin
+      run: "mv target/x86_64-apple-darwin/release/libJvmClassHook.dylib ../build/libs"
+    
     - name: Set up JDK 1.8
       uses: actions/setup-java@v1
       with:
@@ -42,11 +55,10 @@ jobs:
         "${GITHUB_WORKSPACE}/.github/workflows/setup.sh"
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
-    - name: Grant execute permission for build script
-      run: chmod +x build.sh
-    - name: Build
-      run: ./build.sh
-    - name: Upload a Build Artifact
+    - name: Build Java
+      run: ./gradlew build
+    
+    - name: Upload Build Artifacts
       uses: actions/upload-artifact@v2.2.2
       with:
         name: paperbin
