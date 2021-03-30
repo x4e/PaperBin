@@ -197,28 +197,33 @@ class CustomLightingQueue(val chunk: Chunk): HashMap<BlockPosition, Runnable>() 
 			else -> {
 				val ignored = chunk.world.timings.lightingQueueTimer.startTiming()
 				var var6: Throwable? = null
-				for ((pos, lightUpdate) in this) {
-					try {
-						lightUpdate.run()
-						if (isOutOfTime(maxTickTime, startTime)) {
-							return true
-						}
-					} catch (var18: Throwable) {
-						var6 = var18
-						throw var18
-					} finally {
-						if (ignored != null) {
-							if (var6 != null) {
-								try {
+				val updates = this.values
+				try {
+					for (lightUpdate in updates) {
+						try {
+							lightUpdate.run()
+							if (isOutOfTime(maxTickTime, startTime)) {
+								return true
+							}
+						} catch (var18: Throwable) {
+							var6 = var18
+							throw var18
+						} finally {
+							if (ignored != null) {
+								if (var6 != null) {
+									try {
+										ignored.close()
+									} catch (var17: Throwable) {
+										var6.addSuppressed(var17)
+									}
+								} else {
 									ignored.close()
-								} catch (var17: Throwable) {
-									var6.addSuppressed(var17)
 								}
-							} else {
-								ignored.close()
 							}
 						}
 					}
+				} catch (e: ConcurrentModificationException) {
+					e.printStackTrace()
 				}
 				return false
 			}
