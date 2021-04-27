@@ -34,6 +34,8 @@ object AntiNetherRoof: PaperBinFeature {
 	}
 	
 	override fun registerTransformers() {
+		if (!PaperBinConfig.antiNetherRoof) return
+		
 		register("net.minecraft.server.v1_12_R1.ItemEndCrystal") { cn ->
 			cn.methods.forEach { mn ->
 				if (mn.name == "a" && mn.desc == "(Lnet/minecraft/server/v1_12_R1/EntityHuman;Lnet/minecraft/server/v1_12_R1/World;Lnet/minecraft/server/v1_12_R1/BlockPosition;Lnet/minecraft/server/v1_12_R1/EnumHand;Lnet/minecraft/server/v1_12_R1/EnumDirection;FFF)Lnet/minecraft/server/v1_12_R1/EnumInteractionResult;") {

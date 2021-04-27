@@ -24,7 +24,7 @@ import kotlin.concurrent.thread
  * @author cookiedragon234 23/Apr/2020
  */
 object PaperBinInfo {
-	val version = 1.81f
+	val version = 1.82f
 	@JvmStatic
 	val logger by lazy {
 		Logger.getLogger("PaperBin").also {

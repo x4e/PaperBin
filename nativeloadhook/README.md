@@ -6,7 +6,7 @@ https://wiki.archlinux.org/index.php/Rust is helpful for this.
 
 Linux:
 ```
-cargo build --release --target "stable-x86_64-unknown-linux-gnu"
+cargo build --release --target "x86_64-unknown-linux-gnu"
 ```
 Windows:
 ```
