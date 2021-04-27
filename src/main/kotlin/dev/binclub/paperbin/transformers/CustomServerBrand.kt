@@ -1,5 +1,6 @@
 package dev.binclub.paperbin.transformers
 
+import dev.binclub.paperbin.PaperBinConfig
 import dev.binclub.paperbin.PaperBinFeature
 import dev.binclub.paperbin.utils.insnBuilder
 import dev.binclub.paperbin.utils.internalName
@@ -26,6 +27,6 @@ object CustomServerBrand: PaperBinFeature {
 
     @JvmStatic
     fun getServerName(): String {
-        return "PaperBin"
+        return PaperBinConfig.customServerBrand
     }
 }
