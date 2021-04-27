@@ -89,7 +89,6 @@ object PaperBinInfo {
 		BlockTickRateLimiter,
 		ChunkLoadingOptimisations,
 		CustomNbtEvents,
-		CustomServerBrand,
 		ElytraLowerRenderDistance,
 		FasterGameRuleLookup,
 		TpsCompensation,
