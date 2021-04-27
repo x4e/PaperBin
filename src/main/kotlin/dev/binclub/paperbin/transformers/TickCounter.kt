@@ -30,7 +30,7 @@ object TickCounter: PaperBinFeature {
 				}
 				if (method.name == "getServerModName" && method.desc == "()Ljava/lang/String;") {
 					method.instructions = insnBuilder {
-						ldc("PaperBin")
+						ldc(getServerName())
 						areturn()
 					}
 					count += 1
@@ -44,7 +44,7 @@ object TickCounter: PaperBinFeature {
 			for (method in classNode.methods) {
 				if (method.name == "getName" && method.desc == "()Ljava/lang/String;") {
 					method.instructions = insnBuilder {
-						ldc("PaperBin")
+						ldc(getServerName())
 						areturn()
 					}
 					return@register
@@ -68,5 +68,10 @@ object TickCounter: PaperBinFeature {
 				PaperBinInfo.onStartup()
 			}
 		}
+	}
+
+	@JvmStatic
+	fun getServerName(): String {
+		return PaperBinConfig.customServerBrand
 	}
 }

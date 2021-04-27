@@ -28,6 +28,7 @@ object PaperBinConfig {
 	var antiUnicodeChat: Boolean by BooleanProperty(properties, "antiUnicodeChat", false)
 	var blockRateLimit: Boolean by BooleanProperty(properties, "blockRateLimit")
 	var chunkLoadOptimisations: Boolean by BooleanProperty(properties, "chunkLoadOptimisations", false)
+	var customServerBrand: String by StringProperty(properties, "customServerBrand", "PaperBin")
 	var fastGameRule: Boolean by BooleanProperty(properties, "fastGameRule")
 	var elytraLowerRenderDistance: Boolean by BooleanProperty(properties, "elytraLowerRenderDistance", false)
 	var elytraLowerRenderDistanceOverworld: Int by IntProperty(properties, "elytraLowerRenderDistanceOverworld", 6)
@@ -97,4 +98,13 @@ class IntProperty(val properties: Properties, val key: String, default: Int = 0)
 	
 	operator fun getValue(thisRef: Any?, prop: KProperty<*>): Int = properties.getProperty(key).toInt()
 	operator fun setValue(thisRef: Any?, prop: KProperty<*>, value: Int) = properties.setProperty(key, value.toString())
+}
+
+class StringProperty(val properties: Properties, val key: String, default: String = "") {
+	init {
+		properties.getProperty(key) ?: properties.setProperty(key, default)
+	}
+
+	operator fun getValue(thisRef: Any?, prop: KProperty<*>): String = properties.getProperty(key)
+	operator fun setValue(thisRef: Any?, prop: KProperty<*>, value: String) = properties.setProperty(key, value)
 }
