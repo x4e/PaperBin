@@ -28,7 +28,8 @@ object CustomNbtEvents: PaperBinFeature {
 	}
 	
 	override fun registerTransformers() {
-		return register("net.minecraft.server.v1_12_R1.Entity") { classNode ->
+		return
+		register("net.minecraft.server.v1_12_R1.Entity") { classNode ->
 			for (method in classNode.methods) {
 				if (method.name == "f" && method.desc == "(Lnet/minecraft/server/v1_12_R1/NBTTagCompound;)V") {
 					val list = InsnList().apply {
