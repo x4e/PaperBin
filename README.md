@@ -5,15 +5,14 @@
 
 An experiment at improving the performance of PaperMC. 
 
-This project uses jvmti to modify Minecraft classes at runtime.
-Because of this paperbin can even be run on top of modified versions of paper.
+This project uses JVM TI to modify Minecraft classes at runtime, Because of this PaperBin can even be run on top of modified versions of paper.
 
 ## Donate
 You can donate by sending bitcoin to `bc1q35vyw5rudnttchglj3rch9p2j9xxannumn3muv`.
 
 ## Usage
 
-Note: It is highly recommended to run PaperBin on Java 15 using ZGC and large pages for best performance.
+Note: It is highly recommended running PaperBin on Java 15 using ZGC and large pages for best performance.
 
 Download the latest 1.12.2 release from [Paper's website](https://papermc.io/legacy).
 
@@ -43,9 +42,17 @@ If it does not then quit it yourself once it has finished starting up the server
 
 (Gav#7669)
 
+> I have been using PaperBin for a couple of months now, very valuable for high player count servers
 
-## Test Server
-This plugin is currently active on `oldfag.org`, feel free to connect and test it out, there are no rules.
+(RemainingToast#3835)
+
+## Test Servers
+This plugin is currently active on 
+
+- `oldfag.org`
+- `2b2t.com.au`
+
+Feel free to connect and test it out, there are no rules.
 
 ## Features:
 - Multithreaded mob ai goal calculation
@@ -54,7 +61,8 @@ This plugin is currently active on `oldfag.org`, feel free to connect and test i
 - Anti Dupe (portal entity exploit)
 - Anti Elytra Fly (infinite durability exploit)
 - Anti Grief (various exploits to break end portals)
-- Anti Nether Roof (prevent people glitching above/below bedrock or outside the world border)
+- Anti Nether Roof (prevent people glitching above/below bedrock)
+- Anti World Border (prevent people glitching/placing blocks outside the world border)  
 - Anti Portal God Mode (exploit allowing invincibility after travelling through a portal)
 - Anti Unicode Chat
 - Block Tick Rate Limiter (limit the rate at which blocks are ticked)

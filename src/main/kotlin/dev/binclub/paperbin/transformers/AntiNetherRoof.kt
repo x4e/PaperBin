@@ -189,11 +189,13 @@ object AntiNetherRoof: PaperBinFeature {
 		val y = location.y.toInt()
 		val z = location.z.toInt()
 
-		if (x >= worldBorder || z >= worldBorder || x <= negWorldBorder || z <= negWorldBorder) {
+		if (PaperBinConfig.antiWorldBorder && (x >= worldBorder || z >= worldBorder || x <= negWorldBorder || z <= negWorldBorder)) {
 			return false
 		}
-		
-		when (location.world.environment) {
+
+		val env = location.world.environment ?: return false
+
+		when (env) {
 			World.Environment.NETHER -> {
 				if (y <= 0 || y >= yLevel) {
 					return false
