@@ -23,6 +23,7 @@ object PaperBinConfig {
 	var antiNetherRoofLevel: Int by IntProperty(properties, "antiNetherRoof.level", 125)
 	var antiNewChunks: Boolean by BooleanProperty(properties, "antiNewChunks", false)
 	var antiPhysicsCrash: Boolean by BooleanProperty(properties, "antiPhysicsCrash", false)
+	var antiWorldBorder: Boolean by BooleanProperty(properties, "antiWorldBorder", false)
 	var physicsMaxStackSize: Int by IntProperty(properties, "antiPhysicsCrash.maxStackSize", 500)
 	var antiPortalGodmode: Boolean by BooleanProperty(properties, "antiPortalGodmode")
 	var antiUnicodeChat: Boolean by BooleanProperty(properties, "antiUnicodeChat", false)

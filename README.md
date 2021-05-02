@@ -3,7 +3,7 @@
 [![Downloads](https://img.shields.io/github/downloads/bytechef/paperbin/total?logo=github&logoColor=white)](https://github.com/x4e/PaperBin/releases/latest)
 [![Discord](https://img.shields.io/discord/658373639137132595?logo=discord&logoColor=white)](https://discord.gg/9wA2G8E)
 
-An experiment at improving the performance of PaperMC. 
+An experiment at improving the performance of PaperMC.
 
 This project uses jvmti to modify Minecraft classes at runtime.
 Because of this paperbin can even be run on top of modified versions of paper.
@@ -23,7 +23,7 @@ The following commands will be for the linux native library, adapt them for your
 java -jar paper-1.12.2-1618.jar
 java -agentpath:libJvmClassHook.so -jar PaperBin.jar cache/patched_1.12.2.jar
 ```
-The first command should exit with an error. 
+The first command should exit with an error.
 If it does not then quit it yourself once it has finished starting up the server.
 
 ## Testomonials
@@ -88,7 +88,7 @@ cd ../
 
 Thank you YourKit for supporting this project with their amazing profiler.
 
-YourKit supports open source projects with innovative and intelligent tools 
+YourKit supports open source projects with innovative and intelligent tools
 for monitoring and profiling Java and .NET applications.
 YourKit is the creator of [YourKit Java Profiler](https://www.yourkit.com/java/profiler/),
 [YourKit .NET Profiler](https://www.yourkit.com/.net/profiler/),
